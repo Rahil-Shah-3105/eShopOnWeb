@@ -124,32 +124,44 @@
 
     private async Task CreateClick()
     {
+		Logger.LogDebug(">>> Entering CreateClick()");
         var result = await CatalogItemService.Create(_item);
         if (result != null)
+		Logger.LogDebug("CreateClick(): result → {Result}", result);
         {
             await OnSaveClick.InvokeAsync(null);
             await Close();
         }
+		Logger.LogDebug("<<< Exiting CreateClick()");
     }
 
     public async Task Open()
     {
+	Logger.LogDebug(">>> Entering Open()");
     
         Logger.LogInformation("Now loading... /Catalog/Create");
 
         await new Css(JSRuntime).HideBodyOverflow();
 
         _item = new CreateCatalogItemRequest
+		Logger.LogDebug("Open(): _item → {_item}", _item);
         {
             CatalogTypeId = Types.First().Id,
             CatalogBrandId = Brands.First().Id
         };
 
         _modalDisplay = "block;";
+		Logger.LogDebug("Open(): _modalDisplay → {_modalDisplay}", _modalDisplay);
         _modalClass = "Show";
         _showCreateModal = true;
+		Logger.LogDebug("Open(): _modalClass → {_modalClass}", _modalClass);
+		Logger.LogDebug("Open(): _showCreateModal → {_showCreateModal}", _showCreateModal);
 
         StateHasChanged();
+		Logger.LogDebug("<<< Exiting Open()");
+		Logger.LogDebug(">>> Entering Close()");
+		Logger.LogDebug("Close(): _modalDisplay → {_modalDisplay}", _modalDisplay);
+		Logger.LogDebug("<<< Exiting Close()");
     }
 
     private async Task Close()
@@ -158,5 +170,6 @@
         _modalDisplay = "none";
         _modalClass = "";
         _showCreateModal = false;
+		Logger.LogDebug("Close(): _modalClass → {_modalClass}", _modalClass);
     }
 }

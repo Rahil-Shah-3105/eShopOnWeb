@@ -28,21 +28,31 @@ public class CheckoutModel : PageModel
         IAppLogger<CheckoutModel> logger)
     {
         _basketService = basketService;
+		_logger.LogDebug("CheckoutModel(basketService={BasketService},basketViewModelService={BasketViewModelService},signInManager={SignInManager},orderService={OrderService},logger={Logger}): _basketService → {_basketService}", basketService, basketViewModelService, signInManager, orderService, logger, _basketService);
         _signInManager = signInManager;
+		_logger.LogDebug("CheckoutModel(basketService={BasketService},basketViewModelService={BasketViewModelService},signInManager={SignInManager},orderService={OrderService},logger={Logger}): _signInManager → {_signInManager}", basketService, basketViewModelService, signInManager, orderService, logger, _signInManager);
         _orderService = orderService;
+		_logger.LogDebug("CheckoutModel(basketService={BasketService},basketViewModelService={BasketViewModelService},signInManager={SignInManager},orderService={OrderService},logger={Logger}): _orderService → {_orderService}", basketService, basketViewModelService, signInManager, orderService, logger, _orderService);
         _basketViewModelService = basketViewModelService;
+		_logger.LogDebug("CheckoutModel(basketService={BasketService},basketViewModelService={BasketViewModelService},signInManager={SignInManager},orderService={OrderService},logger={Logger}): _basketViewModelService → {_basketViewModelService}", basketService, basketViewModelService, signInManager, orderService, logger, _basketViewModelService);
         _logger = logger;
+		_logger.LogDebug(">>> Entering CheckoutModel(basketService={BasketService},basketViewModelService={BasketViewModelService},signInManager={SignInManager},orderService={OrderService},logger={Logger})", basketService, basketViewModelService, signInManager, orderService, logger);
+		_logger.LogDebug("<<< Exiting CheckoutModel(basketService={BasketService},basketViewModelService={BasketViewModelService},signInManager={SignInManager},orderService={OrderService},logger={Logger})", basketService, basketViewModelService, signInManager, orderService, logger);
+		_logger.LogDebug("CheckoutModel(basketService={BasketService},basketViewModelService={BasketViewModelService},signInManager={SignInManager},orderService={OrderService},logger={Logger}): _logger → {_logger}", basketService, basketViewModelService, signInManager, orderService, logger, _logger);
     }
 
     public BasketViewModel BasketModel { get; set; } = new BasketViewModel();
 
     public async Task OnGet()
     {
+		_logger.LogDebug(">>> Entering OnGet()");
         await SetBasketModelAsync();
+		_logger.LogDebug("<<< Exiting OnGet()");
     }
 
     public async Task<IActionResult> OnPost(IEnumerable<BasketItemViewModel> items)
     {
+		_logger.LogDebug(">>> Entering OnPost(items={Items})", items);
         try
         {
             await SetBasketModelAsync();
@@ -53,6 +63,7 @@ public class CheckoutModel : PageModel
             }
 
             var updateModel = items.ToDictionary(b => b.Id.ToString(), b => b.Quantity);
+			_logger.LogDebug("OnPost(items={Items}): updateModel → {UpdateModel}", items, updateModel);
             await _basketService.SetQuantities(BasketModel.Id, updateModel);
             await _orderService.CreateOrderAsync(BasketModel.Id, new Address("123 Main St.", "Kent", "OH", "United States", "44240"));
             await _basketService.DeleteBasketAsync(BasketModel.Id);
@@ -61,9 +72,12 @@ public class CheckoutModel : PageModel
         {
             //Redirect to Empty Basket page
             _logger.LogWarning(emptyBasketOnCheckoutException.Message);
+		_logger.LogDebug("<<< Exiting OnPost(items={Items})", items);
             return RedirectToPage("/Basket/Index");
         }
 
+		_logger.LogDebug(">>> Entering SetBasketModelAsync()");
+		_logger.LogDebug("<<< Exiting SetBasketModelAsync()");
         return RedirectToPage("Success");
     }
 
@@ -83,15 +97,19 @@ public class CheckoutModel : PageModel
 
     private void GetOrSetBasketCookieAndUserName()
     {
+		_logger.LogDebug(">>> Entering GetOrSetBasketCookieAndUserName()");
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
             _username = Request.Cookies[Constants.BASKET_COOKIENAME];
         }
+		_logger.LogDebug("GetOrSetBasketCookieAndUserName(): _username → {_username}", _username);
         if (_username != null) return;
 
         _username = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions();
+		_logger.LogDebug("GetOrSetBasketCookieAndUserName(): cookieOptions → {CookieOptions}", cookieOptions);
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, _username, cookieOptions);
+		_logger.LogDebug("<<< Exiting GetOrSetBasketCookieAndUserName()");
     }
 }

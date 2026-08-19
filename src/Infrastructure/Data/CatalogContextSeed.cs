@@ -13,6 +13,7 @@ public class CatalogContextSeed
         ILogger logger,
         int retry = 0)
     {
+		logger.LogDebug(">>> Entering SeedAsync(catalogContext={CatalogContext},logger={Logger},retry={Retry})", catalogContext, logger, retry);
         var retryForAvailability = retry;
         try
         {
@@ -21,10 +22,13 @@ public class CatalogContextSeed
                 catalogContext.Database.Migrate();
             }
 
+			var __logStart = System.Diagnostics.Stopwatch.StartNew();
             if (!await catalogContext.CatalogBrands.AnyAsync())
             {
                 await catalogContext.CatalogBrands.AddRangeAsync(
                     GetPreconfiguredCatalogBrands());
+					logger.LogInformation("SeedAsync(catalogContext,logger,retry)={CatalogContext},{Logger},{Retry}: database query executed in {Arg3} ms", catalogContext, logger, retry, __logStart.ElapsedMilliseconds);
+					logger.LogInformation("SeedAsync(catalogContext,logger,retry)={CatalogContext},{Logger},{Retry}: save query executed in {Arg3} ms", catalogContext, logger, retry, __logStart.ElapsedMilliseconds);
 
                 await catalogContext.SaveChangesAsync();
             }
@@ -53,12 +57,15 @@ public class CatalogContextSeed
             
             logger.LogError(ex.Message);
             await SeedAsync(catalogContext, logger, retryForAvailability);
+		logger.LogDebug("<<< Exiting SeedAsync(catalogContext={CatalogContext},logger={Logger},retry={Retry})", catalogContext, logger, retry);
             throw;
         }
     }
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogDebug(">>> Entering GetPreconfiguredCatalogBrands()");
+		logger.LogDebug("<<< Exiting GetPreconfiguredCatalogBrands()");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +78,8 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogDebug(">>> Entering GetPreconfiguredCatalogTypes()");
+		logger.LogDebug("<<< Exiting GetPreconfiguredCatalogTypes()");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +91,8 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogDebug(">>> Entering GetPreconfiguredItems()");
+		logger.LogDebug("<<< Exiting GetPreconfiguredItems()");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

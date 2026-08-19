@@ -17,19 +17,28 @@ public class RevokeAuthenticationEvents : CookieAuthenticationEvents
     public RevokeAuthenticationEvents(IMemoryCache cache, ILogger<RevokeAuthenticationEvents> logger)
     {
         _cache = cache;
+		_logger.LogDebug("RevokeAuthenticationEvents(cache={Cache},logger={Logger}): _cache → {_cache}", cache, logger, _cache);
         _logger = logger;
+		_logger.LogDebug(">>> Entering RevokeAuthenticationEvents(cache={Cache},logger={Logger})", cache, logger);
+		_logger.LogDebug("RevokeAuthenticationEvents(cache={Cache},logger={Logger}): _logger → {_logger}", cache, logger, _logger);
+		_logger.LogDebug("<<< Exiting RevokeAuthenticationEvents(cache={Cache},logger={Logger})", cache, logger);
     }
 
     public override async Task ValidatePrincipal(CookieValidatePrincipalContext context)
     {
+		_logger.LogDebug(">>> Entering ValidatePrincipal(context={Context})", context);
+		var __logStart = System.Diagnostics.Stopwatch.StartNew();
         var userId = context.Principal?.Claims.First(c => c.Type == ClaimTypes.Name);
         var identityKey = context.Request.Cookies[ConfigureCookieSettings.IdentifierCookieName];
 
+		_logger.LogDebug("ValidatePrincipal(context={Context}): userId → {UserId}", context, userId);
+		_logger.LogInformation("ValidatePrincipal(context)={Context}: database query executed in {Arg1} ms", context, __logStart.ElapsedMilliseconds);
         if (_cache.TryGetValue($"{userId?.Value}:{identityKey}", out var revokeKeys))
         {
             _logger.LogDebug($"Access has been revoked for: {userId?.Value}.");
             context.RejectPrincipal();
             await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
+		_logger.LogDebug("<<< Exiting ValidatePrincipal(context={Context})", context);
     }
 }

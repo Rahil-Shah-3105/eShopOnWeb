@@ -1,12 +1,15 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Identity.Migrations;
 
 public partial class InitialIdentityModel : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
+		_logger.LogDebug(">>> Entering Up(migrationBuilder={MigrationBuilder})", migrationBuilder);
         migrationBuilder.CreateTable(
             name: "AspNetRoles",
             columns: table => new
@@ -18,6 +21,9 @@ public partial class InitialIdentityModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): Name → {Name}", migrationBuilder, Name);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): ConcurrencyStamp → {ConcurrencyStamp}", migrationBuilder, ConcurrencyStamp);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): NormalizedName → {NormalizedName}", migrationBuilder, NormalizedName);
                 table.PrimaryKey("PK_AspNetRoles", x => x.Id);
             });
 
@@ -43,6 +49,19 @@ public partial class InitialIdentityModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): PhoneNumberConfirmed → {PhoneNumberConfirmed}", migrationBuilder, PhoneNumberConfirmed);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): EmailConfirmed → {EmailConfirmed}", migrationBuilder, EmailConfirmed);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): Email → {Email}", migrationBuilder, Email);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): SecurityStamp → {SecurityStamp}", migrationBuilder, SecurityStamp);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): PhoneNumber → {PhoneNumber}", migrationBuilder, PhoneNumber);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): LockoutEnabled → {LockoutEnabled}", migrationBuilder, LockoutEnabled);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): AccessFailedCount → {AccessFailedCount}", migrationBuilder, AccessFailedCount);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): PasswordHash → {PasswordHash}", migrationBuilder, PasswordHash);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): LockoutEnd → {LockoutEnd}", migrationBuilder, LockoutEnd);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): NormalizedUserName → {NormalizedUserName}", migrationBuilder, NormalizedUserName);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): UserName → {UserName}", migrationBuilder, UserName);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): NormalizedEmail → {NormalizedEmail}", migrationBuilder, NormalizedEmail);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): TwoFactorEnabled → {TwoFactorEnabled}", migrationBuilder, TwoFactorEnabled);
                 table.PrimaryKey("PK_AspNetUsers", x => x.Id);
             });
 
@@ -58,6 +77,9 @@ public partial class InitialIdentityModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): RoleId → {RoleId}", migrationBuilder, RoleId);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): ClaimValue → {ClaimValue}", migrationBuilder, ClaimValue);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): ClaimType → {ClaimType}", migrationBuilder, ClaimType);
                 table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
                 table.ForeignKey(
                     name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
@@ -79,6 +101,7 @@ public partial class InitialIdentityModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): UserId → {UserId}", migrationBuilder, UserId);
                 table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
                 table.ForeignKey(
                     name: "FK_AspNetUserClaims_AspNetUsers_UserId",
@@ -99,6 +122,9 @@ public partial class InitialIdentityModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): ProviderKey → {ProviderKey}", migrationBuilder, ProviderKey);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): ProviderDisplayName → {ProviderDisplayName}", migrationBuilder, ProviderDisplayName);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): LoginProvider → {LoginProvider}", migrationBuilder, LoginProvider);
                 table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
                 table.ForeignKey(
                     name: "FK_AspNetUserLogins_AspNetUsers_UserId",
@@ -143,6 +169,7 @@ public partial class InitialIdentityModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): Value → {Value}", migrationBuilder, Value);
                 table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                 table.ForeignKey(
                     name: "FK_AspNetUserTokens_AspNetUsers_UserId",
@@ -190,10 +217,12 @@ public partial class InitialIdentityModel : Migration
             column: "NormalizedUserName",
             unique: true,
             filter: "[NormalizedUserName] IS NOT NULL");
+			_logger.LogDebug("<<< Exiting Up(migrationBuilder={MigrationBuilder})", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
+		_logger.LogDebug(">>> Entering Down(migrationBuilder={MigrationBuilder})", migrationBuilder);
         migrationBuilder.DropTable(
             name: "AspNetRoleClaims");
 
@@ -214,5 +243,6 @@ public partial class InitialIdentityModel : Migration
 
         migrationBuilder.DropTable(
             name: "AspNetUsers");
+			_logger.LogDebug("<<< Exiting Down(migrationBuilder={MigrationBuilder})", migrationBuilder);
     }
 }

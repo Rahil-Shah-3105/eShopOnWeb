@@ -1,12 +1,15 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations;
 
 public partial class InitialModel : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
+		_logger.LogDebug(">>> Entering Up(migrationBuilder={MigrationBuilder})", migrationBuilder);
         migrationBuilder.CreateSequence(
             name: "catalog_brand_hilo",
             incrementBy: 10);
@@ -29,6 +32,7 @@ public partial class InitialModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): BuyerId → {BuyerId}", migrationBuilder, BuyerId);
                 table.PrimaryKey("PK_Baskets", x => x.Id);
             });
 
@@ -41,6 +45,7 @@ public partial class InitialModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): Brand → {Brand}", migrationBuilder, Brand);
                 table.PrimaryKey("PK_CatalogBrands", x => x.Id);
             });
 
@@ -53,6 +58,7 @@ public partial class InitialModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): Type → {Type}", migrationBuilder, Type);
                 table.PrimaryKey("PK_CatalogTypes", x => x.Id);
             });
 
@@ -72,6 +78,12 @@ public partial class InitialModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): ShipToAddress_Country → {ShipToAddress_Country}", migrationBuilder, ShipToAddress_Country);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): ShipToAddress_ZipCode → {ShipToAddress_ZipCode}", migrationBuilder, ShipToAddress_ZipCode);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): ShipToAddress_Street → {ShipToAddress_Street}", migrationBuilder, ShipToAddress_Street);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): ShipToAddress_State → {ShipToAddress_State}", migrationBuilder, ShipToAddress_State);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): OrderDate → {OrderDate}", migrationBuilder, OrderDate);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): ShipToAddress_City → {ShipToAddress_City}", migrationBuilder, ShipToAddress_City);
                 table.PrimaryKey("PK_Orders", x => x.Id);
             });
 
@@ -88,6 +100,10 @@ public partial class InitialModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): Quantity → {Quantity}", migrationBuilder, Quantity);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): UnitPrice → {UnitPrice}", migrationBuilder, UnitPrice);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): CatalogItemId → {CatalogItemId}", migrationBuilder, CatalogItemId);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): BasketId → {BasketId}", migrationBuilder, BasketId);
                 table.PrimaryKey("PK_BasketItems", x => x.Id);
                 table.ForeignKey(
                     name: "FK_BasketItems_Baskets_BasketId",
@@ -111,6 +127,12 @@ public partial class InitialModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): Price → {Price}", migrationBuilder, Price);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): CatalogTypeId → {CatalogTypeId}", migrationBuilder, CatalogTypeId);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): CatalogBrandId → {CatalogBrandId}", migrationBuilder, CatalogBrandId);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): PictureUri → {PictureUri}", migrationBuilder, PictureUri);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): Description → {Description}", migrationBuilder, Description);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): Name → {Name}", migrationBuilder, Name);
                 table.PrimaryKey("PK_Catalog", x => x.Id);
                 table.ForeignKey(
                     name: "FK_Catalog_CatalogBrands_CatalogBrandId",
@@ -141,6 +163,11 @@ public partial class InitialModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): OrderId → {OrderId}", migrationBuilder, OrderId);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): ItemOrdered_CatalogItemId → {ItemOrdered_CatalogItemId}", migrationBuilder, ItemOrdered_CatalogItemId);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): ItemOrdered_ProductName → {ItemOrdered_ProductName}", migrationBuilder, ItemOrdered_ProductName);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): Units → {Units}", migrationBuilder, Units);
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): ItemOrdered_PictureUri → {ItemOrdered_PictureUri}", migrationBuilder, ItemOrdered_PictureUri);
                 table.PrimaryKey("PK_OrderItems", x => x.Id);
                 table.ForeignKey(
                     name: "FK_OrderItems_Orders_OrderId",
@@ -169,10 +196,12 @@ public partial class InitialModel : Migration
             name: "IX_OrderItems_OrderId",
             table: "OrderItems",
             column: "OrderId");
+			_logger.LogDebug("<<< Exiting Up(migrationBuilder={MigrationBuilder})", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
+		_logger.LogDebug(">>> Entering Down(migrationBuilder={MigrationBuilder})", migrationBuilder);
         migrationBuilder.DropTable(
             name: "BasketItems");
 
@@ -202,5 +231,6 @@ public partial class InitialModel : Migration
 
         migrationBuilder.DropSequence(
             name: "catalog_type_hilo");
+			_logger.LogDebug("<<< Exiting Down(migrationBuilder={MigrationBuilder})", migrationBuilder);
     }
 }

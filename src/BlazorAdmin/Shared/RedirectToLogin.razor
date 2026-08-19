@@ -1,12 +1,19 @@
+using Microsoft.Extensions.Logging;
 ﻿@using System.Web;
 
 @inject NavigationManager Navigation
 @inject IJSRuntime JsRuntime
 
 @code {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void OnInitialized()
     {       
+		_logger.LogDebug(">>> Entering OnInitialized()");
+		var __logStart = System.Diagnostics.Stopwatch.StartNew();
         var returnUrl = HttpUtility.UrlEncode($"/{Uri.EscapeDataString(Navigation.ToBaseRelativePath(Navigation.Uri))}");
         JsRuntime.InvokeVoidAsync("location.replace", $"Identity/Account/Login?returnUrl={returnUrl}");
+		_logger.LogInformation("OnInitialized(): external service call {ReturnUrl} took {Arg1} ms", returnUrl, __logStart.ElapsedMilliseconds);
+		_logger.LogDebug("<<< Exiting OnInitialized()");
     }
 }
+_logger.LogDebug("OnInitialized(): returnUrl → {ReturnUrl}", returnUrl);

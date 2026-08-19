@@ -29,9 +29,15 @@ public class RegisterModel : PageModel
         IEmailSender emailSender)
     {
         _userManager = userManager;
+		_logger.LogDebug("RegisterModel(userManager={UserManager},signInManager={SignInManager},logger={Logger},emailSender={EmailSender}): _userManager → {_userManager}", userManager, signInManager, logger, emailSender, _userManager);
         _signInManager = signInManager;
+		_logger.LogDebug("RegisterModel(userManager={UserManager},signInManager={SignInManager},logger={Logger},emailSender={EmailSender}): _signInManager → {_signInManager}", userManager, signInManager, logger, emailSender, _signInManager);
         _logger = logger;
+		_logger.LogDebug(">>> Entering RegisterModel(userManager={UserManager},signInManager={SignInManager},logger={Logger},emailSender={EmailSender})", userManager, signInManager, logger, emailSender);
+		_logger.LogDebug("RegisterModel(userManager={UserManager},signInManager={SignInManager},logger={Logger},emailSender={EmailSender}): _logger → {_logger}", userManager, signInManager, logger, emailSender, _logger);
         _emailSender = emailSender;
+		_logger.LogDebug("RegisterModel(userManager={UserManager},signInManager={SignInManager},logger={Logger},emailSender={EmailSender}): _emailSender → {_emailSender}", userManager, signInManager, logger, emailSender, _emailSender);
+		_logger.LogDebug("<<< Exiting RegisterModel(userManager={UserManager},signInManager={SignInManager},logger={Logger},emailSender={EmailSender})", userManager, signInManager, logger, emailSender);
     }
 
     [BindProperty]
@@ -60,21 +66,28 @@ public class RegisterModel : PageModel
 
     public void OnGet(string? returnUrl = null)
     {
+		_logger.LogDebug(">>> Entering OnGet(returnUrl={ReturnUrl})", returnUrl);
         ReturnUrl = returnUrl;
+		_logger.LogDebug("OnGet(returnUrl={ReturnUrl}): ReturnUrl → {ReturnUrl1}", returnUrl, ReturnUrl);
+		_logger.LogDebug("<<< Exiting OnGet(returnUrl={ReturnUrl})", returnUrl);
     }
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
     {
+		_logger.LogDebug(">>> Entering OnPostAsync(returnUrl={ReturnUrl})", returnUrl);
         returnUrl = returnUrl ?? Url.Content("~/");
         if (ModelState.IsValid)
+		_logger.LogDebug("OnPostAsync(returnUrl={ReturnUrl}): returnUrl → {ReturnUrl1}", returnUrl, returnUrl);
         {
             var user = new ApplicationUser { UserName = Input?.Email, Email = Input?.Email };
             var result = await _userManager.CreateAsync(user, Input?.Password!);
+			_logger.LogDebug("OnPostAsync(returnUrl={ReturnUrl}): result → {Result}", returnUrl, result);
             if (result.Succeeded)
             {
                 _logger.LogInformation("User created a new account with password.");
 
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+				_logger.LogDebug("OnPostAsync(returnUrl={ReturnUrl}): code → {Code}", returnUrl, code);
                 var callbackUrl = Url.Page(
                     "/Account/ConfirmEmail",
                     pageHandler: null,
@@ -95,6 +108,7 @@ public class RegisterModel : PageModel
         }
 
         // If we got this far, something failed, redisplay form
+		_logger.LogDebug("<<< Exiting OnPostAsync(returnUrl={ReturnUrl})", returnUrl);
         return Page();
     }
 }

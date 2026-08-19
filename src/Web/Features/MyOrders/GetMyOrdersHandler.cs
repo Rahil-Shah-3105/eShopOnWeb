@@ -3,24 +3,33 @@ using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Features.MyOrders;
 
 public class GetMyOrdersHandler : IRequestHandler<GetMyOrders, IEnumerable<OrderViewModel>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IReadRepository<Order> _orderRepository;
 
     public GetMyOrdersHandler(IReadRepository<Order> orderRepository)
     {
+		_logger.LogDebug(">>> Entering GetMyOrdersHandler(orderRepository={OrderRepository})", orderRepository);
         _orderRepository = orderRepository;
+		_logger.LogDebug("GetMyOrdersHandler(orderRepository={OrderRepository}): _orderRepository → {_orderRepository}", orderRepository, _orderRepository);
+		_logger.LogDebug("<<< Exiting GetMyOrdersHandler(orderRepository={OrderRepository})", orderRepository);
     }
 
     public async Task<IEnumerable<OrderViewModel>> Handle(GetMyOrders request,
         CancellationToken cancellationToken)
     {
+		_logger.LogDebug(">>> Entering Handle(request={Request},cancellationToken=<redacted>)", request);
         var specification = new CustomerOrdersSpecification(request.UserName);
         var orders = await _orderRepository.ListAsync(specification, cancellationToken);
 
+		_logger.LogDebug("Handle(request={Request},cancellationToken=<redacted>): specification → {Specification}", request, specification);
+		_logger.LogDebug("Handle(request={Request},cancellationToken=<redacted>): orders → {Orders}", request, orders);
+		_logger.LogDebug("<<< Exiting Handle(request={Request},cancellationToken=<redacted>)", request);
         return orders.Select(o => new OrderViewModel
         {
             OrderDate = o.OrderDate,
