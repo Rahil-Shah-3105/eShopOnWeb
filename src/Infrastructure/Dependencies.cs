@@ -3,15 +3,19 @@ using Microsoft.eShopWeb.Infrastructure.Data;
 using Microsoft.eShopWeb.Infrastructure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure;
 
 public static class Dependencies
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public static void ConfigureServices(IConfiguration configuration, IServiceCollection services)
     {
+		_logger.LogDebug(">>> Entering ConfigureServices(configuration={Configuration},services={Services})", configuration, services);
         bool useOnlyInMemoryDatabase = false;
         if (configuration["UseOnlyInMemoryDatabase"] != null)
+		_logger.LogDebug("ConfigureServices(configuration={Configuration},services={Services}): useOnlyInMemoryDatabase → {UseOnlyInMemoryDatabase}", configuration, services, useOnlyInMemoryDatabase);
         {
             useOnlyInMemoryDatabase = bool.Parse(configuration["UseOnlyInMemoryDatabase"]!);
         }
@@ -36,5 +40,6 @@ public static class Dependencies
             services.AddDbContext<AppIdentityDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("IdentityConnection")));
         }
+		_logger.LogDebug("<<< Exiting ConfigureServices(configuration={Configuration},services={Services})", configuration, services);
     }
 }

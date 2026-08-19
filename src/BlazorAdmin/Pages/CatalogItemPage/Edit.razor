@@ -126,24 +126,34 @@
 
     private async Task SaveClick()
     {
+		Logger.LogDebug(">>> Entering SaveClick()");
         await CatalogItemService.Edit(_item);
         await OnSaveClick.InvokeAsync(null);
         await Close();
+		Logger.LogDebug("<<< Exiting SaveClick()");
     }
 
     public async Task Open(int id)
     {
+		Logger.LogDebug(">>> Entering Open(id={Id})", id);
         Logger.LogInformation("Now loading... /Catalog/Edit/{Id}", id);
 
         await new Css(JSRuntime).HideBodyOverflow();
 
         _item = await CatalogItemService.GetById(id);
+		Logger.LogDebug("Open(id={Id}): _item → {_item}", id, _item);
 
         _modalDisplay = "block;";
         _modalClass = "Show";
+		Logger.LogDebug("Open(id={Id}): _modalClass → {_modalClass}", id, _modalClass);
         _showEditModal = true;
+		Logger.LogDebug("Open(id={Id}): _showEditModal → {_showEditModal}", id, _showEditModal);
 
         StateHasChanged();
+		Logger.LogDebug("<<< Exiting Open(id={Id})", id);
+		Logger.LogDebug(">>> Entering Close()");
+		Logger.LogDebug("Close(): _modalDisplay → {_modalDisplay}", _modalDisplay);
+		Logger.LogDebug("<<< Exiting Close()");
     }
 
     private async Task Close()
@@ -153,5 +163,6 @@
         _modalDisplay = "none";
         _modalClass = "";
         _showEditModal = false;
+		Logger.LogDebug("Close(): _modalClass → {_modalClass}", _modalClass);
     }
 }

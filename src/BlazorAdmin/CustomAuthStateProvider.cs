@@ -25,16 +25,23 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         ILogger<CustomAuthStateProvider> logger)
     {
         _httpClient = httpClient;
+		_logger.LogDebug("CustomAuthStateProvider(httpClient={HttpClient},logger={Logger}): _httpClient → {_httpClient}", httpClient, logger, _httpClient);
         _logger = logger;
+		_logger.LogDebug(">>> Entering CustomAuthStateProvider(httpClient={HttpClient},logger={Logger})", httpClient, logger);
+		_logger.LogDebug("CustomAuthStateProvider(httpClient={HttpClient},logger={Logger}): _logger → {_logger}", httpClient, logger, _logger);
+		_logger.LogDebug("<<< Exiting CustomAuthStateProvider(httpClient={HttpClient},logger={Logger})", httpClient, logger);
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
+		_logger.LogDebug(">>> Entering GetAuthenticationStateAsync()");
+		_logger.LogDebug("<<< Exiting GetAuthenticationStateAsync()");
         return new AuthenticationState(await GetUser(useCache: true));
     }
 
     private async ValueTask<ClaimsPrincipal> GetUser(bool useCache = false)
     {
+		_logger.LogDebug(">>> Entering GetUser(useCache={UseCache})", useCache);
         var now = DateTimeOffset.Now;
         if (useCache && now < _userLastCheck + UserCacheRefreshInterval)
         {
@@ -43,14 +50,19 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
         _cachedUser = await FetchUser();
         _userLastCheck = now;
+		_logger.LogDebug("GetUser(useCache={UseCache}): _cachedUser → {_cachedUser}", useCache, _cachedUser);
+		_logger.LogDebug("GetUser(useCache={UseCache}): _userLastCheck → {_userLastCheck}", useCache, _userLastCheck);
 
+		_logger.LogDebug("<<< Exiting GetUser(useCache={UseCache})", useCache);
         return _cachedUser;
     }
 
     private async Task<ClaimsPrincipal> FetchUser()
     {
+		_logger.LogDebug(">>> Entering FetchUser()");
         UserInfo user = null;
 
+		_logger.LogDebug("FetchUser(): user → {User}", user);
         try
         {
             _logger.LogInformation("Fetching user details from web api.");
@@ -81,6 +93,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
 
+		_logger.LogDebug("<<< Exiting FetchUser()");
         return new ClaimsPrincipal(identity);
     }
 }

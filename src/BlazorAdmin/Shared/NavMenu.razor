@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 ﻿@inherits BlazorAdmin.Helpers.BlazorComponent
 <div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">eShopOnWeb Admin</a>
@@ -32,6 +33,7 @@
 </div>
 
 @code {
+private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     private bool collapseNavMenu = true;
 
@@ -39,6 +41,9 @@
 
     private void ToggleNavMenu()
     {
+		_logger.LogDebug(">>> Entering ToggleNavMenu()");
         collapseNavMenu = !collapseNavMenu;
+		_logger.LogDebug("ToggleNavMenu(): collapseNavMenu → {CollapseNavMenu}", collapseNavMenu);
+		_logger.LogDebug("<<< Exiting ToggleNavMenu()");
     }
 }
