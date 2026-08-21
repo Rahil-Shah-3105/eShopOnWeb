@@ -1,13 +1,16 @@
+using Microsoft.Extensions.Logging;
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public partial class FixShipToAddress : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+			_logger.LogDebug(">>> Entering Up(migrationBuilder={MigrationBuilder})", migrationBuilder);
             migrationBuilder.AlterColumn<string>(
                 name: "ShipToAddress_ZipCode",
                 table: "Orders",
@@ -55,10 +58,12 @@ namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations
                 oldType: "nvarchar(100)",
                 oldMaxLength: 100,
                 oldNullable: true);
+				_logger.LogDebug("<<< Exiting Up(migrationBuilder={MigrationBuilder})", migrationBuilder);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+			_logger.LogDebug(">>> Entering Down(migrationBuilder={MigrationBuilder})", migrationBuilder);
             migrationBuilder.AlterColumn<string>(
                 name: "ShipToAddress_ZipCode",
                 table: "Orders",
@@ -98,6 +103,7 @@ namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(100)",
                 oldMaxLength: 100);
+				_logger.LogDebug("<<< Exiting Down(migrationBuilder={MigrationBuilder})", migrationBuilder);
         }
     }
 }

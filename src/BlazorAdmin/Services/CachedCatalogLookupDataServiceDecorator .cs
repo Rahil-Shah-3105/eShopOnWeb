@@ -22,14 +22,19 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
         ILogger<CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>> logger)
     {
         _localStorageService = localStorageService;
+		_logger.LogDebug("CachedCatalogLookupDataServiceDecorator(localStorageService={LocalStorageService},catalogTypeService={CatalogTypeService},logger={Logger}): _localStorageService → {_localStorageService}", localStorageService, catalogTypeService, logger, _localStorageService);
         _catalogTypeService = catalogTypeService;
+		_logger.LogDebug("CachedCatalogLookupDataServiceDecorator(localStorageService={LocalStorageService},catalogTypeService={CatalogTypeService},logger={Logger}): _catalogTypeService → {_catalogTypeService}", localStorageService, catalogTypeService, logger, _catalogTypeService);
         _logger = logger;
+		_logger.LogDebug(">>> Entering CachedCatalogLookupDataServiceDecorator(localStorageService={LocalStorageService},catalogTypeService={CatalogTypeService},logger={Logger})", localStorageService, catalogTypeService, logger);
     }
 
     public async Task<List<TLookupData>> List()
     {
+		_logger.LogDebug(">>> Entering List()");
         string key = typeof(TLookupData).Name;
         var cacheEntry = await _localStorageService.GetItemAsync<CacheEntry<List<TLookupData>>>(key);
+		_logger.LogDebug("List(): cacheEntry → {CacheEntry}", cacheEntry);
         if (cacheEntry != null)
         {
             _logger.LogInformation($"Loading {key} from local storage.");
@@ -45,8 +50,11 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
         }
 
         var types = await _catalogTypeService.List();
+		_logger.LogDebug("List(): types → {Types}", types);
         var entry = new CacheEntry<List<TLookupData>>(types);
+		_logger.LogDebug("List(): entry → {Entry}", entry);
         await _localStorageService.SetItemAsync(key, entry);
+		_logger.LogDebug("<<< Exiting List()");
         return types;
     }
 }
