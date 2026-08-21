@@ -34,9 +34,14 @@ public class ManageController : Controller
       UrlEncoder urlEncoder)
     {
         _userManager = userManager;
+		_logger.LogDebug("ManageController(userManager={UserManager},signInManager={SignInManager},emailSender={EmailSender},logger={Logger},urlEncoder={UrlEncoder}): _userManager → {_userManager}", userManager, signInManager, emailSender, logger, urlEncoder, _userManager);
         _signInManager = signInManager;
+		_logger.LogDebug("ManageController(userManager={UserManager},signInManager={SignInManager},emailSender={EmailSender},logger={Logger},urlEncoder={UrlEncoder}): _signInManager → {_signInManager}", userManager, signInManager, emailSender, logger, urlEncoder, _signInManager);
         _emailSender = emailSender;
+		_logger.LogDebug("ManageController(userManager={UserManager},signInManager={SignInManager},emailSender={EmailSender},logger={Logger},urlEncoder={UrlEncoder}): _emailSender → {_emailSender}", userManager, signInManager, emailSender, logger, urlEncoder, _emailSender);
         _logger = logger;
+		_logger.LogDebug(">>> Entering ManageController(userManager={UserManager},signInManager={SignInManager},emailSender={EmailSender},logger={Logger},urlEncoder={UrlEncoder})", userManager, signInManager, emailSender, logger, urlEncoder);
+		_logger.LogDebug("ManageController(userManager={UserManager},signInManager={SignInManager},emailSender={EmailSender},logger={Logger},urlEncoder={UrlEncoder}): _logger → {_logger}", userManager, signInManager, emailSender, logger, urlEncoder, _logger);
         _urlEncoder = urlEncoder;
     }
 
@@ -46,9 +51,11 @@ public class ManageController : Controller
     [HttpGet]
     public async Task<IActionResult> MyAccount()
     {
+		_logger.LogDebug(">>> Entering MyAccount()");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from MyAccount()");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
@@ -61,6 +68,8 @@ public class ManageController : Controller
             StatusMessage = StatusMessage
         };
 
+		_logger.LogDebug("<<< Exiting MyAccount()");
+		_logger.LogDebug("<<< Exiting MyAccount(model={Model})", model);
         return View(model);
     }
 
@@ -100,6 +109,7 @@ public class ManageController : Controller
         }
 
         StatusMessage = "Your profile has been updated";
+		_logger.LogDebug("MyAccount(model={Model}): StatusMessage → {StatusMessage}", model, StatusMessage);
         return RedirectToAction(nameof(MyAccount));
     }
 
@@ -107,21 +117,27 @@ public class ManageController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SendVerificationEmail(IndexViewModel model)
     {
+		_logger.LogDebug(">>> Entering SendVerificationEmail(model={Model})", model);
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
         var user = await _userManager.GetUserAsync(User);
+		_logger.LogDebug("SendVerificationEmail(model={Model}): user → {User}", model, user);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from SendVerificationEmail(model={Model})", model);
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+		_logger.LogDebug("SendVerificationEmail(model={Model}): code → {Code}", model, code);
         var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
+		_logger.LogDebug("SendVerificationEmail(model={Model}): callbackUrl → {CallbackUrl}", model, callbackUrl);
         Guard.Against.Null(callbackUrl, nameof(callbackUrl));
         var email = user.Email;
+		_logger.LogDebug("SendVerificationEmail(model={Model}): email → {Email}", model, email);
         if (email == null)
         {
             throw new ApplicationException($"No email associated with user {user.UserName}'.");
@@ -130,25 +146,32 @@ public class ManageController : Controller
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
 
         StatusMessage = "Verification email sent. Please check your email.";
+		_logger.LogDebug("SendVerificationEmail(model={Model}): StatusMessage → {StatusMessage}", model, StatusMessage);
+		_logger.LogDebug("<<< Exiting SendVerificationEmail(model={Model})", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
     [HttpGet]
     public async Task<IActionResult> ChangePassword()
     {
+		_logger.LogDebug(">>> Entering ChangePassword()");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from ChangePassword()");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
         var hasPassword = await _userManager.HasPasswordAsync(user);
+		_logger.LogDebug("ChangePassword(): hasPassword → {HasPassword}", hasPassword);
         if (!hasPassword)
         {
             return RedirectToAction(nameof(SetPassword));
         }
 
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogDebug("<<< Exiting ChangePassword()");
+		_logger.LogDebug("<<< Exiting ChangePassword(model={Model})", model);
         return View(model);
     }
 
@@ -185,13 +208,16 @@ public class ManageController : Controller
     [HttpGet]
     public async Task<IActionResult> SetPassword()
     {
+		_logger.LogDebug(">>> Entering SetPassword()");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from SetPassword()");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
         var hasPassword = await _userManager.HasPasswordAsync(user);
+		_logger.LogDebug("SetPassword(): hasPassword → {HasPassword}", hasPassword);
 
         if (hasPassword)
         {
@@ -199,6 +225,8 @@ public class ManageController : Controller
         }
 
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogDebug("<<< Exiting SetPassword()");
+		_logger.LogDebug("<<< Exiting SetPassword(model={Model})", model);
         return View(model);
     }
 
@@ -233,19 +261,24 @@ public class ManageController : Controller
     [HttpGet]
     public async Task<IActionResult> ExternalLogins()
     {
+		_logger.LogDebug(">>> Entering ExternalLogins()");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from ExternalLogins()");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
         var model = new ExternalLoginsViewModel { CurrentLogins = await _userManager.GetLoginsAsync(user) };
+		_logger.LogDebug("ExternalLogins(): model → {Model}", model);
         model.OtherLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync())
             .Where(auth => model.CurrentLogins.All(ul => auth.Name != ul.LoginProvider))
             .ToList();
         model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
         model.StatusMessage = StatusMessage;
+		_logger.LogDebug("ExternalLogins(): model.StatusMessage → {Arg0}", model.StatusMessage);
 
+		_logger.LogDebug("<<< Exiting ExternalLogins()");
         return View(model);
     }
 
@@ -253,31 +286,39 @@ public class ManageController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> LinkLogin(string provider)
     {
+		_logger.LogDebug(">>> Entering LinkLogin(provider={Provider})", provider);
         // Clear the existing external cookie to ensure a clean login process
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
         // Request a redirect to the external login provider to link a login for the current user
         var redirectUrl = Url.Action(nameof(LinkLoginCallback));
+		_logger.LogDebug("LinkLogin(provider={Provider}): redirectUrl → {RedirectUrl}", provider, redirectUrl);
         var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, _userManager.GetUserId(User));
+		_logger.LogDebug("LinkLogin(provider={Provider}): properties → {Properties}", provider, properties);
+		_logger.LogDebug("<<< Exiting LinkLogin(provider={Provider})", provider);
         return new ChallengeResult(provider, properties);
     }
 
     [HttpGet]
     public async Task<IActionResult> LinkLoginCallback()
     {
+		_logger.LogDebug(">>> Entering LinkLoginCallback()");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from LinkLoginCallback()");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
         var info = await _signInManager.GetExternalLoginInfoAsync(user.Id);
+		_logger.LogDebug("LinkLoginCallback(): info → {Info}", info);
         if (info == null)
         {
             throw new ApplicationException($"Unexpected error occurred loading external login info for user with ID '{user.Id}'.");
         }
 
         var result = await _userManager.AddLoginAsync(user, info);
+		_logger.LogDebug("LinkLoginCallback(): result → {Result}", result);
         if (!result.Succeeded)
         {
             throw new ApplicationException($"Unexpected error occurred adding external login for user with ID '{user.Id}'.");
@@ -287,6 +328,8 @@ public class ManageController : Controller
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
         StatusMessage = "The external login was added.";
+		_logger.LogDebug("LinkLoginCallback(): StatusMessage → {StatusMessage}", StatusMessage);
+		_logger.LogDebug("<<< Exiting LinkLoginCallback()");
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -294,9 +337,11 @@ public class ManageController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RemoveLogin(RemoveLoginViewModel model)
     {
+		_logger.LogDebug(">>> Entering RemoveLogin(model={Model})", model);
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from RemoveLogin(model={Model})", model);
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
         if (!ModelState.IsValid)
@@ -305,6 +350,7 @@ public class ManageController : Controller
         }
 
         var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
+		_logger.LogDebug("RemoveLogin(model={Model}): result → {Result}", model, result);
         if (!result.Succeeded)
         {
             throw new ApplicationException($"Unexpected error occurred removing external login for user with ID '{user.Id}'.");
@@ -312,15 +358,19 @@ public class ManageController : Controller
 
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "The external login was removed.";
+		_logger.LogDebug("RemoveLogin(model={Model}): StatusMessage → {StatusMessage}", model, StatusMessage);
+		_logger.LogDebug("<<< Exiting RemoveLogin(model={Model})", model);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
     [HttpGet]
     public async Task<IActionResult> TwoFactorAuthentication()
     {
+		_logger.LogDebug(">>> Entering TwoFactorAuthentication()");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from TwoFactorAuthentication()");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
@@ -331,20 +381,24 @@ public class ManageController : Controller
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
         };
 
+		_logger.LogDebug("<<< Exiting TwoFactorAuthentication()");
         return View(model);
     }
 
     [HttpGet]
     public async Task<IActionResult> Disable2faWarning()
     {
+		_logger.LogDebug(">>> Entering Disable2faWarning()");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from Disable2faWarning()");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
         if (!user.TwoFactorEnabled)
         {
+		_logger.LogDebug("<<< Exiting Disable2faWarning()");
             throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
         }
 
@@ -355,40 +409,50 @@ public class ManageController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Disable2fa()
     {
+		_logger.LogDebug(">>> Entering Disable2fa()");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from Disable2fa()");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
         var disable2faResult = await _userManager.SetTwoFactorEnabledAsync(user, false);
+		_logger.LogDebug("Disable2fa(): disable2faResult → {Disable2faResult}", disable2faResult);
         if (!disable2faResult.Succeeded)
         {
             throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
         }
 
         _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.Id);
+		_logger.LogDebug("<<< Exiting Disable2fa()");
         return RedirectToAction(nameof(TwoFactorAuthentication));
     }
 
     [HttpGet]
     public async Task<IActionResult> EnableAuthenticator()
     {
+		_logger.LogDebug(">>> Entering EnableAuthenticator()");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from EnableAuthenticator()");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
         var model = new EnableAuthenticatorViewModel();
+		_logger.LogDebug("EnableAuthenticator(): model → {Model}", model);
         await LoadSharedKeyAndQrCodeUriAsync(user, model);
 
+		_logger.LogDebug("<<< Exiting EnableAuthenticator()");
+		_logger.LogDebug("<<< Exiting EnableAuthenticator(model={Model})", model);
         return View(model);
     }
 
     [HttpGet]
     public IActionResult ShowRecoveryCodes()
     {
+		_logger.LogDebug(">>> Entering ShowRecoveryCodes()");
         var recoveryCodes = (string[]?)TempData[RecoveryCodesKey];
         if (recoveryCodes == null)
         {
@@ -396,6 +460,7 @@ public class ManageController : Controller
         }
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes };
+		_logger.LogDebug("<<< Exiting ShowRecoveryCodes()");
         return View(model);
     }
 
@@ -426,6 +491,8 @@ public class ManageController : Controller
         {
             ModelState.AddModelError("Code", "Verification code is invalid.");
             await LoadSharedKeyAndQrCodeUriAsync(user, model);
+			_logger.LogDebug(">>> Entering LoadSharedKeyAndQrCodeUriAsync(user={User},model={Model})", user, model);
+			_logger.LogDebug("<<< Exiting LoadSharedKeyAndQrCodeUriAsync(user={User},model={Model})", user, model);
             return View(model);
         }
 
@@ -440,6 +507,7 @@ public class ManageController : Controller
     [HttpGet]
     public IActionResult ResetAuthenticatorWarning()
     {
+		_logger.LogDebug(">>> Entering ResetAuthenticatorWarning()");
         return View(nameof(ResetAuthenticator));
     }
 
@@ -447,9 +515,11 @@ public class ManageController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ResetAuthenticator()
     {
+		_logger.LogDebug(">>> Entering ResetAuthenticator()");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from ResetAuthenticator()");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
@@ -457,6 +527,7 @@ public class ManageController : Controller
         await _userManager.ResetAuthenticatorKeyAsync(user);
         _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
 
+		_logger.LogDebug("<<< Exiting ResetAuthenticator()");
         return RedirectToAction(nameof(EnableAuthenticator));
     }
 
@@ -464,9 +535,11 @@ public class ManageController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> GenerateRecoveryCodes()
     {
+		_logger.LogDebug(">>> Entering GenerateRecoveryCodes()");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from GenerateRecoveryCodes()");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
@@ -476,24 +549,30 @@ public class ManageController : Controller
         }
 
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) ?? new List<string>();
+		_logger.LogDebug("GenerateRecoveryCodes(): recoveryCodes → {RecoveryCodes}", recoveryCodes);
         _logger.LogInformation("User with ID {UserId} has generated new 2FA recovery codes.", user.Id);
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
+		_logger.LogDebug("GenerateRecoveryCodes(): model → {Model}", model);
 
+		_logger.LogDebug("<<< Exiting GenerateRecoveryCodes()");
         return View(nameof(ShowRecoveryCodes), model);
     }
 
     [HttpGet]
     public async Task<IActionResult> GenerateRecoveryCodesWarning()
     {
+		_logger.LogDebug(">>> Entering GenerateRecoveryCodesWarning()");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogWarning("Throwing ApplicationException from GenerateRecoveryCodesWarning()");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
         if (!user.TwoFactorEnabled)
         {
+		_logger.LogDebug("<<< Exiting GenerateRecoveryCodesWarning()");
             throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.Id}' because they do not have 2FA enabled.");
         }
 
@@ -502,16 +581,20 @@ public class ManageController : Controller
 
     private void AddErrors(IdentityResult result)
     {
+		_logger.LogDebug(">>> Entering AddErrors(result={Result})", result);
         foreach (var error in result.Errors)
         {
             ModelState.AddModelError(string.Empty, error.Description);
         }
+		_logger.LogDebug("<<< Exiting AddErrors(result={Result})", result);
     }
 
     private string FormatKey(string unformattedKey)
     {
+		_logger.LogDebug(">>> Entering FormatKey(unformattedKey={UnformattedKey})", unformattedKey);
         var result = new StringBuilder();
         int currentPosition = 0;
+		_logger.LogDebug("FormatKey(unformattedKey={UnformattedKey}): result → {Result}", unformattedKey, result);
         while (currentPosition + 4 < unformattedKey.Length)
         {
             result.Append(unformattedKey.Substring(currentPosition, 4)).Append(" ");
@@ -522,11 +605,13 @@ public class ManageController : Controller
             result.Append(unformattedKey.Substring(currentPosition));
         }
 
+		_logger.LogDebug("<<< Exiting FormatKey(unformattedKey={UnformattedKey})", unformattedKey);
         return result.ToString().ToLowerInvariant();
     }
 
     private string GenerateQrCodeUri(string email, string unformattedKey)
     {
+		_logger.LogDebug(">>> Entering GenerateQrCodeUri(email={Email},unformattedKey={UnformattedKey})", email, unformattedKey);
         return string.Format(
             AuthenticatorUriFormat,
             _urlEncoder.Encode("eShopOnWeb"),
@@ -536,6 +621,7 @@ public class ManageController : Controller
 
     private async Task LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user, EnableAuthenticatorViewModel model)
     {
+		_logger.LogDebug(">>> Entering LoadSharedKeyAndQrCodeUriAsync(user={User},model={Model})", user, model);
         var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
         if (string.IsNullOrEmpty(unformattedKey))
         {
@@ -545,6 +631,7 @@ public class ManageController : Controller
 
         model.SharedKey = FormatKey(unformattedKey!);
         model.AuthenticatorUri = GenerateQrCodeUri(user.Email!, unformattedKey!);
+		_logger.LogDebug("<<< Exiting LoadSharedKeyAndQrCodeUriAsync(user={User},model={Model})", user, model);
     }
 
 }

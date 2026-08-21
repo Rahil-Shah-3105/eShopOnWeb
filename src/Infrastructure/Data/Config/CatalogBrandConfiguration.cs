@@ -1,13 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Config;
 
 public class CatalogBrandConfiguration : IEntityTypeConfiguration<CatalogBrand>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public void Configure(EntityTypeBuilder<CatalogBrand> builder)
     {
+		_logger.LogDebug(">>> Entering Configure(builder={Builder})", builder);
         builder.HasKey(ci => ci.Id);
 
         builder.Property(ci => ci.Id)
@@ -17,5 +20,6 @@ public class CatalogBrandConfiguration : IEntityTypeConfiguration<CatalogBrand>
         builder.Property(cb => cb.Brand)
             .IsRequired()
             .HasMaxLength(100);
+			_logger.LogDebug("<<< Exiting Configure(builder={Builder})", builder);
     }
 }
