@@ -1,16 +1,23 @@
+using Microsoft.Extensions.Logging;
 ﻿using System;
 
 namespace BlazorAdmin.Services;
 
 public class CacheEntry<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public CacheEntry(T item)
     {
+		_logger.LogDebug(">>> Entering CacheEntry(item={Item})", item);
         Value = item;
+		_logger.LogDebug("CacheEntry(item={Item}): Value → {Value}", item, Value);
+		_logger.LogDebug(">>> Entering CacheEntry()");
+		_logger.LogDebug("<<< Exiting CacheEntry()");
     }
     public CacheEntry()
     {
 
+	_logger.LogDebug("<<< Exiting CacheEntry()");
     }
 
     public T Value { get; set; }
