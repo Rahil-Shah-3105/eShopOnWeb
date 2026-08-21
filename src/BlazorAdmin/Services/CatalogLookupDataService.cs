@@ -28,16 +28,25 @@ public class CatalogLookupDataService<TLookupData, TReponse>
         ILogger<CatalogLookupDataService<TLookupData, TReponse>> logger)
     {
         _httpClient = httpClient;
+		_logger.LogDebug("CatalogLookupDataService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},logger={Logger}): _httpClient → {_httpClient}", httpClient, baseUrlConfiguration, logger, _httpClient);
         _logger = logger;
+		_logger.LogDebug(">>> Entering CatalogLookupDataService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},logger={Logger})", httpClient, baseUrlConfiguration, logger);
+		_logger.LogDebug("CatalogLookupDataService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},logger={Logger}): _logger → {_logger}", httpClient, baseUrlConfiguration, logger, _logger);
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
     }
 
     public async Task<List<TLookupData>> List()
     {
+		_logger.LogDebug(">>> Entering List()");
+		var __logStart = System.Diagnostics.Stopwatch.StartNew();
         var endpointName = typeof(TLookupData).GetCustomAttribute<EndpointAttribute>().Name;
         _logger.LogInformation($"Fetching {typeof(TLookupData).Name} from API. Enpoint : {endpointName}");
+		_logger.LogDebug("List(): endpointName → {EndpointName}", endpointName);
 
         var response = await _httpClient.GetFromJsonAsync<TReponse>($"{_apiUrl}{endpointName}");
+		_logger.LogDebug("List(): response → {Response}", response);
+		_logger.LogInformation("List(): external service call {EndpointName} took {Arg1} ms", endpointName, __logStart.ElapsedMilliseconds);
+		_logger.LogDebug("<<< Exiting List()");
         return response.List;
     }
 }
