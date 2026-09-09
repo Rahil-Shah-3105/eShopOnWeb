@@ -4,11 +4,13 @@ using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.Pages.Basket;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Services;
 
 public class BasketViewModelService : IBasketViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IUriComposer _uriComposer;
     private readonly IBasketQueryService _basketQueryService;
@@ -71,6 +73,7 @@ public class BasketViewModelService : IBasketViewModelService
             return basketItemViewModel;
         }).ToList();
 
+		_logger.LogWarning("GetBasketItems(basketItems)={BasketItems}): CCPA-AUDIT: Record access recorded for the audit trail", basketItems);
         return items;
     }
 
