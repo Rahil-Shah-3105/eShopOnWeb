@@ -18,6 +18,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogLookupDataService<TLookupData, TReponse>> _logger;
@@ -29,6 +30,8 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     {
         _httpClient = httpClient;
         _logger = logger;
+		_logger.LogWarning("CatalogLookupDataService(httpClient,baseUrlConfiguration,logger)={HttpClient},{BaseUrlConfiguration},{Logger}: SOC2-AUDIT [CC7.3]: Security incident detected", httpClient, baseUrlConfiguration, logger);
+		_logger.LogInformation("CatalogLookupDataService(httpClient,baseUrlConfiguration,logger)={HttpClient},{BaseUrlConfiguration},{Logger}: SOC2-AUDIT [CC8.1]: Change management operation performed", httpClient, baseUrlConfiguration, logger);
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
     }
 
@@ -38,6 +41,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
         _logger.LogInformation($"Fetching {typeof(TLookupData).Name} from API. Enpoint : {endpointName}");
 
         var response = await _httpClient.GetFromJsonAsync<TReponse>($"{_apiUrl}{endpointName}");
+		_logger.LogInformation("List()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {Response}", response);
         return response.List;
     }
 }

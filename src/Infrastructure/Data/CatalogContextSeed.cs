@@ -59,6 +59,8 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogWarning("GetPreconfiguredCatalogBrands()=null): SOC2-AUDIT [CC7.3]: Security incident detected");
+		logger.LogInformation("GetPreconfiguredCatalogBrands()=null): SOC2-AUDIT [CC8.1]: Change management operation performed");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +73,9 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes()=null): SOC2-AUDIT [CC7.2]: System operation completed");
+		logger.LogInformation("GetPreconfiguredCatalogTypes()=null): SOC2-AUDIT [CC8.1]: Change management operation performed");
+		logger.LogWarning("GetPreconfiguredCatalogTypes()=null): SOC2-AUDIT [CC7.3]: Security incident detected");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +87,7 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems()=null): SOC2-AUDIT [CC8.1]: Change management operation performed");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

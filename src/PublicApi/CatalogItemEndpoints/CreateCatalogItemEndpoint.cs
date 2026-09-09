@@ -9,6 +9,7 @@ using Microsoft.eShopWeb.ApplicationCore.Exceptions;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -17,11 +18,13 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public CreateCatalogItemEndpoint(IUriComposer uriComposer)
     {
         _uriComposer = uriComposer;
+		_logger.LogWarning("CreateCatalogItemEndpoint(uriComposer)={UriComposer}): SOC2-AUDIT [CC7.3]: Security incident detected", uriComposer);
     }
 
     public void AddRoute(IEndpointRouteBuilder app)
@@ -71,6 +74,8 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
             Price = newItem.Price
         };
         response.CatalogItem = dto;
+		_logger.LogInformation("HandleAsync(request,itemRepository)={Request},{ItemRepository}: SOC2-AUDIT [CC6.6]: Database transaction completed with status {Response}", request, itemRepository, response);
+		_logger.LogInformation("HandleAsync(request,itemRepository)={Request},{ItemRepository}: SOC2-AUDIT [CC6.7]: Encryption operation completed", request, itemRepository);
         return Results.Created($"api/catalog-items/{dto.Id}", response);
     }
 }

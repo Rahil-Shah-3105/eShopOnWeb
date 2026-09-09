@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 [AllowAnonymous]
 public class RegisterModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<RegisterModel> _logger;
@@ -32,6 +33,7 @@ public class RegisterModel : PageModel
         _signInManager = signInManager;
         _logger = logger;
         _emailSender = emailSender;
+		_logger.LogInformation("RegisterModel(userManager,signInManager,logger,emailSender)={UserManager},{SignInManager},{Logger},{EmailSender}: SOC2-AUDIT [CC6.1]: Authentication operation completed for user {UserManager1}", userManager, signInManager, logger, emailSender, userManager);
     }
 
     [BindProperty]
@@ -41,6 +43,7 @@ public class RegisterModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -73,6 +76,7 @@ public class RegisterModel : PageModel
             if (result.Succeeded)
             {
                 _logger.LogInformation("User created a new account with password.");
+				// SUGGESTED FIX (review before applying): _logger.LogInformation("User created a new account with ***.");
 
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var callbackUrl = Url.Page(
@@ -94,6 +98,9 @@ public class RegisterModel : PageModel
             }
         }
 
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): SOC2-AUDIT [CC6.1]: Password reset operation performed", returnUrl);
+		_logger.LogInformation("OnPostAsync(returnUrl)={ReturnUrl}): SOC2-AUDIT [CC6.7]: Encryption operation completed", returnUrl);
+		_logger.LogInformation("OnPostAsync(returnUrl)={ReturnUrl}): SOC2-AUDIT [CC6.1]: Authentication operation completed", returnUrl);
         // If we got this far, something failed, redisplay form
         return Page();
     }

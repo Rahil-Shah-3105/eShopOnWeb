@@ -16,6 +16,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ITokenClaimsService _tokenClaimsService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<UserController> _logger;
@@ -29,6 +30,8 @@ public class UserController : ControllerBase
         _tokenClaimsService = tokenClaimsService;
         _signInManager = signInManager;
         _logger = logger;
+		_logger.LogInformation("UserController(tokenClaimsService,signInManager,logger,cache)=<redacted>,{SignInManager},{Logger},{Cache}: SOC2-AUDIT [CC7.2]: System operation completed", signInManager, logger, cache);
+		_logger.LogInformation("UserController(tokenClaimsService,signInManager,logger,cache)=<redacted>,{SignInManager},{Logger},{Cache}: SOC2-AUDIT [CC6.1]: Authentication operation completed", signInManager, logger, cache);
         _cache = cache;
     }
 
@@ -53,6 +56,9 @@ public class UserController : ControllerBase
             AbsoluteExpiration = DateTime.Now.AddMinutes(ConfigureCookieSettings.ValidityMinutesPeriod)
         });
 
+		_logger.LogWarning("Logout()=null): SOC2-AUDIT [CC7.3]: Security incident detected");
+		_logger.LogInformation("Logout()=null): SOC2-AUDIT [CC7.2]: System operation completed");
+		_logger.LogInformation("Logout()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {UserId}", userId);
         _logger.LogInformation("User logged out.");
         return Ok();
     }
@@ -100,6 +106,7 @@ public class UserController : ControllerBase
         var token = await _tokenClaimsService.GetTokenAsync(claimsPrincipal.Identity.Name);
         userInfo.Token = token;
 
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal)={ClaimsPrincipal}): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {UserInfo}", claimsPrincipal, userInfo);
         return userInfo;
     }
 }

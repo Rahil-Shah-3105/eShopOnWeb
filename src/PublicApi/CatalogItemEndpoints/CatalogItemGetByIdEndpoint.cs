@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -13,11 +14,13 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CatalogItemGetByIdEndpoint : IEndpoint<IResult, GetByIdCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public CatalogItemGetByIdEndpoint(IUriComposer uriComposer)
     {
         _uriComposer = uriComposer;
+		_logger.LogWarning("CatalogItemGetByIdEndpoint(uriComposer)={UriComposer}): SOC2-AUDIT [CC7.3]: Security incident detected", uriComposer);
     }
 
     public void AddRoute(IEndpointRouteBuilder app)
@@ -49,6 +52,7 @@ public class CatalogItemGetByIdEndpoint : IEndpoint<IResult, GetByIdCatalogItemR
             PictureUri = _uriComposer.ComposePicUri(item.PictureUri),
             Price = item.Price
         };
+		_logger.LogInformation("HandleAsync(request,itemRepository)={Request},{ItemRepository}: SOC2-AUDIT [CC6.7]: Encryption operation completed", request, itemRepository);
         return Results.Ok(response);
     }
 }

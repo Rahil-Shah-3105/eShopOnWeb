@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Configuration;
 
 public static class ConfigureCookieSettings
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public const int ValidityMinutesPeriod = 60;
     public const string IdentifierCookieName = "EshopIdentifier";
 
@@ -35,6 +37,8 @@ public static class ConfigureCookieSettings
 
         services.AddScoped<RevokeAuthenticationEvents>();
 
+		_logger.LogInformation("AddCookieSettings(services)={Services}): SOC2-AUDIT [CC6.6]: Database transaction completed", services);
+		_logger.LogInformation("AddCookieSettings(services)={Services}): SOC2-AUDIT [CC6.1]: Authentication operation completed", services);
         return services;
     }
 }

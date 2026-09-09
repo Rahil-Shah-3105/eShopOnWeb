@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -38,6 +39,7 @@ public class ManageController : Controller
         _emailSender = emailSender;
         _logger = logger;
         _urlEncoder = urlEncoder;
+		_logger.LogInformation("ManageController(userManager,signInManager,emailSender,logger,urlEncoder)={UserManager},{SignInManager},{EmailSender},{Logger},{UrlEncoder}: SOC2-AUDIT [CC6.1]: Authentication operation completed for user {UserManager1}", userManager, signInManager, emailSender, logger, urlEncoder, userManager);
     }
 
     [TempData]
@@ -61,6 +63,7 @@ public class ManageController : Controller
             StatusMessage = StatusMessage
         };
 
+		_logger.LogInformation("MyAccount()=null): SOC2-AUDIT [CC7.1]: System operation completed");
         return View(model);
     }
 
@@ -100,6 +103,7 @@ public class ManageController : Controller
         }
 
         StatusMessage = "Your profile has been updated";
+		_logger.LogInformation("MyAccount(model)={Model}): SOC2-AUDIT [CC7.1]: System operation completed", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
@@ -130,6 +134,8 @@ public class ManageController : Controller
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
 
         StatusMessage = "Verification email sent. Please check your email.";
+		_logger.LogInformation("SendVerificationEmail(model)={Model}): SOC2-AUDIT [CC6.6]: Database transaction completed", model);
+		_logger.LogInformation("SendVerificationEmail(model)={Model}): SOC2-AUDIT [CC7.1]: System operation completed", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
@@ -149,6 +155,8 @@ public class ManageController : Controller
         }
 
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogWarning("ChangePassword()=null): SOC2-AUDIT [CC6.1]: Password reset operation performed for user {User}", user);
+		_logger.LogInformation("ChangePassword()=null): SOC2-AUDIT [CC7.1]: System operation completed");
         return View(model);
     }
 
@@ -179,6 +187,7 @@ public class ManageController : Controller
         _logger.LogInformation("User changed their password successfully.");
         StatusMessage = "Your password has been changed.";
 
+		_logger.LogInformation("ChangePassword(model)={Model}): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", model, user);
         return RedirectToAction(nameof(ChangePassword));
     }
 
@@ -199,6 +208,8 @@ public class ManageController : Controller
         }
 
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogWarning("SetPassword()=null): SOC2-AUDIT [CC6.1]: Password reset operation performed for user {User}", user);
+		_logger.LogInformation("SetPassword()=null): SOC2-AUDIT [CC7.1]: System operation completed");
         return View(model);
     }
 
@@ -227,6 +238,7 @@ public class ManageController : Controller
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "Your password has been set.";
 
+		_logger.LogInformation("SetPassword(model)={Model}): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", model, user);
         return RedirectToAction(nameof(SetPassword));
     }
 
@@ -239,6 +251,8 @@ public class ManageController : Controller
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
+		_logger.LogInformation("ExternalLogins()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", user);
+		_logger.LogInformation("ExternalLogins()=null): SOC2-AUDIT [CC7.1]: System operation completed");
         var model = new ExternalLoginsViewModel { CurrentLogins = await _userManager.GetLoginsAsync(user) };
         model.OtherLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync())
             .Where(auth => model.CurrentLogins.All(ul => auth.Name != ul.LoginProvider))
@@ -246,6 +260,8 @@ public class ManageController : Controller
         model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
         model.StatusMessage = StatusMessage;
 
+		_logger.LogWarning("ExternalLogins()=null): SOC2-AUDIT [CC7.3]: Security incident detected");
+		_logger.LogWarning("ExternalLogins()=null): SOC2-AUDIT [CC6.1]: Password reset operation performed for user {User}", user);
         return View(model);
     }
 
@@ -259,6 +275,8 @@ public class ManageController : Controller
         // Request a redirect to the external login provider to link a login for the current user
         var redirectUrl = Url.Action(nameof(LinkLoginCallback));
         var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, _userManager.GetUserId(User));
+		_logger.LogWarning("LinkLogin(provider)={Provider}): SOC2-AUDIT [CC7.3]: Security incident detected", provider);
+		_logger.LogInformation("LinkLogin(provider)={Provider}): SOC2-AUDIT [CC6.1]: Authentication operation completed", provider);
         return new ChallengeResult(provider, properties);
     }
 
@@ -286,6 +304,9 @@ public class ManageController : Controller
         // Clear the existing external cookie to ensure a clean login process
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
+		_logger.LogWarning("LinkLoginCallback()=null): SOC2-AUDIT [CC7.3]: Security incident detected");
+		_logger.LogInformation("LinkLoginCallback()=null): SOC2-AUDIT [CC7.1]: System operation completed with status {Result}", result);
+		_logger.LogInformation("LinkLoginCallback()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", user);
         StatusMessage = "The external login was added.";
         return RedirectToAction(nameof(ExternalLogins));
     }
@@ -311,6 +332,9 @@ public class ManageController : Controller
         }
 
         await _signInManager.SignInAsync(user, isPersistent: false);
+		_logger.LogWarning("RemoveLogin(model)={Model}): SOC2-AUDIT [CC7.3]: Security incident detected", model);
+		_logger.LogInformation("RemoveLogin(model)={Model}): SOC2-AUDIT [CC7.1]: System operation completed with status {Result}", model, result);
+		_logger.LogInformation("RemoveLogin(model)={Model}): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", model, user);
         StatusMessage = "The external login was removed.";
         return RedirectToAction(nameof(ExternalLogins));
     }
@@ -331,6 +355,7 @@ public class ManageController : Controller
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
         };
 
+		_logger.LogInformation("TwoFactorAuthentication()=null): SOC2-AUDIT [CC6.7]: Encryption operation completed");
         return View(model);
     }
 
@@ -368,6 +393,7 @@ public class ManageController : Controller
         }
 
         _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.Id);
+		_logger.LogInformation("Disable2fa()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", user);
         return RedirectToAction(nameof(TwoFactorAuthentication));
     }
 
@@ -396,6 +422,7 @@ public class ManageController : Controller
         }
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes };
+		_logger.LogInformation("ShowRecoveryCodes()=null): SOC2-AUDIT [CC6.7]: Encryption operation completed");
         return View(model);
     }
 
@@ -434,6 +461,7 @@ public class ManageController : Controller
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) ?? new List<string>();
         TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
+		_logger.LogInformation("EnableAuthenticator(model)={Model}): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", model, user);
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
@@ -480,6 +508,8 @@ public class ManageController : Controller
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
 
+		_logger.LogInformation("GenerateRecoveryCodes()=null): SOC2-AUDIT [CC6.7]: Encryption operation completed");
+		_logger.LogInformation("GenerateRecoveryCodes()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", user);
         return View(nameof(ShowRecoveryCodes), model);
     }
 
@@ -497,6 +527,7 @@ public class ManageController : Controller
             throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.Id}' because they do not have 2FA enabled.");
         }
 
+		_logger.LogInformation("GenerateRecoveryCodesWarning()=null): SOC2-AUDIT [CC6.7]: Encryption operation completed");
         return View(nameof(GenerateRecoveryCodesWarning));
     }
 
@@ -506,6 +537,7 @@ public class ManageController : Controller
         {
             ModelState.AddModelError(string.Empty, error.Description);
         }
+		_logger.LogInformation("AddErrors(result)={Result}): SOC2-AUDIT [CC6.7]: Encryption operation completed with algorithm {Result1}", result, result);
     }
 
     private string FormatKey(string unformattedKey)

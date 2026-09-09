@@ -4,11 +4,13 @@ using System.Threading.Tasks;
 using BlazorShared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.eShopWeb.ApplicationCore.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.Middleware;
 
 public class ExceptionMiddleware
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly RequestDelegate _next;
 
     public ExceptionMiddleware(RequestDelegate next)
@@ -50,5 +52,6 @@ public class ExceptionMiddleware
                 Message = exception.Message
             }.ToString());
         }
+		_logger.LogInformation("HandleExceptionAsync(context,exception)={Context},{Exception}: SOC2-AUDIT [CC7.1]: System operation completed", context, exception);
     }
 }

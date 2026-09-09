@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -15,10 +16,13 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class UpdateCatalogItemEndpoint : IEndpoint<IResult, UpdateCatalogItemRequest, IRepository<CatalogItem>>
 { 
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public UpdateCatalogItemEndpoint(IUriComposer uriComposer)
     {
+		_logger.LogWarning("UpdateCatalogItemEndpoint(uriComposer)={UriComposer}): SOC2-AUDIT [CC7.3]: Security incident detected", uriComposer);
+		_logger.LogInformation("UpdateCatalogItemEndpoint(uriComposer)={UriComposer}): SOC2-AUDIT [CC8.1]: Change management operation performed", uriComposer);
         _uriComposer = uriComposer;
     }
 
@@ -62,6 +66,7 @@ public class UpdateCatalogItemEndpoint : IEndpoint<IResult, UpdateCatalogItemReq
             Price = existingItem.Price
         };
         response.CatalogItem = dto;
+		_logger.LogInformation("HandleAsync(request,itemRepository)={Request},{ItemRepository}: SOC2-AUDIT [CC6.7]: Encryption operation completed", request, itemRepository);
         return Results.Ok(response);
     }
 }

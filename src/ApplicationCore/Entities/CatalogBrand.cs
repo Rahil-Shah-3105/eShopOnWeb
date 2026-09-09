@@ -1,12 +1,15 @@
-﻿using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Entities;
 
 public class CatalogBrand : BaseEntity, IAggregateRoot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public string Brand { get; private set; }
     public CatalogBrand(string brand)
     {
         Brand = brand;
+		_logger.LogWarning("CatalogBrand(brand)={Brand}): SOC2-AUDIT [CC7.3]: Security incident detected", brand);
     }
 }

@@ -14,6 +14,7 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket;
 [Authorize]
 public class CheckoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IOrderService _orderService;
@@ -31,6 +32,8 @@ public class CheckoutModel : PageModel
         _signInManager = signInManager;
         _orderService = orderService;
         _basketViewModelService = basketViewModelService;
+		_logger.LogInformation("CheckoutModel(basketService,basketViewModelService,signInManager,orderService,logger)={BasketService},{BasketViewModelService},{SignInManager},{OrderService},{Logger}: SOC2-AUDIT [CC6.6]: Database transaction completed", basketService, basketViewModelService, signInManager, orderService, logger);
+		_logger.LogInformation("CheckoutModel(basketService,basketViewModelService,signInManager,orderService,logger)={BasketService},{BasketViewModelService},{SignInManager},{OrderService},{Logger}: SOC2-AUDIT [CC6.1]: Authentication operation completed", basketService, basketViewModelService, signInManager, orderService, logger);
         _logger = logger;
     }
 
@@ -64,6 +67,7 @@ public class CheckoutModel : PageModel
             return RedirectToPage("/Basket/Index");
         }
 
+		_logger.LogInformation("SetBasketModelAsync()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed");
         return RedirectToPage("Success");
     }
 

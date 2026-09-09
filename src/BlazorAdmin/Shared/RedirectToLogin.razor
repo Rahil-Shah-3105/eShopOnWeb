@@ -1,12 +1,15 @@
-﻿@using System.Web;
+﻿using Microsoft.Extensions.Logging;
+@using System.Web;
 
 @inject NavigationManager Navigation
 @inject IJSRuntime JsRuntime
 
 @code {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void OnInitialized()
     {       
         var returnUrl = HttpUtility.UrlEncode($"/{Uri.EscapeDataString(Navigation.ToBaseRelativePath(Navigation.Uri))}");
         JsRuntime.InvokeVoidAsync("location.replace", $"Identity/Account/Login?returnUrl={returnUrl}");
+		_logger.LogInformation("OnInitialized()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed");
     }
 }
