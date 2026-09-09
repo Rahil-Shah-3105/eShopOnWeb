@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -130,6 +131,7 @@ public class ManageController : Controller
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
 
         StatusMessage = "Verification email sent. Please check your email.";
+		_logger.LogWarning("SendVerificationEmail(model)={Model}): ISO27701-AUDIT: Outbound notification recorded for the audit trail", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
@@ -149,6 +151,7 @@ public class ManageController : Controller
         }
 
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogWarning("ChangePassword()=null): ISO27701-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
@@ -199,6 +202,7 @@ public class ManageController : Controller
         }
 
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogWarning("SetPassword()=null): ISO27701-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
@@ -312,6 +316,7 @@ public class ManageController : Controller
 
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "The external login was removed.";
+		_logger.LogWarning("RemoveLogin(model)={Model}): ISO27701-AUDIT: State change recorded for the audit trail {Result}", model, result);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -348,6 +353,7 @@ public class ManageController : Controller
             throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
         }
 
+		_logger.LogWarning("Disable2faWarning()=null): ISO27701-AUDIT: State change recorded for the audit trail");
         return View(nameof(Disable2fa));
     }
 
@@ -368,6 +374,7 @@ public class ManageController : Controller
         }
 
         _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.Id);
+		_logger.LogWarning("Disable2fa()=null): ISO27701-AUDIT: State change recorded for the audit trail {Disable2faResult}", disable2faResult);
         return RedirectToAction(nameof(TwoFactorAuthentication));
     }
 
@@ -383,6 +390,7 @@ public class ManageController : Controller
         var model = new EnableAuthenticatorViewModel();
         await LoadSharedKeyAndQrCodeUriAsync(user, model);
 
+		_logger.LogWarning("EnableAuthenticator()=null): ISO27701-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
@@ -426,6 +434,7 @@ public class ManageController : Controller
         {
             ModelState.AddModelError("Code", "Verification code is invalid.");
             await LoadSharedKeyAndQrCodeUriAsync(user, model);
+			_logger.LogWarning("LoadSharedKeyAndQrCodeUriAsync(user,model)={User},{Model}: ISO27701-AUDIT: Outbound notification recorded for the audit trail", user, model);
             return View(model);
         }
 
@@ -440,6 +449,7 @@ public class ManageController : Controller
     [HttpGet]
     public IActionResult ResetAuthenticatorWarning()
     {
+		_logger.LogWarning("ResetAuthenticatorWarning()=null): ISO27701-AUDIT: State change recorded for the audit trail");
         return View(nameof(ResetAuthenticator));
     }
 
@@ -457,6 +467,7 @@ public class ManageController : Controller
         await _userManager.ResetAuthenticatorKeyAsync(user);
         _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
 
+		_logger.LogWarning("ResetAuthenticator()=null): ISO27701-AUDIT: State change recorded for the audit trail");
         return RedirectToAction(nameof(EnableAuthenticator));
     }
 
@@ -502,6 +513,7 @@ public class ManageController : Controller
 
     private void AddErrors(IdentityResult result)
     {
+		_logger.LogWarning("AddErrors(result)={Result}): ISO27701-AUDIT: State change recorded for the audit trail {Result1}", result, result);
         foreach (var error in result.Errors)
         {
             ModelState.AddModelError(string.Empty, error.Description);
