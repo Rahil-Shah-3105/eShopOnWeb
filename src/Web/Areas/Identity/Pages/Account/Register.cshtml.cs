@@ -41,6 +41,7 @@ public class RegisterModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -60,6 +61,7 @@ public class RegisterModel : PageModel
 
     public void OnGet(string? returnUrl = null)
     {
+		_logger.LogWarning("OnGet(returnUrl)={ReturnUrl}): NISTAIRMF-AUDIT: Record access recorded for the audit trail", returnUrl);
         ReturnUrl = returnUrl;
     }
 
@@ -95,6 +97,7 @@ public class RegisterModel : PageModel
         }
 
         // If we got this far, something failed, redisplay form
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): NISTAIRMF-AUDIT: Outbound notification recorded for the audit trail", returnUrl);
         return Page();
     }
 }
