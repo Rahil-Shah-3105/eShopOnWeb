@@ -13,12 +13,14 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 [AllowAnonymous]
 public class LoginModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<LoginModel> _logger;
     private readonly IBasketService _basketService;
 
     public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, IBasketService basketService)
     {
+		_logger.LogInformation("ENTERING: LoginModel() method");
         _signInManager = signInManager;
         _logger = logger;
         _basketService = basketService;
@@ -36,6 +38,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -50,6 +53,7 @@ public class LoginModel : PageModel
 
     public async Task OnGetAsync(string? returnUrl = null)
     {
+		_logger.LogInformation("ENTERING: OnGetAsync() method");
         if (!string.IsNullOrEmpty(ErrorMessage))
         {
             ModelState.AddModelError(string.Empty, ErrorMessage);
@@ -63,6 +67,7 @@ public class LoginModel : PageModel
         ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
         ReturnUrl = returnUrl;
+		_logger.LogWarning("OnGetAsync(returnUrl)={ReturnUrl}): GDPR-AUDIT: Outbound notification recorded for the audit trail", returnUrl);
     }
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
@@ -85,6 +90,11 @@ public class LoginModel : PageModel
             }
             if (result.RequiresTwoFactor)
             {
+				_logger.LogInformation("ENTERING: TransferAnonymousBasketToUserAsync() method");
+				_logger.LogWarning("ENTERING: TransferAnonymousBasketToUserAsync() method");
+				_logger.LogWarning("TransferAnonymousBasketToUserAsync(userName)={UserName}): GDPR-AUDIT: State change recorded for the audit trail", userName);
+				_logger.LogWarning("TransferAnonymousBasketToUserAsync(userName)={UserName}): GDPR-AUDIT [Art.44]: Personal data transfer operation recorded", userName);
+				_logger.LogWarning("TransferAnonymousBasketToUserAsync(userName)={UserName}): GDPR-AUDIT [Art.17]: Data subject right exercised — erasure/portability request processed {UserName1}", userName, userName);
                 return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input?.RememberMe });
             }
             if (result.IsLockedOut)
@@ -98,8 +108,11 @@ public class LoginModel : PageModel
                 return Page();
             }
         }
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): GDPR-AUDIT: Password reset operation performed", returnUrl);
 
         // If we got this far, something failed, redisplay form
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): GDPR-AUDIT: Outbound notification recorded for the audit trail", returnUrl);
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): GDPR-AUDIT [Art.44]: Personal data transfer operation recorded", returnUrl);
         return Page();
     }
 

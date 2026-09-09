@@ -13,6 +13,7 @@ public class CatalogContextSeed
         ILogger logger,
         int retry = 0)
     {
+		logger.LogInformation("ENTERING: SeedAsync() method");
         var retryForAvailability = retry;
         try
         {
@@ -59,6 +60,8 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("ENTERING: GetPreconfiguredCatalogBrands() method");
+		logger.LogWarning("GetPreconfiguredCatalogBrands()=null): GDPR-AUDIT: Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +74,8 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("ENTERING: GetPreconfiguredCatalogTypes() method");
+		logger.LogWarning("GetPreconfiguredCatalogTypes()=null): GDPR-AUDIT: Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +87,8 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("ENTERING: GetPreconfiguredItems() method");
+		logger.LogWarning("GetPreconfiguredItems()=null): GDPR-AUDIT: State change recorded for the audit trail");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

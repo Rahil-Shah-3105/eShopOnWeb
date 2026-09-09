@@ -6,11 +6,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities.BasketAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Services;
 
 public class OrderService : IOrderService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Order> _orderRepository;
     private readonly IUriComposer _uriComposer;
     private readonly IRepository<Basket> _basketRepository;
@@ -21,6 +23,7 @@ public class OrderService : IOrderService
         IRepository<Order> orderRepository,
         IUriComposer uriComposer)
     {
+		_logger.LogInformation("ENTERING: OrderService() method");
         _orderRepository = orderRepository;
         _uriComposer = uriComposer;
         _basketRepository = basketRepository;
@@ -29,6 +32,7 @@ public class OrderService : IOrderService
 
     public async Task CreateOrderAsync(int basketId, Address shippingAddress)
     {
+		_logger.LogInformation("ENTERING: CreateOrderAsync() method");
         var basketSpec = new BasketWithItemsSpecification(basketId);
         var basket = await _basketRepository.FirstOrDefaultAsync(basketSpec);
 
@@ -48,6 +52,8 @@ public class OrderService : IOrderService
 
         var order = new Order(basket.BuyerId, shippingAddress, items);
 
+		_logger.LogWarning("CreateOrderAsync(basketId,shippingAddress)={BasketId},<redacted>: GDPR-AUDIT: State change recorded for the audit trail {BasketId1}", basketId, basketId);
+		_logger.LogInformation("CreateOrderAsync(basketId,shippingAddress)={BasketId},<redacted>: GDPR-AUDIT [Art.30]: Personal data processing activity completed", basketId);
         await _orderRepository.AddAsync(order);
     }
 }

@@ -10,6 +10,7 @@ namespace BlazorAdmin.Services;
 
 public class CatalogItemService : ICatalogItemService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ICatalogLookupDataService<CatalogBrand> _brandService;
     private readonly ICatalogLookupDataService<CatalogType> _typeService;
     private readonly HttpService _httpService;
@@ -20,6 +21,7 @@ public class CatalogItemService : ICatalogItemService
         HttpService httpService,
         ILogger<CatalogItemService> logger)
     {
+		_logger.LogInformation("ENTERING: CatalogItemService() method");
         _brandService = brandService;
         _typeService = typeService;
         _httpService = httpService;
@@ -28,22 +30,26 @@ public class CatalogItemService : ICatalogItemService
 
     public async Task<CatalogItem> Create(CreateCatalogItemRequest catalogItem)
     {
+		_logger.LogInformation("ENTERING: Create() method");
         var response = await _httpService.HttpPost<CreateCatalogItemResponse>("catalog-items", catalogItem);
         return response?.CatalogItem;
     }
 
     public async Task<CatalogItem> Edit(CatalogItem catalogItem)
     {
+		_logger.LogInformation("ENTERING: Edit() method");
         return (await _httpService.HttpPut<EditCatalogItemResult>("catalog-items", catalogItem)).CatalogItem;
     }
 
     public async Task<string> Delete(int catalogItemId)
     {
+		_logger.LogInformation("ENTERING: Delete() method");
         return (await _httpService.HttpDelete<DeleteCatalogItemResponse>("catalog-items", catalogItemId)).Status;
     }
 
     public async Task<CatalogItem> GetById(int id)
     {
+		_logger.LogInformation("ENTERING: GetById() method");
         var brandListTask = _brandService.List();
         var typeListTask = _typeService.List();
         var itemGetTask = _httpService.HttpGet<EditCatalogItemResult>($"catalog-items/{id}");
@@ -53,6 +59,8 @@ public class CatalogItemService : ICatalogItemService
         var catalogItem = itemGetTask.Result.CatalogItem;
         catalogItem.CatalogBrand = brands.FirstOrDefault(b => b.Id == catalogItem.CatalogBrandId)?.Name;
         catalogItem.CatalogType = types.FirstOrDefault(t => t.Id == catalogItem.CatalogTypeId)?.Name;
+		_logger.LogWarning("GetById(id)={Id}): GDPR-AUDIT: Record access recorded for the audit trail {Id1}", id, id);
+		_logger.LogInformation("GetById(id)={Id}): GDPR-AUDIT [Art.30]: Personal data processing activity completed", id);
         return catalogItem;
     }
 
@@ -72,6 +80,8 @@ public class CatalogItemService : ICatalogItemService
             item.CatalogBrand = brands.FirstOrDefault(b => b.Id == item.CatalogBrandId)?.Name;
             item.CatalogType = types.FirstOrDefault(t => t.Id == item.CatalogTypeId)?.Name;
         }
+		_logger.LogWarning("ListPaged(pageSize)={PageSize}): GDPR-AUDIT: Record access recorded for the audit trail", pageSize);
+		_logger.LogInformation("ListPaged(pageSize)={PageSize}): GDPR-AUDIT [Art.30]: Personal data processing activity completed", pageSize);
         return items;
     }
 
@@ -91,6 +101,8 @@ public class CatalogItemService : ICatalogItemService
             item.CatalogBrand = brands.FirstOrDefault(b => b.Id == item.CatalogBrandId)?.Name;
             item.CatalogType = types.FirstOrDefault(t => t.Id == item.CatalogTypeId)?.Name;
         }
+		_logger.LogWarning("List()=null): GDPR-AUDIT: Record access recorded for the audit trail");
+		_logger.LogInformation("List()=null): GDPR-AUDIT [Art.30]: Personal data processing activity completed");
         return items;
     }
 }

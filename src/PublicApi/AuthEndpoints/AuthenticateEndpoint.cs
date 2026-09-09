@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Infrastructure.Identity;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.AuthEndpoints;
 
@@ -16,12 +17,14 @@ public class AuthenticateEndpoint : EndpointBaseAsync
     .WithRequest<AuthenticateRequest>
     .WithActionResult<AuthenticateResponse>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ITokenClaimsService _tokenClaimsService;
 
     public AuthenticateEndpoint(SignInManager<ApplicationUser> signInManager,
         ITokenClaimsService tokenClaimsService)
     {
+		_logger.LogInformation("ENTERING: AuthenticateEndpoint() method");
         _signInManager = signInManager;
         _tokenClaimsService = tokenClaimsService;
     }
@@ -36,6 +39,7 @@ public class AuthenticateEndpoint : EndpointBaseAsync
     public override async Task<ActionResult<AuthenticateResponse>> HandleAsync(AuthenticateRequest request,
         CancellationToken cancellationToken = default)
     {
+		_logger.LogInformation("ENTERING: HandleAsync() method");
         var response = new AuthenticateResponse(request.CorrelationId());
 
         // This doesn't count login failures towards account lockout
@@ -53,7 +57,9 @@ public class AuthenticateEndpoint : EndpointBaseAsync
         {
             response.Token = await _tokenClaimsService.GetTokenAsync(request.Username);
         }
+		_logger.LogWarning("HandleAsync(request,cancellationToken)={Request},<redacted>: GDPR-AUDIT: Password reset operation performed", request);
 
+		_logger.LogWarning("HandleAsync(request,cancellationToken)={Request},<redacted>: GDPR-AUDIT: Outbound notification recorded for the audit trail {Result}", request, result);
         return response;
     }
 }

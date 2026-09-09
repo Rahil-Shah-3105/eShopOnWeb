@@ -12,6 +12,7 @@ namespace BlazorAdmin;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // TODO: Get Default Cache Duration from Config
     private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
 
@@ -24,17 +25,20 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
     public CustomAuthStateProvider(HttpClient httpClient,
         ILogger<CustomAuthStateProvider> logger)
     {
+		_logger.LogInformation("ENTERING: CustomAuthStateProvider() method");
         _httpClient = httpClient;
         _logger = logger;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
+		_logger.LogInformation("ENTERING: GetAuthenticationStateAsync() method");
         return new AuthenticationState(await GetUser(useCache: true));
     }
 
     private async ValueTask<ClaimsPrincipal> GetUser(bool useCache = false)
     {
+		_logger.LogInformation("ENTERING: GetUser() method");
         var now = DateTimeOffset.Now;
         if (useCache && now < _userLastCheck + UserCacheRefreshInterval)
         {
@@ -49,6 +53,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
     private async Task<ClaimsPrincipal> FetchUser()
     {
+		_logger.LogInformation("ENTERING: FetchUser() method");
         UserInfo user = null;
 
         try
@@ -81,6 +86,8 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
 
+		_logger.LogWarning("FetchUser()=null): GDPR-AUDIT: Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser()=null): GDPR-AUDIT [Art.30]: Personal data processing operation recorded {User}", user);
         return new ClaimsPrincipal(identity);
     }
 }

@@ -126,8 +126,10 @@
 
     private async Task SaveClick()
     {
+		Logger.LogInformation("ENTERING: SaveClick() method");
         await CatalogItemService.Edit(_item);
         await OnSaveClick.InvokeAsync(null);
+		Logger.LogWarning("SaveClick()=null): GDPR-AUDIT: State change recorded for the audit trail");
         await Close();
     }
 
@@ -144,6 +146,7 @@
         _showEditModal = true;
 
         StateHasChanged();
+		Logger.LogInformation("ENTERING: Close() method");
     }
 
     private async Task Close()

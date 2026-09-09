@@ -11,17 +11,20 @@ namespace Microsoft.eShopWeb.Web.Configuration;
 //TODO : replace IMemoryCache with a distributed cache if you are in multi-host scenario
 public class RevokeAuthenticationEvents : CookieAuthenticationEvents
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMemoryCache _cache;
     private readonly ILogger _logger;
 
     public RevokeAuthenticationEvents(IMemoryCache cache, ILogger<RevokeAuthenticationEvents> logger)
     {
+		_logger.LogInformation("ENTERING: RevokeAuthenticationEvents() method");
         _cache = cache;
         _logger = logger;
     }
 
     public override async Task ValidatePrincipal(CookieValidatePrincipalContext context)
     {
+		_logger.LogInformation("ENTERING: ValidatePrincipal() method");
         var userId = context.Principal?.Claims.First(c => c.Type == ClaimTypes.Name);
         var identityKey = context.Request.Cookies[ConfigureCookieSettings.IdentifierCookieName];
 

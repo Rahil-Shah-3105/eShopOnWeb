@@ -41,6 +41,7 @@ await builder.Build().RunAsync();
 
 static async Task ClearLocalStorageCache(IServiceCollection services)
 {
+	_logger.LogInformation("ENTERING: ClearLocalStorageCache() method");
     var sp = services.BuildServiceProvider();
     var localStorageService = sp.GetRequiredService<ILocalStorageService>();
 
