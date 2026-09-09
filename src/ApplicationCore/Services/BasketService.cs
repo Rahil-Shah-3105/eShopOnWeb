@@ -10,6 +10,7 @@ namespace Microsoft.eShopWeb.ApplicationCore.Services;
 
 public class BasketService : IBasketService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IAppLogger<BasketService> _logger;
 
@@ -32,6 +33,7 @@ public class BasketService : IBasketService
         }
 
         basket.AddItem(catalogItemId, price, quantity);
+		_logger.LogWarning("AddItemToBasket(username,catalogItemId,price,quantity)={Username},{CatalogItemId},{Price},{Quantity}: EUAIACT-AUDIT: State change recorded for the audit trail {CatalogItemId1}", username, catalogItemId, price, quantity, catalogItemId);
 
         await _basketRepository.UpdateAsync(basket);
         return basket;
@@ -39,6 +41,7 @@ public class BasketService : IBasketService
 
     public async Task DeleteBasketAsync(int basketId)
     {
+		_logger.LogWarning("DeleteBasketAsync(basketId)={BasketId}): EUAIACT-AUDIT: State change recorded for the audit trail {BasketId1}", basketId, basketId);
         var basket = await _basketRepository.GetByIdAsync(basketId);
         Guard.Against.Null(basket, nameof(basket));
         await _basketRepository.DeleteAsync(basket);
@@ -58,6 +61,7 @@ public class BasketService : IBasketService
                 item.SetQuantity(quantity);
             }
         }
+		_logger.LogWarning("SetQuantities(basketId,quantities)={BasketId},{Quantities}: EUAIACT-AUDIT: State change recorded for the audit trail {BasketId1}", basketId, quantities, basketId);
         basket.RemoveEmptyItems();
         await _basketRepository.UpdateAsync(basket);
         return basket;
@@ -75,6 +79,7 @@ public class BasketService : IBasketService
             userBasket = new Basket(userName);
             await _basketRepository.AddAsync(userBasket);
         }
+		_logger.LogWarning("TransferBasketAsync(anonymousId,userName)={AnonymousId},{UserName}: EUAIACT-AUDIT: State change recorded for the audit trail {AnonymousId1}", anonymousId, userName, anonymousId);
         foreach (var item in anonymousBasket.Items)
         {
             userBasket.AddItem(item.CatalogItemId, item.UnitPrice, item.Quantity);

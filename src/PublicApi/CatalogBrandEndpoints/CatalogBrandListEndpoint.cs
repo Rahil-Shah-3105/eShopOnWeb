@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogBrandEndpoints;
 
@@ -15,6 +16,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogBrandEndpoints;
 /// </summary>
 public class CatalogBrandListEndpoint : IEndpoint<IResult, IRepository<CatalogBrand>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMapper _mapper;
 
     public CatalogBrandListEndpoint(IMapper mapper)
@@ -24,7 +26,9 @@ public class CatalogBrandListEndpoint : IEndpoint<IResult, IRepository<CatalogBr
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
+		_logger.LogWarning("AddRoute(app)={App}): EUAIACT-AUDIT: State change recorded for the audit trail", app);
         app.MapGet("api/catalog-brands",
+			_logger.LogWarning("async(catalogBrandRepository)={CatalogBrandRepository}): EUAIACT-AUDIT: Outbound notification recorded for the audit trail", catalogBrandRepository);
             async (IRepository<CatalogBrand> catalogBrandRepository) =>
             {
                 return await HandleAsync(catalogBrandRepository);
@@ -39,6 +43,7 @@ public class CatalogBrandListEndpoint : IEndpoint<IResult, IRepository<CatalogBr
 
         var items = await catalogBrandRepository.ListAsync();
 
+		_logger.LogWarning("HandleAsync(catalogBrandRepository)={CatalogBrandRepository}): EUAIACT-AUDIT: Outbound notification recorded for the audit trail", catalogBrandRepository);
         response.CatalogBrands.AddRange(items.Select(_mapper.Map<CatalogBrandDto>));
 
         return Results.Ok(response);

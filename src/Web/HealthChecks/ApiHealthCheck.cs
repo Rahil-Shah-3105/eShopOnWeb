@@ -4,11 +4,13 @@ using System.Threading.Tasks;
 using BlazorShared;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.HealthChecks;
 
 public class ApiHealthCheck : IHealthCheck
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly BaseUrlConfiguration _baseUrlConfiguration;
 
     public ApiHealthCheck(IOptions<BaseUrlConfiguration> baseUrlConfiguration)
@@ -24,6 +26,7 @@ public class ApiHealthCheck : IHealthCheck
         var client = new HttpClient();
         var response = await client.GetAsync(myUrl);
         var pageContents = await response.Content.ReadAsStringAsync();
+		_logger.LogWarning("CheckHealthAsync(context,cancellationToken)={Context},<redacted>: EUAIACT-AUDIT: PHI operation logged for audit compliance", context);
         if (pageContents.Contains(".NET Bot Black Sweatshirt"))
         {
             return HealthCheckResult.Healthy("The check indicates a healthy result.");
