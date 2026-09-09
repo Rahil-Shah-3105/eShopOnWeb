@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -15,6 +16,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class UpdateCatalogItemEndpoint : IEndpoint<IResult, UpdateCatalogItemRequest, IRepository<CatalogItem>>
 { 
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public UpdateCatalogItemEndpoint(IUriComposer uriComposer)
@@ -32,6 +34,7 @@ public class UpdateCatalogItemEndpoint : IEndpoint<IResult, UpdateCatalogItemReq
             })
             .Produces<UpdateCatalogItemResponse>()
             .WithTags("CatalogItemEndpoints");
+			_logger.LogWarning("AddRoute(app)={App}): BIPA-AUDIT: State change recorded for the audit trail", app);
     }
 
     public async Task<IResult> HandleAsync(UpdateCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
@@ -62,6 +65,7 @@ public class UpdateCatalogItemEndpoint : IEndpoint<IResult, UpdateCatalogItemReq
             Price = existingItem.Price
         };
         response.CatalogItem = dto;
+		_logger.LogWarning("HandleAsync(request,itemRepository)={Request},{ItemRepository}: BIPA-AUDIT: Outbound notification recorded for the audit trail", request, itemRepository);
         return Results.Ok(response);
     }
 }

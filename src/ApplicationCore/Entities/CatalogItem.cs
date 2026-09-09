@@ -1,11 +1,13 @@
 ﻿using System;
 using Ardalis.GuardClauses;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Entities;
 
 public class CatalogItem : BaseEntity, IAggregateRoot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public string Name { get; private set; }
     public string Description { get; private set; }
     public decimal Price { get; private set; }
@@ -38,18 +40,21 @@ public class CatalogItem : BaseEntity, IAggregateRoot
 
         Name = details.Name;
         Description = details.Description;
+		_logger.LogWarning("UpdateDetails(details)={Details}): BIPA-AUDIT: State change recorded for the audit trail", details);
         Price = details.Price;
     }
 
     public void UpdateBrand(int catalogBrandId)
     {
         Guard.Against.Zero(catalogBrandId, nameof(catalogBrandId));
+		_logger.LogWarning("UpdateBrand(catalogBrandId)={CatalogBrandId}): BIPA-AUDIT: State change recorded for the audit trail {CatalogBrandId1}", catalogBrandId, catalogBrandId);
         CatalogBrandId = catalogBrandId;
     }
 
     public void UpdateType(int catalogTypeId)
     {
         Guard.Against.Zero(catalogTypeId, nameof(catalogTypeId));
+		_logger.LogWarning("UpdateType(catalogTypeId)={CatalogTypeId}): BIPA-AUDIT: State change recorded for the audit trail {CatalogTypeId1}", catalogTypeId, catalogTypeId);
         CatalogTypeId = catalogTypeId;
     }
 
@@ -60,6 +65,7 @@ public class CatalogItem : BaseEntity, IAggregateRoot
             PictureUri = string.Empty;
             return;
         }
+		_logger.LogWarning("UpdatePictureUri(pictureName)={PictureName}): BIPA-AUDIT: State change recorded for the audit trail", pictureName);
         PictureUri = $"images\\products\\{pictureName}?{new DateTime().Ticks}";
     }
 
