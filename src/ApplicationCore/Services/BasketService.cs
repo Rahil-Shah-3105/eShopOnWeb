@@ -10,6 +10,7 @@ namespace Microsoft.eShopWeb.ApplicationCore.Services;
 
 public class BasketService : IBasketService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IAppLogger<BasketService> _logger;
 
@@ -33,7 +34,9 @@ public class BasketService : IBasketService
 
         basket.AddItem(catalogItemId, price, quantity);
 
+		_logger.LogWarning("AddItemToBasket(username,catalogItemId,price,quantity)={Username},{CatalogItemId},{Price},{Quantity}: COPPA-AUDIT: State change recorded for the audit trail {CatalogItemId1}", username, catalogItemId, price, quantity, catalogItemId);
         await _basketRepository.UpdateAsync(basket);
+		_logger.LogInformation("AddItemToBasket(username,catalogItemId,price,quantity)={Username},{CatalogItemId},{Price},{Quantity}: COPPA-AUDIT: Database transaction completed", username, catalogItemId, price, quantity);
         return basket;
     }
 
@@ -41,6 +44,7 @@ public class BasketService : IBasketService
     {
         var basket = await _basketRepository.GetByIdAsync(basketId);
         Guard.Against.Null(basket, nameof(basket));
+		_logger.LogWarning("DeleteBasketAsync(basketId)={BasketId}): COPPA-AUDIT: State change recorded for the audit trail {BasketId1}", basketId, basketId);
         await _basketRepository.DeleteAsync(basket);
     }
 
@@ -60,6 +64,7 @@ public class BasketService : IBasketService
         }
         basket.RemoveEmptyItems();
         await _basketRepository.UpdateAsync(basket);
+		_logger.LogWarning("SetQuantities(basketId,quantities)={BasketId},{Quantities}: COPPA-AUDIT: State change recorded for the audit trail {BasketId1}", basketId, quantities, basketId);
         return basket;
     }
 
@@ -79,7 +84,9 @@ public class BasketService : IBasketService
         {
             userBasket.AddItem(item.CatalogItemId, item.UnitPrice, item.Quantity);
         }
+		_logger.LogWarning("TransferBasketAsync(anonymousId,userName)={AnonymousId},{UserName}: COPPA-AUDIT: State change recorded for the audit trail {AnonymousId1}", anonymousId, userName, anonymousId);
         await _basketRepository.UpdateAsync(userBasket);
+		_logger.LogInformation("TransferBasketAsync(anonymousId,userName)={AnonymousId},{UserName}: COPPA-AUDIT: Database transaction completed", anonymousId, userName);
         await _basketRepository.DeleteAsync(anonymousBasket);
     }
 }
