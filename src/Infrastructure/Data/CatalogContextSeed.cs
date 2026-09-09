@@ -59,6 +59,9 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogWarning("GetPreconfiguredCatalogBrands()=null): DORA-AUDIT: Record access recorded for the audit trail");
+		logger.LogWarning("GetPreconfiguredCatalogBrands()=null): DORA-AUDIT: Security incident detected");
+		logger.LogInformation("GetPreconfiguredCatalogBrands()=null): DORA-AUDIT: Change management operation performed");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +74,9 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogWarning("GetPreconfiguredCatalogTypes()=null): DORA-AUDIT: Record access recorded for the audit trail");
+		logger.LogWarning("GetPreconfiguredCatalogTypes()=null): DORA-AUDIT: Security incident detected");
+		logger.LogInformation("GetPreconfiguredCatalogTypes()=null): DORA-AUDIT: Change management operation performed");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +88,8 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogWarning("GetPreconfiguredItems()=null): DORA-AUDIT: State change recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems()=null): DORA-AUDIT: Change management operation performed");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),
