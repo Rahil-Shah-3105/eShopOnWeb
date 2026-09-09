@@ -112,6 +112,7 @@
         await CatalogItemService.Delete(id);
 
         await OnSaveClick.InvokeAsync(null);
+		Logger.LogWarning("DeleteClick(id)={Id}): USSTATE-AUDIT: State change recorded for the audit trail {Id1}", id, id);
         await Close();
     }
 

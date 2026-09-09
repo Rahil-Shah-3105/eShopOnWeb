@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.eShopWeb.ApplicationCore.Constants;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Identity;
 
 public class AppIdentityDbContextSeed
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public static async Task SeedAsync(AppIdentityDbContext identityDbContext, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
     {
 
@@ -24,6 +26,7 @@ public class AppIdentityDbContextSeed
         var adminUser = new ApplicationUser { UserName = adminUserName, Email = adminUserName };
         await userManager.CreateAsync(adminUser, AuthorizationConstants.DEFAULT_PASSWORD);
         adminUser = await userManager.FindByNameAsync(adminUserName);
+		_logger.LogWarning("SeedAsync(identityDbContext,userManager,roleManager)={IdentityDbContext},{UserManager},{RoleManager}: USSTATE-AUDIT: Outbound notification recorded for the audit trail {IdentityDbContext1}", identityDbContext, userManager, roleManager, identityDbContext);
         if (adminUser != null)
         {
             await userManager.AddToRoleAsync(adminUser, BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS);
