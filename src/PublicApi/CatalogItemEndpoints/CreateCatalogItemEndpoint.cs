@@ -9,6 +9,7 @@ using Microsoft.eShopWeb.ApplicationCore.Exceptions;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -17,6 +18,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public CreateCatalogItemEndpoint(IUriComposer uriComposer)
@@ -34,6 +36,7 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
             })
             .Produces<CreateCatalogItemResponse>()
             .WithTags("CatalogItemEndpoints");
+			_logger.LogWarning("AddRoute(app)={App}): BIPA-AUDIT: State change recorded for the audit trail", app);
     }
 
     public async Task<IResult> HandleAsync(CreateCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
@@ -70,7 +73,9 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
             PictureUri = _uriComposer.ComposePicUri(newItem.PictureUri),
             Price = newItem.Price
         };
+		_logger.LogWarning("HandleAsync(request,itemRepository)={Request},{ItemRepository}: BIPA-AUDIT: Outbound notification recorded for the audit trail", request, itemRepository);
         response.CatalogItem = dto;
+		_logger.LogInformation("HandleAsync(request,itemRepository)={Request},{ItemRepository}: BIPA-AUDIT: Database transaction completed with status {Response}", request, itemRepository, response);
         return Results.Created($"api/catalog-items/{dto.Id}", response);
     }
 }
