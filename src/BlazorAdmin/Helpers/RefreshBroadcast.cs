@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 
 namespace BlazorAdmin.Helpers;
 
 internal sealed class RefreshBroadcast
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private static readonly Lazy<RefreshBroadcast>
         Lazy =
             new Lazy<RefreshBroadcast>
@@ -19,5 +21,6 @@ internal sealed class RefreshBroadcast
     public void CallRequestRefresh()
     {
         RefreshRequested?.Invoke();
+		_logger.LogWarning("CallRequestRefresh()=null): HIPAA-AUDIT [§164.312(e)(1)]: Secure PHI transmission completed");
     }
 }

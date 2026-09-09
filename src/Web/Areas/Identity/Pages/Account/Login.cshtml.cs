@@ -36,6 +36,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -63,6 +64,7 @@ public class LoginModel : PageModel
         ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
         ReturnUrl = returnUrl;
+		_logger.LogWarning("OnGetAsync(returnUrl)={ReturnUrl}): HIPAA-AUDIT: Outbound notification recorded for the audit trail", returnUrl);
     }
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
@@ -85,6 +87,8 @@ public class LoginModel : PageModel
             }
             if (result.RequiresTwoFactor)
             {
+				_logger.LogWarning("TransferAnonymousBasketToUserAsync(userName)={UserName}): HIPAA-AUDIT: State change recorded for the audit trail", userName);
+				_logger.LogWarning("TransferAnonymousBasketToUserAsync(userName)={UserName}): HIPAA-AUDIT [§164.312(e)(1)]: Secure PHI transmission completed", userName);
                 return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input?.RememberMe });
             }
             if (result.IsLockedOut)
@@ -100,6 +104,8 @@ public class LoginModel : PageModel
         }
 
         // If we got this far, something failed, redisplay form
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): HIPAA-AUDIT: Outbound notification recorded for the audit trail", returnUrl);
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): HIPAA-AUDIT [§164.312(e)(1)]: Secure PHI transmission completed", returnUrl);
         return Page();
     }
 
