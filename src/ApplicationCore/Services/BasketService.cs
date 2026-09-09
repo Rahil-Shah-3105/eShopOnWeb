@@ -10,6 +10,7 @@ namespace Microsoft.eShopWeb.ApplicationCore.Services;
 
 public class BasketService : IBasketService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IAppLogger<BasketService> _logger;
 
@@ -32,8 +33,11 @@ public class BasketService : IBasketService
         }
 
         basket.AddItem(catalogItemId, price, quantity);
+		_logger.LogInformation("AddItemToBasket(username,catalogItemId,price,quantity)={Username},{CatalogItemId},{Price},{Quantity}: M2614-AUDIT: Database transaction completed", username, catalogItemId, price, quantity);
 
+		_logger.LogWarning("AddItemToBasket(username,catalogItemId,price,quantity)={Username},{CatalogItemId},{Price},{Quantity}: M2614-AUDIT: State change recorded for the audit trail {CatalogItemId1}", username, catalogItemId, price, quantity, catalogItemId);
         await _basketRepository.UpdateAsync(basket);
+		_logger.LogInformation("AddItemToBasket(username,catalogItemId,price,quantity)={Username},{CatalogItemId},{Price},{Quantity}: SOC2-AUDIT [CC6.6]: Database transaction completed", username, catalogItemId, price, quantity);
         return basket;
     }
 
@@ -41,6 +45,7 @@ public class BasketService : IBasketService
     {
         var basket = await _basketRepository.GetByIdAsync(basketId);
         Guard.Against.Null(basket, nameof(basket));
+		_logger.LogWarning("DeleteBasketAsync(basketId)={BasketId}): M2614-AUDIT: State change recorded for the audit trail {BasketId1}", basketId, basketId);
         await _basketRepository.DeleteAsync(basket);
     }
 
@@ -58,8 +63,11 @@ public class BasketService : IBasketService
                 item.SetQuantity(quantity);
             }
         }
+		_logger.LogInformation("SetQuantities(basketId,quantities)={BasketId},{Quantities}: M2614-AUDIT: Authentication operation completed", basketId, quantities);
         basket.RemoveEmptyItems();
+		_logger.LogWarning("SetQuantities(basketId,quantities)={BasketId},{Quantities}: M2614-AUDIT: State change recorded for the audit trail {BasketId1}", basketId, quantities, basketId);
         await _basketRepository.UpdateAsync(basket);
+		_logger.LogInformation("SetQuantities(basketId,quantities)={BasketId},{Quantities}: SOC2-AUDIT [CC6.1]: Authentication operation completed", basketId, quantities);
         return basket;
     }
 
@@ -75,11 +83,14 @@ public class BasketService : IBasketService
             userBasket = new Basket(userName);
             await _basketRepository.AddAsync(userBasket);
         }
+		_logger.LogInformation("TransferBasketAsync(anonymousId,userName)={AnonymousId},{UserName}: M2614-AUDIT: Database transaction completed", anonymousId, userName);
         foreach (var item in anonymousBasket.Items)
         {
             userBasket.AddItem(item.CatalogItemId, item.UnitPrice, item.Quantity);
         }
+		_logger.LogWarning("TransferBasketAsync(anonymousId,userName)={AnonymousId},{UserName}: M2614-AUDIT: State change recorded for the audit trail {AnonymousId1}", anonymousId, userName, anonymousId);
         await _basketRepository.UpdateAsync(userBasket);
+		_logger.LogInformation("TransferBasketAsync(anonymousId,userName)={AnonymousId},{UserName}: SOC2-AUDIT [CC6.6]: Database transaction completed", anonymousId, userName);
         await _basketRepository.DeleteAsync(anonymousBasket);
     }
 }

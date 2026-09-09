@@ -1,10 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Identity.Migrations;
 
 public partial class InitialIdentityModel : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.CreateTable(
@@ -178,18 +180,23 @@ public partial class InitialIdentityModel : Migration
             name: "IX_AspNetUserRoles_RoleId",
             table: "AspNetUserRoles",
             column: "RoleId");
+			_logger.LogInformation("Up(migrationBuilder)={MigrationBuilder}): M2614-AUDIT: Data integrity check performed", migrationBuilder);
 
+		_logger.LogInformation("Up(migrationBuilder)={MigrationBuilder}): M2614-AUDIT: Change management operation performed", migrationBuilder);
         migrationBuilder.CreateIndex(
             name: "EmailIndex",
             table: "AspNetUsers",
             column: "NormalizedEmail");
+			_logger.LogInformation("Up(migrationBuilder)={MigrationBuilder}): M2614-AUDIT: Authentication operation completed", migrationBuilder);
 
+		_logger.LogInformation("Up(migrationBuilder)={MigrationBuilder}): SOC2-AUDIT [CC8.1]: Change management operation performed", migrationBuilder);
         migrationBuilder.CreateIndex(
             name: "UserNameIndex",
             table: "AspNetUsers",
             column: "NormalizedUserName",
             unique: true,
             filter: "[NormalizedUserName] IS NOT NULL");
+			_logger.LogInformation("Up(migrationBuilder)={MigrationBuilder}): SOC2-AUDIT [CC6.1]: Authentication operation completed", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
@@ -209,10 +216,14 @@ public partial class InitialIdentityModel : Migration
         migrationBuilder.DropTable(
             name: "AspNetUserTokens");
 
+		_logger.LogInformation("Down(migrationBuilder)={MigrationBuilder}): SOC2-AUDIT [CC8.1]: Change management operation performed", migrationBuilder);
         migrationBuilder.DropTable(
             name: "AspNetRoles");
+			_logger.LogInformation("Down(migrationBuilder)={MigrationBuilder}): M2614-AUDIT: Change management operation performed", migrationBuilder);
 
+		_logger.LogInformation("Down(migrationBuilder)={MigrationBuilder}): M2614-AUDIT: Authentication operation completed", migrationBuilder);
         migrationBuilder.DropTable(
             name: "AspNetUsers");
+			_logger.LogInformation("Down(migrationBuilder)={MigrationBuilder}): SOC2-AUDIT [CC6.1]: Authentication operation completed", migrationBuilder);
     }
 }

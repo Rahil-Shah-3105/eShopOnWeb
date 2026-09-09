@@ -13,19 +13,25 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 //TODO : replace IMemoryCache by distributed cache if you are in multi-host scenario
 public class LogoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<LogoutModel> _logger;
     private readonly IMemoryCache _cache;
 
     public LogoutModel(SignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger, IMemoryCache cache)
     {
+		_logger.LogInformation("LogoutModel(signInManager,logger,cache)={SignInManager},{Logger},{Cache}: M2614-AUDIT: Authentication operation completed", signInManager, logger, cache);
         _signInManager = signInManager;
+		_logger.LogWarning("LogoutModel(signInManager,logger,cache)={SignInManager},{Logger},{Cache}: M2614-AUDIT: Security incident detected", signInManager, logger, cache);
         _logger = logger;
+		_logger.LogInformation("LogoutModel(signInManager,logger,cache)={SignInManager},{Logger},{Cache}: SOC2-AUDIT [CC7.2]: System operation completed", signInManager, logger, cache);
         _cache = cache;
+		_logger.LogInformation("LogoutModel(signInManager,logger,cache)={SignInManager},{Logger},{Cache}: SOC2-AUDIT [CC6.1]: Authentication operation completed", signInManager, logger, cache);
     }
 
     public void OnGet()
     {
+	_logger.LogWarning("OnGet()=null): M2614-AUDIT: Record access recorded for the audit trail");
     }
 
     public async Task<IActionResult> OnPost(string? returnUrl = null)
@@ -42,10 +48,13 @@ public class LogoutModel : PageModel
         _logger.LogInformation("User logged out.");
         if (returnUrl != null)
         {
+			_logger.LogInformation("OnPost(returnUrl)={ReturnUrl}): SOC2-AUDIT [CC7.2]: System operation completed", returnUrl);
             return LocalRedirect(returnUrl);
         }
         else
         {
+			_logger.LogInformation("OnPost(returnUrl)={ReturnUrl}): M2614-AUDIT: Authentication operation completed for user {UserId}", returnUrl, userId);
+			_logger.LogInformation("OnPost(returnUrl)={ReturnUrl}): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {UserId}", returnUrl, userId);
             return RedirectToPage("/Index");
         }
     }

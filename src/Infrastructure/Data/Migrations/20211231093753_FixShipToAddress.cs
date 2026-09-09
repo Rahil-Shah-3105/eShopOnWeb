@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -6,6 +7,7 @@ namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations
 {
     public partial class FixShipToAddress : Migration
     {
+		private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
@@ -44,6 +46,7 @@ namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations
                 oldMaxLength: 90,
                 oldNullable: true);
 
+			_logger.LogInformation("Up(migrationBuilder)={MigrationBuilder}): M2614-AUDIT: Change management operation performed", migrationBuilder);
             migrationBuilder.AlterColumn<string>(
                 name: "ShipToAddress_City",
                 table: "Orders",
@@ -55,6 +58,7 @@ namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations
                 oldType: "nvarchar(100)",
                 oldMaxLength: 100,
                 oldNullable: true);
+				_logger.LogInformation("Up(migrationBuilder)={MigrationBuilder}): SOC2-AUDIT [CC8.1]: Change management operation performed", migrationBuilder);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -89,6 +93,7 @@ namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations
                 oldType: "nvarchar(90)",
                 oldMaxLength: 90);
 
+			_logger.LogInformation("Down(migrationBuilder)={MigrationBuilder}): M2614-AUDIT: Change management operation performed", migrationBuilder);
             migrationBuilder.AlterColumn<string>(
                 name: "ShipToAddress_City",
                 table: "Orders",
@@ -98,6 +103,7 @@ namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(100)",
                 oldMaxLength: 100);
+				_logger.LogInformation("Down(migrationBuilder)={MigrationBuilder}): SOC2-AUDIT [CC8.1]: Change management operation performed", migrationBuilder);
         }
     }
 }

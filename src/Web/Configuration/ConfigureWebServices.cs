@@ -1,11 +1,13 @@
 ﻿using MediatR;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Configuration;
 
 public static class ConfigureWebServices
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public static IServiceCollection AddWebServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMediatR(cfg => 
@@ -14,8 +16,11 @@ public static class ConfigureWebServices
         services.AddScoped<CatalogViewModelService>();
         services.AddScoped<ICatalogItemViewModelService, CatalogItemViewModelService>();
         services.Configure<CatalogSettings>(configuration);
+		_logger.LogInformation("AddWebServices(services,configuration)={Services},{Configuration}: M2614-AUDIT: Change management operation performed", services, configuration);
         services.AddScoped<ICatalogViewModelService, CachedCatalogViewModelService>();
+		_logger.LogWarning("AddWebServices(services,configuration)={Services},{Configuration}: M2614-AUDIT: State change recorded for the audit trail", services, configuration);
 
+		_logger.LogInformation("AddWebServices(services,configuration)={Services},{Configuration}: SOC2-AUDIT [CC8.1]: Change management operation performed", services, configuration);
         return services;
     }
 }

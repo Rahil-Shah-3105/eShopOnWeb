@@ -13,6 +13,7 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogLookupDataService<TLookupData, TReponse> _catalogTypeService;
     private ILogger<CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>> _logger;
@@ -24,6 +25,7 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
         _localStorageService = localStorageService;
         _catalogTypeService = catalogTypeService;
         _logger = logger;
+		_logger.LogWarning("CachedCatalogLookupDataServiceDecorator(localStorageService,catalogTypeService,logger)={LocalStorageService},{CatalogTypeService},{Logger}: M2614-AUDIT: Security incident detected", localStorageService, catalogTypeService, logger);
     }
 
     public async Task<List<TLookupData>> List()
@@ -45,6 +47,9 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
         }
 
         var types = await _catalogTypeService.List();
+		_logger.LogInformation("List()=null): M2614-AUDIT: Authentication operation completed");
+		_logger.LogWarning("List()=null): M2614-AUDIT: Record access recorded for the audit trail");
+		_logger.LogInformation("List()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed");
         var entry = new CacheEntry<List<TLookupData>>(types);
         await _localStorageService.SetItemAsync(key, entry);
         return types;

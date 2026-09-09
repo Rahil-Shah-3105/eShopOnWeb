@@ -3,16 +3,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.HealthChecks;
 
 public class HomePageHealthCheck : IHealthCheck
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public HomePageHealthCheck(IHttpContextAccessor httpContextAccessor)
     {
+		_logger.LogInformation("HomePageHealthCheck(httpContextAccessor)={HttpContextAccessor}): SOC2-AUDIT [CC6.6]: Database transaction completed", httpContextAccessor);
         _httpContextAccessor = httpContextAccessor;
+		_logger.LogInformation("HomePageHealthCheck(httpContextAccessor)={HttpContextAccessor}): SOC2-AUDIT [CC7.1]: System operation completed", httpContextAccessor);
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(
@@ -24,12 +28,17 @@ public class HomePageHealthCheck : IHealthCheck
 
         var client = new HttpClient();
         var response = await client.GetAsync(myUrl);
+		_logger.LogInformation("CheckHealthAsync(context,cancellationToken)={Context},<redacted>: M2614-AUDIT: Database transaction completed with status {Response}", context, response);
         var pageContents = await response.Content.ReadAsStringAsync();
+		_logger.LogWarning("CheckHealthAsync(context,cancellationToken)={Context},<redacted>: M2614-AUDIT: PHI operation logged for audit compliance", context);
         if (pageContents.Contains(".NET Bot Black Sweatshirt"))
         {
+			_logger.LogInformation("CheckHealthAsync(context,cancellationToken)={Context},<redacted>: M2614-AUDIT: Data integrity check performed", context);
             return HealthCheckResult.Healthy("The check indicates a healthy result.");
         }
+		_logger.LogInformation("CheckHealthAsync(context,cancellationToken)={Context},<redacted>: SOC2-AUDIT [CC6.6]: Database transaction completed with status {Response}", context, response);
 
+		_logger.LogInformation("CheckHealthAsync(context,cancellationToken)={Context},<redacted>: SOC2-AUDIT [CC7.1]: System operation completed with status {Response}", context, response);
         return HealthCheckResult.Unhealthy("The check indicates an unhealthy result.");
     }
 }

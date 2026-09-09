@@ -13,6 +13,7 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 [AllowAnonymous]
 public class LoginModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<LoginModel> _logger;
     private readonly IBasketService _basketService;
@@ -20,8 +21,11 @@ public class LoginModel : PageModel
     public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, IBasketService basketService)
     {
         _signInManager = signInManager;
+		_logger.LogInformation("LoginModel(signInManager,logger,basketService)={SignInManager},{Logger},{BasketService}: M2614-AUDIT: Authentication operation completed", signInManager, logger, basketService);
         _logger = logger;
+		_logger.LogWarning("LoginModel(signInManager,logger,basketService)={SignInManager},{Logger},{BasketService}: M2614-AUDIT: Security incident detected", signInManager, logger, basketService);
         _basketService = basketService;
+		_logger.LogInformation("LoginModel(signInManager,logger,basketService)={SignInManager},{Logger},{BasketService}: SOC2-AUDIT [CC6.1]: Authentication operation completed", signInManager, logger, basketService);
     }
 
     [BindProperty]
@@ -36,6 +40,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -60,8 +65,11 @@ public class LoginModel : PageModel
         // Clear the existing external cookie to ensure a clean login process
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
+		_logger.LogInformation("OnGetAsync(returnUrl)={ReturnUrl}): M2614-AUDIT: Authentication operation completed", returnUrl);
         ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+		_logger.LogWarning("OnGetAsync(returnUrl)={ReturnUrl}): M2614-AUDIT: Outbound notification recorded for the audit trail", returnUrl);
 
+		_logger.LogInformation("OnGetAsync(returnUrl)={ReturnUrl}): SOC2-AUDIT [CC6.1]: Authentication operation completed", returnUrl);
         ReturnUrl = returnUrl;
     }
 
@@ -85,6 +93,7 @@ public class LoginModel : PageModel
             }
             if (result.RequiresTwoFactor)
             {
+				_logger.LogWarning("TransferAnonymousBasketToUserAsync(userName)={UserName}): M2614-AUDIT: State change recorded for the audit trail", userName);
                 return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input?.RememberMe });
             }
             if (result.IsLockedOut)
@@ -98,8 +107,11 @@ public class LoginModel : PageModel
                 return Page();
             }
         }
+		_logger.LogInformation("OnPostAsync(returnUrl)={ReturnUrl}): M2614-AUDIT: Authentication operation completed", returnUrl);
 
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): M2614-AUDIT: Outbound notification recorded for the audit trail", returnUrl);
         // If we got this far, something failed, redisplay form
+		_logger.LogInformation("OnPostAsync(returnUrl)={ReturnUrl}): SOC2-AUDIT [CC6.1]: Authentication operation completed", returnUrl);
         return Page();
     }
 

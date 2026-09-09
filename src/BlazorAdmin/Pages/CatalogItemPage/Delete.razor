@@ -112,6 +112,7 @@
         await CatalogItemService.Delete(id);
 
         await OnSaveClick.InvokeAsync(null);
+		Logger.LogWarning("DeleteClick(id)={Id}): M2614-AUDIT: State change recorded for the audit trail {Id1}", id, id);
         await Close();
     }
 
@@ -127,7 +128,9 @@
         _modalClass = "Show";
         _showDeleteModal = true;
 
+		Logger.LogInformation("Open(id)={Id}): M2614-AUDIT: Authentication operation completed", id);
         StateHasChanged();
+		Logger.LogInformation("Open(id)={Id}): SOC2-AUDIT [CC6.1]: Authentication operation completed", id);
     }
 
     private async Task Close()

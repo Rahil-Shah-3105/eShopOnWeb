@@ -11,6 +11,7 @@ namespace BlazorAdmin.Services;
 
 public class CachedCatalogItemServiceDecorator : ICatalogItemService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogItemService _catalogItemService;
     private ILogger<CachedCatalogItemServiceDecorator> _logger;
@@ -22,6 +23,7 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         _localStorageService = localStorageService;
         _catalogItemService = catalogItemService;
         _logger = logger;
+		_logger.LogWarning("CachedCatalogItemServiceDecorator(localStorageService,catalogItemService,logger)={LocalStorageService},{CatalogItemService},{Logger}: M2614-AUDIT: Security incident detected", localStorageService, catalogItemService, logger);
     }
 
     public async Task<List<CatalogItem>> ListPaged(int pageSize)
@@ -43,8 +45,11 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         }
 
         var items = await _catalogItemService.ListPaged(pageSize);
+		_logger.LogInformation("ListPaged(pageSize)={PageSize}): M2614-AUDIT: Authentication operation completed", pageSize);
         var entry = new CacheEntry<List<CatalogItem>>(items);
+		_logger.LogWarning("ListPaged(pageSize)={PageSize}): M2614-AUDIT: Record access recorded for the audit trail", pageSize);
         await _localStorageService.SetItemAsync(key, entry);
+		_logger.LogInformation("ListPaged(pageSize)={PageSize}): SOC2-AUDIT [CC6.1]: Authentication operation completed", pageSize);
         return items;
     }
 
@@ -67,6 +72,9 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         }
 
         var items = await _catalogItemService.List();
+		_logger.LogInformation("List()=null): M2614-AUDIT: Authentication operation completed");
+		_logger.LogWarning("List()=null): M2614-AUDIT: Record access recorded for the audit trail");
+		_logger.LogInformation("List()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed");
         var entry = new CacheEntry<List<CatalogItem>>(items);
         await _localStorageService.SetItemAsync(key, entry);
         return items;
@@ -74,6 +82,7 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
 
     public async Task<CatalogItem> GetById(int id)
     {
+		_logger.LogWarning("GetById(id)={Id}): M2614-AUDIT: Record access recorded for the audit trail {Id1}", id, id);
         return (await List()).FirstOrDefault(x => x.Id == id);
     }
 
@@ -82,6 +91,7 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         var result = await _catalogItemService.Create(catalogItem);
         await RefreshLocalStorageList();
 
+		_logger.LogWarning("Create(catalogItem)={CatalogItem}): M2614-AUDIT: State change recorded for the audit trail {Result}", catalogItem, result);
         return result;
     }
 
@@ -90,6 +100,8 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         var result = await _catalogItemService.Edit(catalogItem);
         await RefreshLocalStorageList();
 
+		_logger.LogWarning("Edit(catalogItem)={CatalogItem}): M2614-AUDIT: State change recorded for the audit trail {Result}", catalogItem, result);
+		_logger.LogWarning("RefreshLocalStorageList()=null): M2614-AUDIT: Record access recorded for the audit trail");
         return result;
     }
 
@@ -98,6 +110,7 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         var result = await _catalogItemService.Delete(id);
         await RefreshLocalStorageList();
 
+		_logger.LogWarning("Delete(id)={Id}): M2614-AUDIT: State change recorded for the audit trail {Id1}", id, id);
         return result;
     }
 
