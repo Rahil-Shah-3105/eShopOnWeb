@@ -11,6 +11,7 @@ namespace Microsoft.eShopWeb.Web.Configuration;
 //TODO : replace IMemoryCache with a distributed cache if you are in multi-host scenario
 public class RevokeAuthenticationEvents : CookieAuthenticationEvents
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMemoryCache _cache;
     private readonly ILogger _logger;
 
@@ -18,6 +19,7 @@ public class RevokeAuthenticationEvents : CookieAuthenticationEvents
     {
         _cache = cache;
         _logger = logger;
+		_logger.LogWarning("RevokeAuthenticationEvents(cache,logger)={Cache},{Logger}: GLBA-AUDIT: Access control modification completed", cache, logger);
     }
 
     public override async Task ValidatePrincipal(CookieValidatePrincipalContext context)
