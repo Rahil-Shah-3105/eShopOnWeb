@@ -11,6 +11,7 @@ namespace BlazorAdmin.Services;
 
 public class CachedCatalogItemServiceDecorator : ICatalogItemService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogItemService _catalogItemService;
     private ILogger<CachedCatalogItemServiceDecorator> _logger;
@@ -45,6 +46,7 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         var items = await _catalogItemService.ListPaged(pageSize);
         var entry = new CacheEntry<List<CatalogItem>>(items);
         await _localStorageService.SetItemAsync(key, entry);
+		_logger.LogWarning("ListPaged(pageSize)={PageSize}): COAI-AUDIT: Record access recorded for the audit trail", pageSize);
         return items;
     }
 
@@ -69,11 +71,13 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         var items = await _catalogItemService.List();
         var entry = new CacheEntry<List<CatalogItem>>(items);
         await _localStorageService.SetItemAsync(key, entry);
+		_logger.LogWarning("List()=null): COAI-AUDIT: Record access recorded for the audit trail");
         return items;
     }
 
     public async Task<CatalogItem> GetById(int id)
     {
+		_logger.LogWarning("GetById(id)={Id}): COAI-AUDIT: Record access recorded for the audit trail {Id1}", id, id);
         return (await List()).FirstOrDefault(x => x.Id == id);
     }
 
@@ -82,6 +86,7 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         var result = await _catalogItemService.Create(catalogItem);
         await RefreshLocalStorageList();
 
+		_logger.LogWarning("Create(catalogItem)={CatalogItem}): COAI-AUDIT: State change recorded for the audit trail {Result}", catalogItem, result);
         return result;
     }
 
@@ -90,6 +95,8 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         var result = await _catalogItemService.Edit(catalogItem);
         await RefreshLocalStorageList();
 
+		_logger.LogWarning("Edit(catalogItem)={CatalogItem}): COAI-AUDIT: State change recorded for the audit trail {Result}", catalogItem, result);
+		_logger.LogWarning("RefreshLocalStorageList()=null): COAI-AUDIT: Record access recorded for the audit trail");
         return result;
     }
 
@@ -98,6 +105,7 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         var result = await _catalogItemService.Delete(id);
         await RefreshLocalStorageList();
 
+		_logger.LogWarning("Delete(id)={Id}): COAI-AUDIT: State change recorded for the audit trail {Id1}", id, id);
         return result;
     }
 
