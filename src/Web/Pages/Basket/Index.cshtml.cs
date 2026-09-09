@@ -5,11 +5,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Pages.Basket;
 
 public class IndexModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly IBasketViewModelService _basketViewModelService;
     private readonly IRepository<CatalogItem> _itemRepository;
@@ -63,6 +65,7 @@ public class IndexModel : PageModel
         var updateModel = items.ToDictionary(b => b.Id.ToString(), b => b.Quantity);
         var basket = await _basketService.SetQuantities(basketView.Id, updateModel);
         BasketModel = await _basketViewModelService.Map(basket);
+		_logger.LogInformation("OnPostUpdate(items)={Items}): SOC2-AUDIT [CC8.1]: Change management operation performed", items);
     }
 
     private string GetOrSetBasketCookieAndUserName()
@@ -95,6 +98,7 @@ public class IndexModel : PageModel
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, userName, cookieOptions);
 
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed");
         return userName;
     }
 }

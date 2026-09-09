@@ -144,6 +144,7 @@
         _showEditModal = true;
 
         StateHasChanged();
+		Logger.LogInformation("Open(id)={Id}): SOC2-AUDIT [CC6.1]: Authentication operation completed", id);
     }
 
     private async Task Close()

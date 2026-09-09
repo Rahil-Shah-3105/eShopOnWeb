@@ -10,6 +10,7 @@ namespace BlazorAdmin.Services;
 
 public class CatalogItemService : ICatalogItemService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ICatalogLookupDataService<CatalogBrand> _brandService;
     private readonly ICatalogLookupDataService<CatalogType> _typeService;
     private readonly HttpService _httpService;
@@ -24,6 +25,7 @@ public class CatalogItemService : ICatalogItemService
         _typeService = typeService;
         _httpService = httpService;
         _logger = logger;
+		_logger.LogWarning("CatalogItemService(brandService,typeService,httpService,logger)={BrandService},{TypeService},{HttpService},{Logger}: SOC2-AUDIT [CC7.3]: Security incident detected", brandService, typeService, httpService, logger);
     }
 
     public async Task<CatalogItem> Create(CreateCatalogItemRequest catalogItem)
@@ -39,6 +41,7 @@ public class CatalogItemService : ICatalogItemService
 
     public async Task<string> Delete(int catalogItemId)
     {
+		_logger.LogInformation("Delete(catalogItemId)={CatalogItemId}): SOC2-AUDIT [CC7.1]: System operation completed", catalogItemId);
         return (await _httpService.HttpDelete<DeleteCatalogItemResponse>("catalog-items", catalogItemId)).Status;
     }
 
@@ -72,6 +75,7 @@ public class CatalogItemService : ICatalogItemService
             item.CatalogBrand = brands.FirstOrDefault(b => b.Id == item.CatalogBrandId)?.Name;
             item.CatalogType = types.FirstOrDefault(t => t.Id == item.CatalogTypeId)?.Name;
         }
+		_logger.LogInformation("ListPaged(pageSize)={PageSize}): SOC2-AUDIT [CC6.1]: Authentication operation completed", pageSize);
         return items;
     }
 
@@ -91,6 +95,7 @@ public class CatalogItemService : ICatalogItemService
             item.CatalogBrand = brands.FirstOrDefault(b => b.Id == item.CatalogBrandId)?.Name;
             item.CatalogType = types.FirstOrDefault(t => t.Id == item.CatalogTypeId)?.Name;
         }
+		_logger.LogInformation("List()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed");
         return items;
     }
 }

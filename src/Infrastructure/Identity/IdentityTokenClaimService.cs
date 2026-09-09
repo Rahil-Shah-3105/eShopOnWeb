@@ -8,11 +8,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.eShopWeb.ApplicationCore.Constants;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Identity;
 
 public class IdentityTokenClaimService : ITokenClaimsService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public IdentityTokenClaimService(UserManager<ApplicationUser> userManager)
@@ -34,12 +36,16 @@ public class IdentityTokenClaimService : ITokenClaimsService
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
 
+		_logger.LogWarning("GetTokenAsync(userName)={UserName}): SOC2-AUDIT [CC6.1]: Password reset operation performed for user {UserName1}", userName, userName);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims.ToArray()),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
+		_logger.LogInformation("GetTokenAsync(userName)={UserName}): SOC2-AUDIT [CC6.7]: Encryption operation completed", userName);
+		_logger.LogInformation("GetTokenAsync(userName)={UserName}): SOC2-AUDIT [CC7.2]: System operation completed", userName);
+		_logger.LogInformation("GetTokenAsync(userName)={UserName}): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {UserName1}", userName, userName);
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }

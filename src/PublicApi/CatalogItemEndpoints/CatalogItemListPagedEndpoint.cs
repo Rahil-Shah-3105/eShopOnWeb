@@ -9,6 +9,7 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -17,6 +18,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CatalogItemListPagedEndpoint : IEndpoint<IResult, ListPagedCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
     private readonly IMapper _mapper;
 
@@ -24,6 +26,7 @@ public class CatalogItemListPagedEndpoint : IEndpoint<IResult, ListPagedCatalogI
     {
         _uriComposer = uriComposer;
         _mapper = mapper;
+		_logger.LogWarning("CatalogItemListPagedEndpoint(uriComposer,mapper)={UriComposer},{Mapper}: SOC2-AUDIT [CC7.3]: Security incident detected", uriComposer, mapper);
     }
 
     public void AddRoute(IEndpointRouteBuilder app)

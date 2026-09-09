@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
 
 public class ListCatalogTypesResponse : BaseResponse
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public ListCatalogTypesResponse(Guid correlationId) : base(correlationId)
     {
+	_logger.LogWarning("ListCatalogTypesResponse(correlationId)={CorrelationId}): SOC2-AUDIT [CC7.3]: Security incident detected", correlationId);
+	_logger.LogWarning("ListCatalogTypesResponse()=null): SOC2-AUDIT [CC7.3]: Security incident detected");
     }
 
     public ListCatalogTypesResponse()

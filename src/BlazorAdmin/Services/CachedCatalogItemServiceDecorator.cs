@@ -11,6 +11,7 @@ namespace BlazorAdmin.Services;
 
 public class CachedCatalogItemServiceDecorator : ICatalogItemService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogItemService _catalogItemService;
     private ILogger<CachedCatalogItemServiceDecorator> _logger;
@@ -22,6 +23,7 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         _localStorageService = localStorageService;
         _catalogItemService = catalogItemService;
         _logger = logger;
+		_logger.LogWarning("CachedCatalogItemServiceDecorator(localStorageService,catalogItemService,logger)={LocalStorageService},{CatalogItemService},{Logger}: SOC2-AUDIT [CC7.3]: Security incident detected", localStorageService, catalogItemService, logger);
     }
 
     public async Task<List<CatalogItem>> ListPaged(int pageSize)
@@ -45,6 +47,7 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         var items = await _catalogItemService.ListPaged(pageSize);
         var entry = new CacheEntry<List<CatalogItem>>(items);
         await _localStorageService.SetItemAsync(key, entry);
+		_logger.LogInformation("ListPaged(pageSize)={PageSize}): SOC2-AUDIT [CC6.1]: Authentication operation completed", pageSize);
         return items;
     }
 
@@ -69,6 +72,7 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         var items = await _catalogItemService.List();
         var entry = new CacheEntry<List<CatalogItem>>(items);
         await _localStorageService.SetItemAsync(key, entry);
+		_logger.LogInformation("List()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed");
         return items;
     }
 

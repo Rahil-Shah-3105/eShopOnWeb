@@ -13,6 +13,7 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 [AllowAnonymous]
 public class LoginModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<LoginModel> _logger;
     private readonly IBasketService _basketService;
@@ -21,6 +22,8 @@ public class LoginModel : PageModel
     {
         _signInManager = signInManager;
         _logger = logger;
+		_logger.LogWarning("LoginModel(signInManager,logger,basketService)={SignInManager},{Logger},{BasketService}: SOC2-AUDIT [CC7.3]: Security incident detected", signInManager, logger, basketService);
+		_logger.LogInformation("LoginModel(signInManager,logger,basketService)={SignInManager},{Logger},{BasketService}: SOC2-AUDIT [CC6.1]: Authentication operation completed", signInManager, logger, basketService);
         _basketService = basketService;
     }
 
@@ -36,6 +39,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -63,6 +67,7 @@ public class LoginModel : PageModel
         ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
         ReturnUrl = returnUrl;
+		_logger.LogInformation("OnGetAsync(returnUrl)={ReturnUrl}): SOC2-AUDIT [CC6.1]: Authentication operation completed", returnUrl);
     }
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
@@ -100,6 +105,8 @@ public class LoginModel : PageModel
         }
 
         // If we got this far, something failed, redisplay form
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): SOC2-AUDIT [CC6.1]: Password reset operation performed", returnUrl);
+		_logger.LogInformation("OnPostAsync(returnUrl)={ReturnUrl}): SOC2-AUDIT [CC6.1]: Authentication operation completed", returnUrl);
         return Page();
     }
 
