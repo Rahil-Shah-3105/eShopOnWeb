@@ -4,11 +4,13 @@ using System.Threading.Tasks;
 using BlazorShared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.eShopWeb.ApplicationCore.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.Middleware;
 
 public class ExceptionMiddleware
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly RequestDelegate _next;
 
     public ExceptionMiddleware(RequestDelegate next)
@@ -21,6 +23,7 @@ public class ExceptionMiddleware
         try
         {
             await _next(httpContext);
+			_logger.LogWarning("InvokeAsync(httpContext)={HttpContext}): USSTATE-AUDIT: Outbound notification recorded for the audit trail", httpContext);
         }
         catch (Exception ex)
         {
@@ -40,6 +43,7 @@ public class ExceptionMiddleware
                 StatusCode = context.Response.StatusCode,
                 Message = duplicationException.Message
             }.ToString());
+			_logger.LogWarning("HandleExceptionAsync(context,exception)={Context},{Exception}: USSTATE-AUDIT: Outbound notification recorded for the audit trail", context, exception);
         }
         else
         {
