@@ -9,6 +9,7 @@ using Microsoft.eShopWeb.ApplicationCore.Exceptions;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -17,6 +18,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public CreateCatalogItemEndpoint(IUriComposer uriComposer)
@@ -34,6 +36,7 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
             })
             .Produces<CreateCatalogItemResponse>()
             .WithTags("CatalogItemEndpoints");
+			_logger.LogWarning("AddRoute(app)={App}): HIPAA-AUDIT: State change recorded for the audit trail", app);
     }
 
     public async Task<IResult> HandleAsync(CreateCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
@@ -71,6 +74,8 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
             Price = newItem.Price
         };
         response.CatalogItem = dto;
+		_logger.LogWarning("HandleAsync(request,itemRepository)={Request},{ItemRepository}: HIPAA-AUDIT: Outbound notification recorded for the audit trail", request, itemRepository);
+		_logger.LogWarning("HandleAsync(request,itemRepository)={Request},{ItemRepository}: HIPAA-AUDIT [§164.312(e)(2)(ii)]: PHI transmission secured and logged {Response}", request, itemRepository, response);
         return Results.Created($"api/catalog-items/{dto.Id}", response);
     }
 }

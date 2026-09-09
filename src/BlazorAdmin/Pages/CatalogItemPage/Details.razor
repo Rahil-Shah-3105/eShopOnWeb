@@ -112,6 +112,7 @@
     {
         await OnEditClick.InvokeAsync(_item.Id);
         await Close();
+		Logger.LogWarning("EditClick()=null): HIPAA-AUDIT: State change recorded for the audit trail");
     }
 
     public async Task Open(int id)
