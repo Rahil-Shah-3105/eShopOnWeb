@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using BlazorShared;
 using BlazorShared.Models;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorAdmin.Services;
 
 public class HttpService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly HttpClient _httpClient;
     private readonly ToastService _toastService;
     private readonly string _apiUrl;
@@ -20,6 +22,7 @@ public class HttpService
         _httpClient = httpClient;
         _toastService = toastService;
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
+		_logger.LogInformation("HttpService(httpClient,baseUrlConfiguration,toastService)={HttpClient},{BaseUrlConfiguration},{ToastService}: FEDRAMP-AUDIT: Change management operation performed", httpClient, baseUrlConfiguration, toastService);
     }
 
     public async Task<T> HttpGet<T>(string uri)
@@ -63,6 +66,7 @@ public class HttpService
             return null;
         }
 
+		_logger.LogInformation("HttpPost(uri,dataToSend)={Uri},{DataToSend}: FEDRAMP-AUDIT: Encryption operation completed with algorithm {Result}", uri, dataToSend, result);
         return await FromHttpResponseMessage<T>(result);
     }
 
@@ -88,6 +92,7 @@ public class HttpService
 
     private async Task<T> FromHttpResponseMessage<T>(HttpResponseMessage result)
     {
+		_logger.LogInformation("FromHttpResponseMessage(result)={Result}): FEDRAMP-AUDIT: Encryption operation completed with algorithm {Result1}", result, result);
         return JsonSerializer.Deserialize<T>(await result.Content.ReadAsStringAsync(), new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true

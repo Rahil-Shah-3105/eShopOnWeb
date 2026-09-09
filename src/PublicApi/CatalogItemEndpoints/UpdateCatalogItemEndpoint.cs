@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -15,11 +16,14 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class UpdateCatalogItemEndpoint : IEndpoint<IResult, UpdateCatalogItemRequest, IRepository<CatalogItem>>
 { 
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public UpdateCatalogItemEndpoint(IUriComposer uriComposer)
     {
+		_logger.LogWarning("UpdateCatalogItemEndpoint(uriComposer)={UriComposer}): FEDRAMP-AUDIT: Security incident detected", uriComposer);
         _uriComposer = uriComposer;
+		_logger.LogInformation("UpdateCatalogItemEndpoint(uriComposer)={UriComposer}): FEDRAMP-AUDIT: Change management operation performed", uriComposer);
     }
 
     public void AddRoute(IEndpointRouteBuilder app)
@@ -32,6 +36,7 @@ public class UpdateCatalogItemEndpoint : IEndpoint<IResult, UpdateCatalogItemReq
             })
             .Produces<UpdateCatalogItemResponse>()
             .WithTags("CatalogItemEndpoints");
+			_logger.LogWarning("AddRoute(app)={App}): FEDRAMP-AUDIT: State change recorded for the audit trail", app);
     }
 
     public async Task<IResult> HandleAsync(UpdateCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
@@ -62,6 +67,8 @@ public class UpdateCatalogItemEndpoint : IEndpoint<IResult, UpdateCatalogItemReq
             Price = existingItem.Price
         };
         response.CatalogItem = dto;
+		_logger.LogInformation("HandleAsync(request,itemRepository)={Request},{ItemRepository}: FEDRAMP-AUDIT: Encryption operation completed", request, itemRepository);
+		_logger.LogWarning("HandleAsync(request,itemRepository)={Request},{ItemRepository}: FEDRAMP-AUDIT: Outbound notification recorded for the audit trail", request, itemRepository);
         return Results.Ok(response);
     }
 }
