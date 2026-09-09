@@ -129,6 +129,7 @@
         await CatalogItemService.Edit(_item);
         await OnSaveClick.InvokeAsync(null);
         await Close();
+		Logger.LogWarning("SaveClick()=null): CJIS-AUDIT: State change recorded for the audit trail");
     }
 
     public async Task Open(int id)
@@ -144,6 +145,7 @@
         _showEditModal = true;
 
         StateHasChanged();
+		Logger.LogInformation("Open(id)={Id}): CJIS-AUDIT: Authentication operation completed", id);
     }
 
     private async Task Close()

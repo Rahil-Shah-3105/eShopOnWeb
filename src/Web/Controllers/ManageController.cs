@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -38,6 +39,7 @@ public class ManageController : Controller
         _emailSender = emailSender;
         _logger = logger;
         _urlEncoder = urlEncoder;
+		_logger.LogInformation("ManageController(userManager,signInManager,emailSender,logger,urlEncoder)={UserManager},{SignInManager},{EmailSender},{Logger},{UrlEncoder}: CJIS-AUDIT: Authentication operation completed for user {UserManager1}", userManager, signInManager, emailSender, logger, urlEncoder, userManager);
     }
 
     [TempData]
@@ -130,6 +132,7 @@ public class ManageController : Controller
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
 
         StatusMessage = "Verification email sent. Please check your email.";
+		_logger.LogWarning("SendVerificationEmail(model)={Model}): CJIS-AUDIT: Outbound notification recorded for the audit trail", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
@@ -149,6 +152,7 @@ public class ManageController : Controller
         }
 
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogWarning("ChangePassword()=null): CJIS-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
@@ -179,6 +183,7 @@ public class ManageController : Controller
         _logger.LogInformation("User changed their password successfully.");
         StatusMessage = "Your password has been changed.";
 
+		_logger.LogInformation("ChangePassword(model)={Model}): CJIS-AUDIT: Authentication operation completed for user {User}", model, user);
         return RedirectToAction(nameof(ChangePassword));
     }
 
@@ -199,6 +204,7 @@ public class ManageController : Controller
         }
 
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogWarning("SetPassword()=null): CJIS-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
@@ -227,6 +233,7 @@ public class ManageController : Controller
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "Your password has been set.";
 
+		_logger.LogInformation("SetPassword(model)={Model}): CJIS-AUDIT: Authentication operation completed for user {User}", model, user);
         return RedirectToAction(nameof(SetPassword));
     }
 
@@ -246,6 +253,7 @@ public class ManageController : Controller
         model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
         model.StatusMessage = StatusMessage;
 
+		_logger.LogInformation("ExternalLogins()=null): CJIS-AUDIT: Authentication operation completed for user {User}", user);
         return View(model);
     }
 
@@ -287,6 +295,7 @@ public class ManageController : Controller
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
         StatusMessage = "The external login was added.";
+		_logger.LogInformation("LinkLoginCallback()=null): CJIS-AUDIT: Authentication operation completed for user {User}", user);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -312,6 +321,8 @@ public class ManageController : Controller
 
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "The external login was removed.";
+		_logger.LogWarning("RemoveLogin(model)={Model}): CJIS-AUDIT: State change recorded for the audit trail {Result}", model, result);
+		_logger.LogInformation("RemoveLogin(model)={Model}): CJIS-AUDIT: Authentication operation completed for user {User}", model, user);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -348,6 +359,7 @@ public class ManageController : Controller
             throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
         }
 
+		_logger.LogWarning("Disable2faWarning()=null): CJIS-AUDIT: State change recorded for the audit trail");
         return View(nameof(Disable2fa));
     }
 
@@ -368,6 +380,8 @@ public class ManageController : Controller
         }
 
         _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.Id);
+		_logger.LogWarning("Disable2fa()=null): CJIS-AUDIT: State change recorded for the audit trail {Disable2faResult}", disable2faResult);
+		_logger.LogInformation("Disable2fa()=null): CJIS-AUDIT: Authentication operation completed for user {User}", user);
         return RedirectToAction(nameof(TwoFactorAuthentication));
     }
 
@@ -383,6 +397,7 @@ public class ManageController : Controller
         var model = new EnableAuthenticatorViewModel();
         await LoadSharedKeyAndQrCodeUriAsync(user, model);
 
+		_logger.LogWarning("EnableAuthenticator()=null): CJIS-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
@@ -426,6 +441,7 @@ public class ManageController : Controller
         {
             ModelState.AddModelError("Code", "Verification code is invalid.");
             await LoadSharedKeyAndQrCodeUriAsync(user, model);
+			_logger.LogWarning("LoadSharedKeyAndQrCodeUriAsync(user,model)={User},{Model}: CJIS-AUDIT: Outbound notification recorded for the audit trail", user, model);
             return View(model);
         }
 
@@ -434,12 +450,14 @@ public class ManageController : Controller
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) ?? new List<string>();
         TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
+		_logger.LogInformation("EnableAuthenticator(model)={Model}): CJIS-AUDIT: Authentication operation completed for user {User}", model, user);
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
     [HttpGet]
     public IActionResult ResetAuthenticatorWarning()
     {
+		_logger.LogWarning("ResetAuthenticatorWarning()=null): CJIS-AUDIT: State change recorded for the audit trail");
         return View(nameof(ResetAuthenticator));
     }
 
@@ -457,6 +475,7 @@ public class ManageController : Controller
         await _userManager.ResetAuthenticatorKeyAsync(user);
         _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
 
+		_logger.LogWarning("ResetAuthenticator()=null): CJIS-AUDIT: State change recorded for the audit trail");
         return RedirectToAction(nameof(EnableAuthenticator));
     }
 
@@ -480,6 +499,7 @@ public class ManageController : Controller
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
 
+		_logger.LogInformation("GenerateRecoveryCodes()=null): CJIS-AUDIT: Authentication operation completed for user {User}", user);
         return View(nameof(ShowRecoveryCodes), model);
     }
 
@@ -506,6 +526,7 @@ public class ManageController : Controller
         {
             ModelState.AddModelError(string.Empty, error.Description);
         }
+		_logger.LogWarning("AddErrors(result)={Result}): CJIS-AUDIT: State change recorded for the audit trail {Result1}", result, result);
     }
 
     private string FormatKey(string unformattedKey)
