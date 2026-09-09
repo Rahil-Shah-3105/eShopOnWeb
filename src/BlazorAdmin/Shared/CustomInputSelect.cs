@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorAdmin.Shared;
 
@@ -9,9 +10,11 @@ namespace BlazorAdmin.Shared;
 /// <typeparam name="TValue"></typeparam>
 public class CustomInputSelect<TValue> : InputSelect<TValue>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override bool TryParseValueFromString(string value, out TValue result,
         out string validationErrorMessage)
     {
+		_logger.LogInformation("ENTERING: TryParseValueFromString() method");
         if (typeof(TValue) == typeof(int))
         {
             if (int.TryParse(value, out var resultInt))

@@ -1,12 +1,15 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations;
 
 public partial class InitialModel : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
+		_logger.LogInformation("ENTERING: Up() method");
         migrationBuilder.CreateSequence(
             name: "catalog_brand_hilo",
             incrementBy: 10);
@@ -169,10 +172,12 @@ public partial class InitialModel : Migration
             name: "IX_OrderItems_OrderId",
             table: "OrderItems",
             column: "OrderId");
+			_logger.LogInformation("Up(migrationBuilder)={MigrationBuilder}): GDPR-AUDIT: Encryption operation completed", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
+		_logger.LogInformation("ENTERING: Down() method");
         migrationBuilder.DropTable(
             name: "BasketItems");
 

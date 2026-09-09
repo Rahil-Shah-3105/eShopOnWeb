@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -6,8 +7,10 @@ namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations
 {
     public partial class FixShipToAddress : Migration
     {
+		private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+			_logger.LogInformation("ENTERING: Up() method");
             migrationBuilder.AlterColumn<string>(
                 name: "ShipToAddress_ZipCode",
                 table: "Orders",
@@ -59,6 +62,7 @@ namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+			_logger.LogInformation("ENTERING: Down() method");
             migrationBuilder.AlterColumn<string>(
                 name: "ShipToAddress_ZipCode",
                 table: "Orders",

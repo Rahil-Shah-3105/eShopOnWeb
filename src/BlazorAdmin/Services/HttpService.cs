@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using BlazorShared;
 using BlazorShared.Models;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorAdmin.Services;
 
 public class HttpService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly HttpClient _httpClient;
     private readonly ToastService _toastService;
     private readonly string _apiUrl;
@@ -17,6 +19,7 @@ public class HttpService
 
     public HttpService(HttpClient httpClient, IOptions<BaseUrlConfiguration> baseUrlConfiguration, ToastService toastService)
     {
+		_logger.LogInformation("ENTERING: HttpService() method");
         _httpClient = httpClient;
         _toastService = toastService;
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
@@ -25,6 +28,7 @@ public class HttpService
     public async Task<T> HttpGet<T>(string uri)
         where T : class
     {
+		_logger.LogInformation("ENTERING: HttpGet() method");
         var result = await _httpClient.GetAsync($"{_apiUrl}{uri}");
         if (!result.IsSuccessStatusCode)
         {
@@ -37,6 +41,7 @@ public class HttpService
     public async Task<T> HttpDelete<T>(string uri, int id)
         where T : class
     {
+		_logger.LogInformation("ENTERING: HttpDelete() method");
         var result = await _httpClient.DeleteAsync($"{_apiUrl}{uri}/{id}");
         if (!result.IsSuccessStatusCode)
         {
@@ -49,6 +54,7 @@ public class HttpService
     public async Task<T> HttpPost<T>(string uri, object dataToSend)
         where T : class
     {
+		_logger.LogInformation("ENTERING: HttpPost() method");
         var content = ToJson(dataToSend);
 
         var result = await _httpClient.PostAsync($"{_apiUrl}{uri}", content);
@@ -63,12 +69,14 @@ public class HttpService
             return null;
         }
 
+		_logger.LogInformation("HttpPost(uri,dataToSend)={Uri},{DataToSend}: GDPR-AUDIT: Encryption operation completed with algorithm {Result}", uri, dataToSend, result);
         return await FromHttpResponseMessage<T>(result);
     }
 
     public async Task<T> HttpPut<T>(string uri, object dataToSend)
         where T : class
     {
+		_logger.LogInformation("ENTERING: HttpPut() method");
         var content = ToJson(dataToSend);
 
         var result = await _httpClient.PutAsync($"{_apiUrl}{uri}", content);
@@ -83,14 +91,17 @@ public class HttpService
 
     private StringContent ToJson(object obj)
     {
+		_logger.LogInformation("ENTERING: ToJson() method");
         return new StringContent(JsonSerializer.Serialize(obj), Encoding.UTF8, "application/json");
     }
 
     private async Task<T> FromHttpResponseMessage<T>(HttpResponseMessage result)
     {
+		_logger.LogInformation("ENTERING: FromHttpResponseMessage() method");
         return JsonSerializer.Deserialize<T>(await result.Content.ReadAsStringAsync(), new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
+			_logger.LogInformation("FromHttpResponseMessage(result)={Result}): GDPR-AUDIT: Encryption operation completed with algorithm {Result1}", result, result);
         });
     }
 }

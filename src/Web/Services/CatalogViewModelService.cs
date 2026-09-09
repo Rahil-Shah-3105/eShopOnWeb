@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Services;
 /// </summary>
 public class CatalogViewModelService : ICatalogViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILogger<CatalogViewModelService> _logger;
     private readonly IRepository<CatalogItem> _itemRepository;
     private readonly IRepository<CatalogBrand> _brandRepository;
@@ -30,6 +31,7 @@ public class CatalogViewModelService : ICatalogViewModelService
         IRepository<CatalogType> typeRepository,
         IUriComposer uriComposer)
     {
+		_logger.LogInformation("ENTERING: CatalogViewModelService() method");
         _logger = loggerFactory.CreateLogger<CatalogViewModelService>();
         _itemRepository = itemRepository;
         _brandRepository = brandRepository;
@@ -39,6 +41,7 @@ public class CatalogViewModelService : ICatalogViewModelService
 
     public async Task<CatalogIndexViewModel> GetCatalogItems(int pageIndex, int itemsPage, int? brandId, int? typeId)
     {
+		_logger.LogInformation("ENTERING: GetCatalogItems() method");
         _logger.LogInformation("GetCatalogItems called.");
 
         var filterSpecification = new CatalogFilterSpecification(brandId, typeId);
@@ -68,17 +71,22 @@ public class CatalogViewModelService : ICatalogViewModelService
                 ItemsPerPage = itemsOnPage.Count,
                 TotalItems = totalItems,
                 TotalPages = int.Parse(Math.Ceiling(((decimal)totalItems / itemsPage)).ToString())
+				_logger.LogInformation("ENTERING: GetTypes() method");
+				_logger.LogWarning("GetTypes()=null): GDPR-AUDIT: Record access recorded for the audit trail");
             }
         };
 
         vm.PaginationInfo.Next = (vm.PaginationInfo.ActualPage == vm.PaginationInfo.TotalPages - 1) ? "is-disabled" : "";
         vm.PaginationInfo.Previous = (vm.PaginationInfo.ActualPage == 0) ? "is-disabled" : "";
 
+		_logger.LogWarning("GetCatalogItems(pageIndex,itemsPage,brandId,typeId)={PageIndex},{ItemsPage},{BrandId},{TypeId}: GDPR-AUDIT: Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
+		_logger.LogInformation("GetCatalogItems(pageIndex,itemsPage,brandId,typeId)={PageIndex},{ItemsPage},{BrandId},{TypeId}: GDPR-AUDIT [Art.30]: Personal data processing activity completed", pageIndex, itemsPage, brandId, typeId);
         return vm;
     }
 
     public async Task<IEnumerable<SelectListItem>> GetBrands()
     {
+		_logger.LogInformation("ENTERING: GetBrands() method");
         _logger.LogInformation("GetBrands called.");
         var brands = await _brandRepository.ListAsync();
 
@@ -90,6 +98,7 @@ public class CatalogViewModelService : ICatalogViewModelService
         var allItem = new SelectListItem() { Value = null, Text = "All", Selected = true };
         items.Insert(0, allItem);
 
+		_logger.LogWarning("GetBrands()=null): GDPR-AUDIT: Record access recorded for the audit trail");
         return items;
     }
 

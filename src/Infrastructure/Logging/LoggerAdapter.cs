@@ -5,9 +5,11 @@ namespace Microsoft.eShopWeb.Infrastructure.Logging;
 
 public class LoggerAdapter<T> : IAppLogger<T>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILogger<T> _logger;
     public LoggerAdapter(ILoggerFactory loggerFactory)
     {
+		_logger.LogInformation("ENTERING: LoggerAdapter() method");
         _logger = loggerFactory.CreateLogger<T>();
     }
 

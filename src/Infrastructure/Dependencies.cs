@@ -3,13 +3,16 @@ using Microsoft.eShopWeb.Infrastructure.Data;
 using Microsoft.eShopWeb.Infrastructure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure;
 
 public static class Dependencies
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public static void ConfigureServices(IConfiguration configuration, IServiceCollection services)
     {
+		_logger.LogInformation("ENTERING: ConfigureServices() method");
         bool useOnlyInMemoryDatabase = false;
         if (configuration["UseOnlyInMemoryDatabase"] != null)
         {

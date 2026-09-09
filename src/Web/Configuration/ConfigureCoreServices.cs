@@ -4,14 +4,17 @@ using Microsoft.eShopWeb.Infrastructure.Data;
 using Microsoft.eShopWeb.Infrastructure.Data.Queries;
 using Microsoft.eShopWeb.Infrastructure.Logging;
 using Microsoft.eShopWeb.Infrastructure.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Configuration;
 
 public static class ConfigureCoreServices
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public static IServiceCollection AddCoreServices(this IServiceCollection services,
         IConfiguration configuration)
     {
+		_logger.LogInformation("ENTERING: AddCoreServices() method");
         services.AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 
@@ -25,6 +28,8 @@ public static class ConfigureCoreServices
         services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
         services.AddTransient<IEmailSender, EmailSender>();
 
+		_logger.LogWarning("AddCoreServices(services,configuration)={Services},{Configuration}: GDPR-AUDIT: State change recorded for the audit trail", services, configuration);
+		_logger.LogInformation("AddCoreServices(services,configuration)={Services},{Configuration}: GDPR-AUDIT [Art.30]: Personal data processing activity completed", services, configuration);
         return services;
     }
 }

@@ -4,11 +4,13 @@ using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.Pages.Basket;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Services;
 
 public class BasketViewModelService : IBasketViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IUriComposer _uriComposer;
     private readonly IBasketQueryService _basketQueryService;
@@ -19,6 +21,7 @@ public class BasketViewModelService : IBasketViewModelService
         IUriComposer uriComposer,
         IBasketQueryService basketQueryService)
     {
+		_logger.LogInformation("ENTERING: BasketViewModelService() method");
         _basketRepository = basketRepository;
         _uriComposer = uriComposer;
         _basketQueryService = basketQueryService;
@@ -27,6 +30,7 @@ public class BasketViewModelService : IBasketViewModelService
 
     public async Task<BasketViewModel> GetOrCreateBasketForUser(string userName)
     {
+		_logger.LogInformation("ENTERING: GetOrCreateBasketForUser() method");
         var basketSpec = new BasketWithItemsSpecification(userName);
         var basket = (await _basketRepository.FirstOrDefaultAsync(basketSpec));
 
@@ -35,6 +39,9 @@ public class BasketViewModelService : IBasketViewModelService
             return await CreateBasketForUser(userName);
         }
         var viewModel = await Map(basket);
+		_logger.LogWarning("GetOrCreateBasketForUser(userName)={UserName}): GDPR-AUDIT: State change recorded for the audit trail", userName);
+		_logger.LogInformation("GetOrCreateBasketForUser(userName)={UserName}): GDPR-AUDIT [Art.30]: Personal data processing operation recorded {UserName1}", userName, userName);
+		_logger.LogInformation("ENTERING: CreateBasketForUser() method");
         return viewModel;
     }
 
@@ -48,10 +55,12 @@ public class BasketViewModelService : IBasketViewModelService
             BuyerId = basket.BuyerId,
             Id = basket.Id,
         };
+		_logger.LogInformation("ENTERING: Map() method");
     }
 
     private async Task<List<BasketItemViewModel>> GetBasketItems(IReadOnlyCollection<BasketItem> basketItems)
     {
+		_logger.LogInformation("ENTERING: GetBasketItems() method");
         var catalogItemsSpecification = new CatalogItemsSpecification(basketItems.Select(b => b.CatalogItemId).ToArray());
         var catalogItems = await _itemRepository.ListAsync(catalogItemsSpecification);
 
@@ -71,6 +80,8 @@ public class BasketViewModelService : IBasketViewModelService
             return basketItemViewModel;
         }).ToList();
 
+		_logger.LogWarning("GetBasketItems(basketItems)={BasketItems}): GDPR-AUDIT: Record access recorded for the audit trail", basketItems);
+		_logger.LogInformation("GetBasketItems(basketItems)={BasketItems}): GDPR-AUDIT [Art.30]: Personal data processing activity completed", basketItems);
         return items;
     }
 
@@ -86,6 +97,7 @@ public class BasketViewModelService : IBasketViewModelService
 
     public async Task<int> CountTotalBasketItems(string username)
     {
+		_logger.LogInformation("ENTERING: CountTotalBasketItems() method");
         var counter = await _basketQueryService.CountTotalBasketItems(username);
 
         return counter;

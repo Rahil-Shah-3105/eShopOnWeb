@@ -107,12 +107,14 @@
 
     private async Task DeleteClick(int id)
     {
+		Logger.LogInformation("ENTERING: DeleteClick() method");
         // TODO: Add some kind of "are you sure" check before this
 
         await CatalogItemService.Delete(id);
 
         await OnSaveClick.InvokeAsync(null);
         await Close();
+		Logger.LogWarning("DeleteClick(id)={Id}): GDPR-AUDIT: State change recorded for the audit trail {Id1}", id, id);
     }
 
     public async Task Open(int id)
@@ -128,6 +130,7 @@
         _showDeleteModal = true;
 
         StateHasChanged();
+		Logger.LogInformation("ENTERING: Close() method");
     }
 
     private async Task Close()

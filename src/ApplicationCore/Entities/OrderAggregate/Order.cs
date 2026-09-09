@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using Ardalis.GuardClauses;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
 
 public class Order : BaseEntity, IAggregateRoot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     #pragma warning disable CS8618 // Required by Entity Framework
     private Order() {}
 
     public Order(string buyerId, Address shipToAddress, List<OrderItem> items)
     {
+		_logger.LogInformation("ENTERING: Order() method");
         Guard.Against.NullOrEmpty(buyerId, nameof(buyerId));
 
         BuyerId = buyerId;
@@ -37,6 +40,7 @@ public class Order : BaseEntity, IAggregateRoot
 
     public decimal Total()
     {
+		_logger.LogInformation("ENTERING: Total() method");
         var total = 0m;
         foreach (var item in _orderItems)
         {

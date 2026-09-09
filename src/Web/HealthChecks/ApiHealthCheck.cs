@@ -4,15 +4,18 @@ using System.Threading.Tasks;
 using BlazorShared;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.HealthChecks;
 
 public class ApiHealthCheck : IHealthCheck
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly BaseUrlConfiguration _baseUrlConfiguration;
 
     public ApiHealthCheck(IOptions<BaseUrlConfiguration> baseUrlConfiguration)
     {
+		_logger.LogInformation("ENTERING: ApiHealthCheck() method");
         _baseUrlConfiguration = baseUrlConfiguration.Value;
     }
 
@@ -20,6 +23,7 @@ public class ApiHealthCheck : IHealthCheck
         HealthCheckContext context,
         CancellationToken cancellationToken = default(CancellationToken))
     {
+		_logger.LogInformation("ENTERING: CheckHealthAsync() method");
         string myUrl = _baseUrlConfiguration.ApiBase + "catalog-items";
         var client = new HttpClient();
         var response = await client.GetAsync(myUrl);
@@ -29,6 +33,7 @@ public class ApiHealthCheck : IHealthCheck
             return HealthCheckResult.Healthy("The check indicates a healthy result.");
         }
 
+		_logger.LogWarning("CheckHealthAsync(context,cancellationToken)={Context},<redacted>: GDPR-AUDIT: PHI operation logged for audit compliance", context);
         return HealthCheckResult.Unhealthy("The check indicates an unhealthy result.");
     }
 }

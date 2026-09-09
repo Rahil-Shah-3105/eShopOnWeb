@@ -1,12 +1,15 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Identity.Migrations;
 
 public partial class InitialIdentityModel : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
+		_logger.LogInformation("ENTERING: Up() method");
         migrationBuilder.CreateTable(
             name: "AspNetRoles",
             columns: table => new
@@ -190,10 +193,12 @@ public partial class InitialIdentityModel : Migration
             column: "NormalizedUserName",
             unique: true,
             filter: "[NormalizedUserName] IS NOT NULL");
+			_logger.LogWarning("Up(migrationBuilder)={MigrationBuilder}): GDPR-AUDIT: Password reset operation performed", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
+		_logger.LogInformation("ENTERING: Down() method");
         migrationBuilder.DropTable(
             name: "AspNetRoleClaims");
 

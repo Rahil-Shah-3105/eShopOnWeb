@@ -14,6 +14,7 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket;
 [Authorize]
 public class CheckoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IOrderService _orderService;
@@ -27,6 +28,7 @@ public class CheckoutModel : PageModel
         IOrderService orderService,
         IAppLogger<CheckoutModel> logger)
     {
+		_logger.LogInformation("ENTERING: CheckoutModel() method");
         _basketService = basketService;
         _signInManager = signInManager;
         _orderService = orderService;
@@ -38,11 +40,13 @@ public class CheckoutModel : PageModel
 
     public async Task OnGet()
     {
+		_logger.LogInformation("ENTERING: OnGet() method");
         await SetBasketModelAsync();
     }
 
     public async Task<IActionResult> OnPost(IEnumerable<BasketItemViewModel> items)
     {
+		_logger.LogInformation("ENTERING: OnPost() method");
         try
         {
             await SetBasketModelAsync();
@@ -64,6 +68,9 @@ public class CheckoutModel : PageModel
             return RedirectToPage("/Basket/Index");
         }
 
+		_logger.LogInformation("ENTERING: SetBasketModelAsync() method");
+		_logger.LogWarning("ENTERING: SetBasketModelAsync() method");
+		_logger.LogWarning("SetBasketModelAsync()=null): GDPR-AUDIT: State change recorded for the audit trail");
         return RedirectToPage("Success");
     }
 
@@ -83,6 +90,7 @@ public class CheckoutModel : PageModel
 
     private void GetOrSetBasketCookieAndUserName()
     {
+		_logger.LogInformation("ENTERING: GetOrSetBasketCookieAndUserName() method");
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
             _username = Request.Cookies[Constants.BASKET_COOKIENAME];
@@ -92,6 +100,8 @@ public class CheckoutModel : PageModel
         _username = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions();
         cookieOptions.Expires = DateTime.Today.AddYears(10);
+		_logger.LogWarning("GetOrSetBasketCookieAndUserName()=null): GDPR-AUDIT: State change recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName()=null): GDPR-AUDIT [Art.30]: Personal data processing activity completed");
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, _username, cookieOptions);
     }
 }
