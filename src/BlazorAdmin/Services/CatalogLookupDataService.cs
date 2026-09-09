@@ -18,6 +18,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogLookupDataService<TLookupData, TReponse>> _logger;
@@ -28,8 +29,10 @@ public class CatalogLookupDataService<TLookupData, TReponse>
         ILogger<CatalogLookupDataService<TLookupData, TReponse>> logger)
     {
         _httpClient = httpClient;
+		_logger.LogWarning("CatalogLookupDataService(httpClient,baseUrlConfiguration,logger)={HttpClient},{BaseUrlConfiguration},{Logger}: NERCCIP-AUDIT: Security incident detected", httpClient, baseUrlConfiguration, logger);
         _logger = logger;
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
+		_logger.LogInformation("CatalogLookupDataService(httpClient,baseUrlConfiguration,logger)={HttpClient},{BaseUrlConfiguration},{Logger}: NERCCIP-AUDIT: Change management operation performed", httpClient, baseUrlConfiguration, logger);
     }
 
     public async Task<List<TLookupData>> List()

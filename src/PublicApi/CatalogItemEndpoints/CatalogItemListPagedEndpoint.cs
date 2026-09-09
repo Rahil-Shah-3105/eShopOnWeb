@@ -9,6 +9,7 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -17,12 +18,14 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CatalogItemListPagedEndpoint : IEndpoint<IResult, ListPagedCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
     private readonly IMapper _mapper;
 
     public CatalogItemListPagedEndpoint(IUriComposer uriComposer, IMapper mapper)
     {
         _uriComposer = uriComposer;
+		_logger.LogWarning("CatalogItemListPagedEndpoint(uriComposer,mapper)={UriComposer},{Mapper}: NERCCIP-AUDIT: Security incident detected", uriComposer, mapper);
         _mapper = mapper;
     }
 

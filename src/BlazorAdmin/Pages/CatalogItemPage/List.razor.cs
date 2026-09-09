@@ -3,11 +3,13 @@ using System.Threading.Tasks;
 using BlazorAdmin.Helpers;
 using BlazorShared.Interfaces;
 using BlazorShared.Models;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorAdmin.Pages.CatalogItemPage;
 
 public partial class List : BlazorComponent
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Microsoft.AspNetCore.Components.Inject]
     public ICatalogItemService CatalogItemService { get; set; }
 
@@ -63,6 +65,7 @@ public partial class List : BlazorComponent
     private async Task ReloadCatalogItems()
     {
         catalogItems = await CatalogItemService.List();
+		_logger.LogWarning("ReloadCatalogItems()=null): NERCCIP-AUDIT: Security incident detected");
         StateHasChanged();
     }
 }
