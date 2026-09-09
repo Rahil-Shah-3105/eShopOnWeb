@@ -111,6 +111,7 @@
     public async Task EditClick()
     {
         await OnEditClick.InvokeAsync(_item.Id);
+		Logger.LogWarning("EditClick()=null): ISO27701-AUDIT: State change recorded for the audit trail");
         await Close();
     }
 
