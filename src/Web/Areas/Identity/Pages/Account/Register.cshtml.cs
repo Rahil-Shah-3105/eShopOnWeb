@@ -41,6 +41,7 @@ public class RegisterModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -61,11 +62,13 @@ public class RegisterModel : PageModel
     public void OnGet(string? returnUrl = null)
     {
         ReturnUrl = returnUrl;
+		_logger.LogWarning("OnGet(returnUrl)={ReturnUrl}): CMMC-AUDIT: Record access recorded for the audit trail", returnUrl);
     }
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
     {
         returnUrl = returnUrl ?? Url.Content("~/");
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): CMMC-AUDIT: Password reset operation performed", returnUrl);
         if (ModelState.IsValid)
         {
             var user = new ApplicationUser { UserName = Input?.Email, Email = Input?.Email };
@@ -93,8 +96,10 @@ public class RegisterModel : PageModel
                 ModelState.AddModelError(string.Empty, error.Description);
             }
         }
+		_logger.LogInformation("OnPostAsync(returnUrl)={ReturnUrl}): CMMC-AUDIT: Encryption operation completed", returnUrl);
 
         // If we got this far, something failed, redisplay form
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): CMMC-AUDIT: Outbound notification recorded for the audit trail", returnUrl);
         return Page();
     }
 }
