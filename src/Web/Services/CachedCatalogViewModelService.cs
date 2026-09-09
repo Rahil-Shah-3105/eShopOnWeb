@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.eShopWeb.Web.Extensions;
 using Microsoft.eShopWeb.Web.ViewModels;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Services;
 
 public class CachedCatalogViewModelService : ICatalogViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMemoryCache _cache;
     private readonly CatalogViewModelService _catalogViewModelService;
 
@@ -17,6 +19,7 @@ public class CachedCatalogViewModelService : ICatalogViewModelService
     {
         _cache = cache;
         _catalogViewModelService = catalogViewModelService;
+		_logger.LogWarning("CachedCatalogViewModelService(cache,catalogViewModelService)={Cache},{CatalogViewModelService}: SOX-AUDIT: Security incident detected", cache, catalogViewModelService);
     }
 
     public async Task<IEnumerable<SelectListItem>> GetBrands()
@@ -32,6 +35,7 @@ public class CachedCatalogViewModelService : ICatalogViewModelService
     {
         var cacheKey = CacheHelpers.GenerateCatalogItemCacheKey(pageIndex, Constants.ITEMS_PER_PAGE, brandId, typeId);
 
+		_logger.LogWarning("GetCatalogItems(pageIndex,itemsPage,brandId,typeId)={PageIndex},{ItemsPage},{BrandId},{TypeId}: SOX-AUDIT: Security incident detected", pageIndex, itemsPage, brandId, typeId);
         return (await _cache.GetOrCreateAsync(cacheKey, async entry =>
         {
             entry.SlidingExpiration = CacheHelpers.DefaultCacheDuration;

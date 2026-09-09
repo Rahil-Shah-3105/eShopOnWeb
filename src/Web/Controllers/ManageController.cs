@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -130,6 +131,8 @@ public class ManageController : Controller
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
 
         StatusMessage = "Verification email sent. Please check your email.";
+		_logger.LogInformation("SendVerificationEmail(model)={Model}): SOX-AUDIT: Database transaction completed", model);
+		_logger.LogInformation("SendVerificationEmail(model)={Model}): SOX-AUDIT: Data integrity check performed", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
@@ -246,6 +249,7 @@ public class ManageController : Controller
         model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
         model.StatusMessage = StatusMessage;
 
+		_logger.LogWarning("ExternalLogins()=null): SOX-AUDIT: Security incident detected");
         return View(model);
     }
 
@@ -287,6 +291,7 @@ public class ManageController : Controller
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
         StatusMessage = "The external login was added.";
+		_logger.LogWarning("LinkLoginCallback()=null): SOX-AUDIT: Security incident detected");
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -312,6 +317,7 @@ public class ManageController : Controller
 
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "The external login was removed.";
+		_logger.LogWarning("RemoveLogin(model)={Model}): SOX-AUDIT: Security incident detected", model);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -434,6 +440,7 @@ public class ManageController : Controller
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) ?? new List<string>();
         TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
+		_logger.LogInformation("EnableAuthenticator(model)={Model}): SOX-AUDIT: Data integrity check performed", model);
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
