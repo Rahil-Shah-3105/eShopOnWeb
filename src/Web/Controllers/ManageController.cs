@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -130,6 +131,8 @@ public class ManageController : Controller
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
 
         StatusMessage = "Verification email sent. Please check your email.";
+		_logger.LogInformation("SendVerificationEmail(model)={Model}): CCPA-AUDIT: Database transaction completed", model);
+		_logger.LogWarning("SendVerificationEmail(model)={Model}): CCPA-AUDIT: Outbound notification recorded for the audit trail", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
@@ -149,6 +152,7 @@ public class ManageController : Controller
         }
 
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogWarning("ChangePassword()=null): CCPA-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
@@ -179,6 +183,7 @@ public class ManageController : Controller
         _logger.LogInformation("User changed their password successfully.");
         StatusMessage = "Your password has been changed.";
 
+		_logger.LogWarning("ChangePassword(model)={Model}): CCPA-AUDIT: State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ChangePassword));
     }
 
@@ -199,6 +204,7 @@ public class ManageController : Controller
         }
 
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogWarning("SetPassword()=null): CCPA-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
@@ -227,6 +233,7 @@ public class ManageController : Controller
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "Your password has been set.";
 
+		_logger.LogWarning("SetPassword(model)={Model}): CCPA-AUDIT: State change recorded for the audit trail", model);
         return RedirectToAction(nameof(SetPassword));
     }
 
@@ -312,6 +319,7 @@ public class ManageController : Controller
 
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "The external login was removed.";
+		_logger.LogWarning("RemoveLogin(model)={Model}): CCPA-AUDIT: State change recorded for the audit trail {Result}", model, result);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -348,6 +356,7 @@ public class ManageController : Controller
             throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
         }
 
+		_logger.LogWarning("Disable2faWarning()=null): CCPA-AUDIT: State change recorded for the audit trail");
         return View(nameof(Disable2fa));
     }
 
@@ -368,6 +377,7 @@ public class ManageController : Controller
         }
 
         _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.Id);
+		_logger.LogWarning("Disable2fa()=null): CCPA-AUDIT: State change recorded for the audit trail {Disable2faResult}", disable2faResult);
         return RedirectToAction(nameof(TwoFactorAuthentication));
     }
 
@@ -383,6 +393,7 @@ public class ManageController : Controller
         var model = new EnableAuthenticatorViewModel();
         await LoadSharedKeyAndQrCodeUriAsync(user, model);
 
+		_logger.LogWarning("EnableAuthenticator()=null): CCPA-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
@@ -426,6 +437,7 @@ public class ManageController : Controller
         {
             ModelState.AddModelError("Code", "Verification code is invalid.");
             await LoadSharedKeyAndQrCodeUriAsync(user, model);
+			_logger.LogWarning("LoadSharedKeyAndQrCodeUriAsync(user,model)={User},{Model}: CCPA-AUDIT: Outbound notification recorded for the audit trail", user, model);
             return View(model);
         }
 
@@ -434,12 +446,14 @@ public class ManageController : Controller
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) ?? new List<string>();
         TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
+		_logger.LogWarning("EnableAuthenticator(model)={Model}): CCPA-AUDIT: State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
     [HttpGet]
     public IActionResult ResetAuthenticatorWarning()
     {
+		_logger.LogWarning("ResetAuthenticatorWarning()=null): CCPA-AUDIT: State change recorded for the audit trail");
         return View(nameof(ResetAuthenticator));
     }
 
@@ -457,6 +471,7 @@ public class ManageController : Controller
         await _userManager.ResetAuthenticatorKeyAsync(user);
         _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
 
+		_logger.LogWarning("ResetAuthenticator()=null): CCPA-AUDIT: State change recorded for the audit trail");
         return RedirectToAction(nameof(EnableAuthenticator));
     }
 
@@ -506,6 +521,7 @@ public class ManageController : Controller
         {
             ModelState.AddModelError(string.Empty, error.Description);
         }
+		_logger.LogWarning("AddErrors(result)={Result}): CCPA-AUDIT: State change recorded for the audit trail {Result1}", result, result);
     }
 
     private string FormatKey(string unformattedKey)
