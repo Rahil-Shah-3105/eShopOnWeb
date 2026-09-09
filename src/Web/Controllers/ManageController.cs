@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -246,6 +247,7 @@ public class ManageController : Controller
         model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
         model.StatusMessage = StatusMessage;
 
+		_logger.LogWarning("ExternalLogins()=null): NERCCIP-AUDIT: Security incident detected");
         return View(model);
     }
 
@@ -259,6 +261,7 @@ public class ManageController : Controller
         // Request a redirect to the external login provider to link a login for the current user
         var redirectUrl = Url.Action(nameof(LinkLoginCallback));
         var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, _userManager.GetUserId(User));
+		_logger.LogWarning("LinkLogin(provider)={Provider}): NERCCIP-AUDIT: Security incident detected", provider);
         return new ChallengeResult(provider, properties);
     }
 
@@ -287,6 +290,7 @@ public class ManageController : Controller
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
         StatusMessage = "The external login was added.";
+		_logger.LogWarning("LinkLoginCallback()=null): NERCCIP-AUDIT: Security incident detected");
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -312,6 +316,7 @@ public class ManageController : Controller
 
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "The external login was removed.";
+		_logger.LogWarning("RemoveLogin(model)={Model}): NERCCIP-AUDIT: Security incident detected", model);
         return RedirectToAction(nameof(ExternalLogins));
     }
 

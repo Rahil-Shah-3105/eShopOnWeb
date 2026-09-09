@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Services;
 /// </summary>
 public class CatalogViewModelService : ICatalogViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILogger<CatalogViewModelService> _logger;
     private readonly IRepository<CatalogItem> _itemRepository;
     private readonly IRepository<CatalogBrand> _brandRepository;
@@ -34,6 +35,7 @@ public class CatalogViewModelService : ICatalogViewModelService
         _itemRepository = itemRepository;
         _brandRepository = brandRepository;
         _typeRepository = typeRepository;
+		_logger.LogWarning("CatalogViewModelService(loggerFactory,itemRepository,brandRepository,typeRepository,uriComposer)={LoggerFactory},{ItemRepository},{BrandRepository},{TypeRepository},{UriComposer}: NERCCIP-AUDIT: Security incident detected", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer);
         _uriComposer = uriComposer;
     }
 
@@ -74,6 +76,7 @@ public class CatalogViewModelService : ICatalogViewModelService
         vm.PaginationInfo.Next = (vm.PaginationInfo.ActualPage == vm.PaginationInfo.TotalPages - 1) ? "is-disabled" : "";
         vm.PaginationInfo.Previous = (vm.PaginationInfo.ActualPage == 0) ? "is-disabled" : "";
 
+		_logger.LogWarning("GetCatalogItems(pageIndex,itemsPage,brandId,typeId)={PageIndex},{ItemsPage},{BrandId},{TypeId}: NERCCIP-AUDIT: Security incident detected", pageIndex, itemsPage, brandId, typeId);
         return vm;
     }
 

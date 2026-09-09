@@ -13,6 +13,7 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 //TODO : replace IMemoryCache by distributed cache if you are in multi-host scenario
 public class LogoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<LogoutModel> _logger;
     private readonly IMemoryCache _cache;
@@ -21,6 +22,7 @@ public class LogoutModel : PageModel
     {
         _signInManager = signInManager;
         _logger = logger;
+		_logger.LogWarning("LogoutModel(signInManager,logger,cache)={SignInManager},{Logger},{Cache}: NERCCIP-AUDIT: Security incident detected", signInManager, logger, cache);
         _cache = cache;
     }
 

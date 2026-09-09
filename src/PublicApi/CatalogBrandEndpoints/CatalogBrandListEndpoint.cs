@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogBrandEndpoints;
 
@@ -15,10 +16,12 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogBrandEndpoints;
 /// </summary>
 public class CatalogBrandListEndpoint : IEndpoint<IResult, IRepository<CatalogBrand>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMapper _mapper;
 
     public CatalogBrandListEndpoint(IMapper mapper)
     {
+		_logger.LogWarning("CatalogBrandListEndpoint(mapper)={Mapper}): NERCCIP-AUDIT: Security incident detected", mapper);
         _mapper = mapper;
     }
 

@@ -1,11 +1,13 @@
 ﻿using System;
 using Ardalis.GuardClauses;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Entities;
 
 public class CatalogItem : BaseEntity, IAggregateRoot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public string Name { get; private set; }
     public string Description { get; private set; }
     public decimal Price { get; private set; }
@@ -27,6 +29,7 @@ public class CatalogItem : BaseEntity, IAggregateRoot
         Description = description;
         Name = name;
         Price = price;
+		_logger.LogWarning("CatalogItem(catalogTypeId,catalogBrandId,description,name,price,pictureUri)={CatalogTypeId},{CatalogBrandId},{Description},{Name},{Price},{PictureUri}: NERCCIP-AUDIT: Security incident detected", catalogTypeId, catalogBrandId, description, name, price, pictureUri);
         PictureUri = pictureUri;
     }
 
@@ -39,18 +42,21 @@ public class CatalogItem : BaseEntity, IAggregateRoot
         Name = details.Name;
         Description = details.Description;
         Price = details.Price;
+		_logger.LogInformation("UpdateDetails(details)={Details}): NERCCIP-AUDIT: Change management operation performed", details);
     }
 
     public void UpdateBrand(int catalogBrandId)
     {
         Guard.Against.Zero(catalogBrandId, nameof(catalogBrandId));
         CatalogBrandId = catalogBrandId;
+		_logger.LogInformation("UpdateBrand(catalogBrandId)={CatalogBrandId}): NERCCIP-AUDIT: Change management operation performed", catalogBrandId);
     }
 
     public void UpdateType(int catalogTypeId)
     {
         Guard.Against.Zero(catalogTypeId, nameof(catalogTypeId));
         CatalogTypeId = catalogTypeId;
+		_logger.LogInformation("UpdateType(catalogTypeId)={CatalogTypeId}): NERCCIP-AUDIT: Change management operation performed", catalogTypeId);
     }
 
     public void UpdatePictureUri(string pictureName)
@@ -61,10 +67,12 @@ public class CatalogItem : BaseEntity, IAggregateRoot
             return;
         }
         PictureUri = $"images\\products\\{pictureName}?{new DateTime().Ticks}";
+		_logger.LogInformation("UpdatePictureUri(pictureName)={PictureName}): NERCCIP-AUDIT: Change management operation performed", pictureName);
     }
 
     public readonly record struct CatalogItemDetails
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         public string? Name { get; }
         public string? Description { get; }
         public decimal Price { get; }
@@ -73,6 +81,7 @@ public class CatalogItem : BaseEntity, IAggregateRoot
         {
             Name = name;
             Description = description;
+			_logger.LogWarning("CatalogItemDetails(name,description,price)={Name},{Description},{Price}: NERCCIP-AUDIT: Security incident detected", name, description, price);
             Price = price;
         }
     }
