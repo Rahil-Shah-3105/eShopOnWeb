@@ -1,11 +1,13 @@
 ﻿using System;
 using Ardalis.GuardClauses;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Entities;
 
 public class CatalogItem : BaseEntity, IAggregateRoot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public string Name { get; private set; }
     public string Description { get; private set; }
     public decimal Price { get; private set; }
@@ -39,18 +41,21 @@ public class CatalogItem : BaseEntity, IAggregateRoot
         Name = details.Name;
         Description = details.Description;
         Price = details.Price;
+		_logger.LogWarning("UpdateDetails(details)={Details}): CJIS-AUDIT: State change recorded for the audit trail", details);
     }
 
     public void UpdateBrand(int catalogBrandId)
     {
         Guard.Against.Zero(catalogBrandId, nameof(catalogBrandId));
         CatalogBrandId = catalogBrandId;
+		_logger.LogWarning("UpdateBrand(catalogBrandId)={CatalogBrandId}): CJIS-AUDIT: State change recorded for the audit trail {CatalogBrandId1}", catalogBrandId, catalogBrandId);
     }
 
     public void UpdateType(int catalogTypeId)
     {
         Guard.Against.Zero(catalogTypeId, nameof(catalogTypeId));
         CatalogTypeId = catalogTypeId;
+		_logger.LogWarning("UpdateType(catalogTypeId)={CatalogTypeId}): CJIS-AUDIT: State change recorded for the audit trail {CatalogTypeId1}", catalogTypeId, catalogTypeId);
     }
 
     public void UpdatePictureUri(string pictureName)
@@ -61,6 +66,7 @@ public class CatalogItem : BaseEntity, IAggregateRoot
             return;
         }
         PictureUri = $"images\\products\\{pictureName}?{new DateTime().Ticks}";
+		_logger.LogWarning("UpdatePictureUri(pictureName)={PictureName}): CJIS-AUDIT: State change recorded for the audit trail", pictureName);
     }
 
     public readonly record struct CatalogItemDetails

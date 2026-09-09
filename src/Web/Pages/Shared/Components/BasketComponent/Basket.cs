@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.eShopWeb.Infrastructure.Identity;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Pages.Shared.Components.BasketComponent;
 
 public class Basket : ViewComponent
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketViewModelService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
 
@@ -19,6 +21,7 @@ public class Basket : ViewComponent
     {
         _basketService = basketService;
         _signInManager = signInManager;
+		_logger.LogInformation("Basket(basketService,signInManager)={BasketService},{SignInManager}: CJIS-AUDIT: Authentication operation completed", basketService, signInManager);
     }
 
     public async Task<IViewComponentResult> InvokeAsync()
@@ -27,6 +30,7 @@ public class Basket : ViewComponent
         {
             ItemsCount = await CountTotalBasketItems()
         };
+		_logger.LogWarning("InvokeAsync()=null): CJIS-AUDIT: Outbound notification recorded for the audit trail");
         return View(vm);
     }
 
@@ -42,6 +46,7 @@ public class Basket : ViewComponent
         if (anonymousId == null)
             return 0;
 
+		_logger.LogInformation("CountTotalBasketItems()=null): CJIS-AUDIT: Authentication operation completed");
         return await _basketService.CountTotalBasketItems(anonymousId);
     }
 
@@ -56,6 +61,7 @@ public class Basket : ViewComponent
                 return id;
             }
         }
+		_logger.LogWarning("GetAnnonymousIdFromCookie()=null): CJIS-AUDIT: Record access recorded for the audit trail");
         return null;
     }
 }
