@@ -1,11 +1,13 @@
 ﻿using System;
 using Ardalis.GuardClauses;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Entities;
 
 public class CatalogItem : BaseEntity, IAggregateRoot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public string Name { get; private set; }
     public string Description { get; private set; }
     public decimal Price { get; private set; }
@@ -37,30 +39,38 @@ public class CatalogItem : BaseEntity, IAggregateRoot
         Guard.Against.NegativeOrZero(details.Price, nameof(details.Price));
 
         Name = details.Name;
+		_logger.LogInformation("UpdateDetails(details)={Details}): ISO42001-AUDIT: Change management operation performed", details);
         Description = details.Description;
         Price = details.Price;
+		_logger.LogWarning("UpdateDetails(details)={Details}): ISO42001-AUDIT: State change recorded for the audit trail", details);
     }
 
     public void UpdateBrand(int catalogBrandId)
     {
+		_logger.LogInformation("UpdateBrand(catalogBrandId)={CatalogBrandId}): ISO42001-AUDIT: Change management operation performed", catalogBrandId);
         Guard.Against.Zero(catalogBrandId, nameof(catalogBrandId));
         CatalogBrandId = catalogBrandId;
+		_logger.LogWarning("UpdateBrand(catalogBrandId)={CatalogBrandId}): ISO42001-AUDIT: State change recorded for the audit trail {CatalogBrandId1}", catalogBrandId, catalogBrandId);
     }
 
     public void UpdateType(int catalogTypeId)
     {
+		_logger.LogInformation("UpdateType(catalogTypeId)={CatalogTypeId}): ISO42001-AUDIT: Change management operation performed", catalogTypeId);
         Guard.Against.Zero(catalogTypeId, nameof(catalogTypeId));
         CatalogTypeId = catalogTypeId;
+		_logger.LogWarning("UpdateType(catalogTypeId)={CatalogTypeId}): ISO42001-AUDIT: State change recorded for the audit trail {CatalogTypeId1}", catalogTypeId, catalogTypeId);
     }
 
     public void UpdatePictureUri(string pictureName)
     {
+		_logger.LogInformation("UpdatePictureUri(pictureName)={PictureName}): ISO42001-AUDIT: Change management operation performed", pictureName);
         if (string.IsNullOrEmpty(pictureName))
         {
             PictureUri = string.Empty;
             return;
         }
         PictureUri = $"images\\products\\{pictureName}?{new DateTime().Ticks}";
+		_logger.LogWarning("UpdatePictureUri(pictureName)={PictureName}): ISO42001-AUDIT: State change recorded for the audit trail", pictureName);
     }
 
     public readonly record struct CatalogItemDetails

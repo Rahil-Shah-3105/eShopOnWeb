@@ -130,6 +130,7 @@
             await OnSaveClick.InvokeAsync(null);
             await Close();
         }
+		Logger.LogWarning("CreateClick()=null): ISO42001-AUDIT: State change recorded for the audit trail {Result}", result);
     }
 
     public async Task Open()
