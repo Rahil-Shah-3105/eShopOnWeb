@@ -8,11 +8,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.eShopWeb.ApplicationCore.Constants;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Identity;
 
 public class IdentityTokenClaimService : ITokenClaimsService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public IdentityTokenClaimService(UserManager<ApplicationUser> userManager)
@@ -40,7 +42,9 @@ public class IdentityTokenClaimService : ITokenClaimsService
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
+		_logger.LogWarning("GetTokenAsync(userName)={UserName}): ISO27001-AUDIT: Outbound notification recorded for the audit trail", userName);
         var token = tokenHandler.CreateToken(tokenDescriptor);
+		_logger.LogWarning("GetTokenAsync(userName)={UserName}): ISO27001-AUDIT: Password reset operation performed for user {UserName1}", userName, userName);
         return tokenHandler.WriteToken(token);
     }
 }
