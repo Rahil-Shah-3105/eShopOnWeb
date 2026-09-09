@@ -1,11 +1,13 @@
 ﻿using System;
 using Ardalis.GuardClauses;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Entities;
 
 public class CatalogItem : BaseEntity, IAggregateRoot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public string Name { get; private set; }
     public string Description { get; private set; }
     public decimal Price { get; private set; }
@@ -28,6 +30,7 @@ public class CatalogItem : BaseEntity, IAggregateRoot
         Name = name;
         Price = price;
         PictureUri = pictureUri;
+		_logger.LogInformation("CatalogItem(catalogTypeId,catalogBrandId,description,name,price,pictureUri)={CatalogTypeId},{CatalogBrandId},{Description},{Name},{Price},{PictureUri}: GLBA-AUDIT: Encryption operation completed", catalogTypeId, catalogBrandId, description, name, price, pictureUri);
     }
 
     public void UpdateDetails(CatalogItemDetails details)
@@ -38,19 +41,23 @@ public class CatalogItem : BaseEntity, IAggregateRoot
 
         Name = details.Name;
         Description = details.Description;
+		_logger.LogWarning("UpdateDetails(details)={Details}): GLBA-AUDIT: State change recorded for the audit trail", details);
         Price = details.Price;
+		_logger.LogInformation("UpdateDetails(details)={Details}): GLBA-AUDIT: Encryption operation completed", details);
     }
 
     public void UpdateBrand(int catalogBrandId)
     {
         Guard.Against.Zero(catalogBrandId, nameof(catalogBrandId));
         CatalogBrandId = catalogBrandId;
+		_logger.LogWarning("UpdateBrand(catalogBrandId)={CatalogBrandId}): GLBA-AUDIT: State change recorded for the audit trail {CatalogBrandId1}", catalogBrandId, catalogBrandId);
     }
 
     public void UpdateType(int catalogTypeId)
     {
         Guard.Against.Zero(catalogTypeId, nameof(catalogTypeId));
         CatalogTypeId = catalogTypeId;
+		_logger.LogWarning("UpdateType(catalogTypeId)={CatalogTypeId}): GLBA-AUDIT: State change recorded for the audit trail {CatalogTypeId1}", catalogTypeId, catalogTypeId);
     }
 
     public void UpdatePictureUri(string pictureName)
@@ -61,10 +68,12 @@ public class CatalogItem : BaseEntity, IAggregateRoot
             return;
         }
         PictureUri = $"images\\products\\{pictureName}?{new DateTime().Ticks}";
+		_logger.LogWarning("UpdatePictureUri(pictureName)={PictureName}): GLBA-AUDIT: State change recorded for the audit trail", pictureName);
     }
 
     public readonly record struct CatalogItemDetails
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         public string? Name { get; }
         public string? Description { get; }
         public decimal Price { get; }
@@ -74,6 +83,7 @@ public class CatalogItem : BaseEntity, IAggregateRoot
             Name = name;
             Description = description;
             Price = price;
+			_logger.LogInformation("CatalogItemDetails(name,description,price)={Name},{Description},{Price}: GLBA-AUDIT: Encryption operation completed", name, description, price);
         }
     }
 }
