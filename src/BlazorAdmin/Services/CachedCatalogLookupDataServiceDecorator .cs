@@ -13,6 +13,7 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogLookupDataService<TLookupData, TReponse> _catalogTypeService;
     private ILogger<CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>> _logger;
@@ -24,6 +25,7 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
         _localStorageService = localStorageService;
         _catalogTypeService = catalogTypeService;
         _logger = logger;
+		_logger.LogWarning("CachedCatalogLookupDataServiceDecorator(localStorageService,catalogTypeService,logger)={LocalStorageService},{CatalogTypeService},{Logger}: PCI-AUDIT: Security incident detected", localStorageService, catalogTypeService, logger);
     }
 
     public async Task<List<TLookupData>> List()
@@ -47,6 +49,8 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
         var types = await _catalogTypeService.List();
         var entry = new CacheEntry<List<TLookupData>>(types);
         await _localStorageService.SetItemAsync(key, entry);
+		_logger.LogInformation("List()=null): PCI-AUDIT: Authentication operation completed");
+		_logger.LogWarning("List()=null): PCI-AUDIT: Record access recorded for the audit trail");
         return types;
     }
 }

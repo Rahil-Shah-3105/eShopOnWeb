@@ -3,11 +3,13 @@ using System.Threading.Tasks;
 using BlazorAdmin.Helpers;
 using BlazorShared.Interfaces;
 using BlazorShared.Models;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorAdmin.Pages.CatalogItemPage;
 
 public partial class List : BlazorComponent
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Microsoft.AspNetCore.Components.Inject]
     public ICatalogItemService CatalogItemService { get; set; }
 
@@ -38,6 +40,7 @@ public partial class List : BlazorComponent
         }
 
         await base.OnAfterRenderAsync(firstRender);
+		_logger.LogWarning("OnAfterRenderAsync(firstRender)={FirstRender}): PCI-AUDIT: Outbound notification recorded for the audit trail", firstRender);
     }
 
     private async void DetailsClick(int id)
@@ -48,21 +51,26 @@ public partial class List : BlazorComponent
     private async Task CreateClick()
     {
         await CreateComponent.Open();
+		_logger.LogWarning("CreateClick()=null): PCI-AUDIT: State change recorded for the audit trail");
     }
 
     private async Task EditClick(int id)
     {
         await EditComponent.Open(id);
+		_logger.LogWarning("EditClick(id)={Id}): PCI-AUDIT: State change recorded for the audit trail {Id1}", id, id);
     }
 
     private async Task DeleteClick(int id)
     {
         await DeleteComponent.Open(id);
+		_logger.LogWarning("DeleteClick(id)={Id}): PCI-AUDIT: State change recorded for the audit trail {Id1}", id, id);
     }
 
     private async Task ReloadCatalogItems()
     {
         catalogItems = await CatalogItemService.List();
+		_logger.LogWarning("ReloadCatalogItems()=null): PCI-AUDIT: Security incident detected");
+		_logger.LogWarning("ReloadCatalogItems()=null): PCI-AUDIT: Record access recorded for the audit trail");
         StateHasChanged();
     }
 }

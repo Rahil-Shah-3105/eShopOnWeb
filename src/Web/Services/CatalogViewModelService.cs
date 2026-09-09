@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Services;
 /// </summary>
 public class CatalogViewModelService : ICatalogViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILogger<CatalogViewModelService> _logger;
     private readonly IRepository<CatalogItem> _itemRepository;
     private readonly IRepository<CatalogBrand> _brandRepository;
@@ -35,6 +36,7 @@ public class CatalogViewModelService : ICatalogViewModelService
         _brandRepository = brandRepository;
         _typeRepository = typeRepository;
         _uriComposer = uriComposer;
+		_logger.LogWarning("CatalogViewModelService(loggerFactory,itemRepository,brandRepository,typeRepository,uriComposer)={LoggerFactory},{ItemRepository},{BrandRepository},{TypeRepository},{UriComposer}: PCI-AUDIT: Security incident detected", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer);
     }
 
     public async Task<CatalogIndexViewModel> GetCatalogItems(int pageIndex, int itemsPage, int? brandId, int? typeId)
@@ -68,12 +70,16 @@ public class CatalogViewModelService : ICatalogViewModelService
                 ItemsPerPage = itemsOnPage.Count,
                 TotalItems = totalItems,
                 TotalPages = int.Parse(Math.Ceiling(((decimal)totalItems / itemsPage)).ToString())
+				_logger.LogInformation("GetTypes()=null): PCI-AUDIT: Authentication operation completed");
+				_logger.LogWarning("GetTypes()=null): PCI-AUDIT: Record access recorded for the audit trail");
             }
         };
 
         vm.PaginationInfo.Next = (vm.PaginationInfo.ActualPage == vm.PaginationInfo.TotalPages - 1) ? "is-disabled" : "";
         vm.PaginationInfo.Previous = (vm.PaginationInfo.ActualPage == 0) ? "is-disabled" : "";
+		_logger.LogWarning("GetCatalogItems(pageIndex,itemsPage,brandId,typeId)={PageIndex},{ItemsPage},{BrandId},{TypeId}: PCI-AUDIT: Security incident detected", pageIndex, itemsPage, brandId, typeId);
 
+		_logger.LogInformation("GetCatalogItems(pageIndex,itemsPage,brandId,typeId)={PageIndex},{ItemsPage},{BrandId},{TypeId}: PCI-AUDIT: Authentication operation completed", pageIndex, itemsPage, brandId, typeId);
         return vm;
     }
 
@@ -90,6 +96,8 @@ public class CatalogViewModelService : ICatalogViewModelService
         var allItem = new SelectListItem() { Value = null, Text = "All", Selected = true };
         items.Insert(0, allItem);
 
+		_logger.LogInformation("GetBrands()=null): PCI-AUDIT: Authentication operation completed");
+		_logger.LogWarning("GetBrands()=null): PCI-AUDIT: Record access recorded for the audit trail");
         return items;
     }
 

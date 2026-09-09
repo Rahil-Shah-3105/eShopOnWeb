@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Timers;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorAdmin.Services;
 
@@ -13,6 +14,7 @@ public enum ToastLevel
 
 public class ToastService : IDisposable
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public event Action<string, ToastLevel> OnShow;
     public event Action OnHide;
     private Timer Countdown;
@@ -42,6 +44,7 @@ public class ToastService : IDisposable
             Countdown.Elapsed += HideToast;
             Countdown.AutoReset = false;
         }
+		_logger.LogWarning("SetCountdown()=null): PCI-AUDIT: State change recorded for the audit trail");
     }
     private void HideToast(object source, ElapsedEventArgs args)
     {

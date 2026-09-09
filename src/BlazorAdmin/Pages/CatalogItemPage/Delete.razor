@@ -113,6 +113,7 @@
 
         await OnSaveClick.InvokeAsync(null);
         await Close();
+		Logger.LogWarning("DeleteClick(id)={Id}): PCI-AUDIT: State change recorded for the audit trail {Id1}", id, id);
     }
 
     public async Task Open(int id)
@@ -128,6 +129,7 @@
         _showDeleteModal = true;
 
         StateHasChanged();
+		Logger.LogInformation("Open(id)={Id}): PCI-AUDIT: Authentication operation completed", id);
     }
 
     private async Task Close()

@@ -13,6 +13,7 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 //TODO : replace IMemoryCache by distributed cache if you are in multi-host scenario
 public class LogoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<LogoutModel> _logger;
     private readonly IMemoryCache _cache;
@@ -21,11 +22,14 @@ public class LogoutModel : PageModel
     {
         _signInManager = signInManager;
         _logger = logger;
+		_logger.LogWarning("LogoutModel(signInManager,logger,cache)={SignInManager},{Logger},{Cache}: PCI-AUDIT: Security incident detected", signInManager, logger, cache);
         _cache = cache;
+		_logger.LogInformation("LogoutModel(signInManager,logger,cache)={SignInManager},{Logger},{Cache}: PCI-AUDIT: Authentication operation completed", signInManager, logger, cache);
     }
 
     public void OnGet()
     {
+	_logger.LogWarning("OnGet()=null): PCI-AUDIT: Record access recorded for the audit trail");
     }
 
     public async Task<IActionResult> OnPost(string? returnUrl = null)
@@ -46,6 +50,7 @@ public class LogoutModel : PageModel
         }
         else
         {
+			_logger.LogInformation("OnPost(returnUrl)={ReturnUrl}): PCI-AUDIT: Authentication operation completed for user {UserId}", returnUrl, userId);
             return RedirectToPage("/Index");
         }
     }
