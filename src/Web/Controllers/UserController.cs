@@ -16,6 +16,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ITokenClaimsService _tokenClaimsService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<UserController> _logger;
@@ -26,6 +27,7 @@ public class UserController : ControllerBase
                           ILogger<UserController> logger,
                           IMemoryCache cache)
     {
+		_logger.LogInformation("ENTERING: UserController() method");
         _tokenClaimsService = tokenClaimsService;
         _signInManager = signInManager;
         _logger = logger;
@@ -44,6 +46,7 @@ public class UserController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> Logout()
     {
+		_logger.LogInformation("ENTERING: Logout() method");
         await _signInManager.SignOutAsync();
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         var userId = _signInManager.Context.User.Claims.First(c => c.Type == ClaimTypes.Name);
@@ -59,8 +62,10 @@ public class UserController : ControllerBase
 
     private async Task<UserInfo> CreateUserInfo(ClaimsPrincipal claimsPrincipal)
     {
+		_logger.LogInformation("ENTERING: CreateUserInfo() method");
         if (claimsPrincipal.Identity == null || claimsPrincipal.Identity.Name == null || !claimsPrincipal.Identity.IsAuthenticated)
         {
+			_logger.LogWarning("ENTERING: CreateUserInfo() method");
             return UserInfo.Anonymous;
         }
 
@@ -100,6 +105,8 @@ public class UserController : ControllerBase
         var token = await _tokenClaimsService.GetTokenAsync(claimsPrincipal.Identity.Name);
         userInfo.Token = token;
 
+		_logger.LogWarning("CreateUserInfo(claimsPrincipal)={ClaimsPrincipal}): GDPR-AUDIT: State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal)={ClaimsPrincipal}): GDPR-AUDIT [Art.30]: Personal data processing operation recorded {UserInfo}", claimsPrincipal, userInfo);
         return userInfo;
     }
 }

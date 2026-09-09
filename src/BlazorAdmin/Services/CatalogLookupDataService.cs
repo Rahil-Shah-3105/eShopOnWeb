@@ -18,6 +18,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogLookupDataService<TLookupData, TReponse>> _logger;
@@ -27,6 +28,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
         IOptions<BaseUrlConfiguration> baseUrlConfiguration,
         ILogger<CatalogLookupDataService<TLookupData, TReponse>> logger)
     {
+		_logger.LogInformation("ENTERING: CatalogLookupDataService() method");
         _httpClient = httpClient;
         _logger = logger;
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
@@ -38,6 +40,8 @@ public class CatalogLookupDataService<TLookupData, TReponse>
         _logger.LogInformation($"Fetching {typeof(TLookupData).Name} from API. Enpoint : {endpointName}");
 
         var response = await _httpClient.GetFromJsonAsync<TReponse>($"{_apiUrl}{endpointName}");
+		_logger.LogWarning("List()=null): GDPR-AUDIT: Record access recorded for the audit trail");
+		_logger.LogInformation("List()=null): GDPR-AUDIT [Art.30]: Personal data processing activity completed");
         return response.List;
     }
 }

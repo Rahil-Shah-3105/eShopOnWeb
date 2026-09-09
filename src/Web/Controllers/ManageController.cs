@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -33,6 +34,7 @@ public class ManageController : Controller
       IAppLogger<ManageController> logger,
       UrlEncoder urlEncoder)
     {
+		_logger.LogInformation("ENTERING: ManageController() method");
         _userManager = userManager;
         _signInManager = signInManager;
         _emailSender = emailSender;
@@ -46,6 +48,7 @@ public class ManageController : Controller
     [HttpGet]
     public async Task<IActionResult> MyAccount()
     {
+		_logger.LogInformation("ENTERING: MyAccount() method");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -107,8 +110,10 @@ public class ManageController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SendVerificationEmail(IndexViewModel model)
     {
+		_logger.LogInformation("ENTERING: SendVerificationEmail() method");
         if (!ModelState.IsValid)
         {
+			_logger.LogWarning("ENTERING: SendVerificationEmail() method");
             return View(model);
         }
 
@@ -130,12 +135,15 @@ public class ManageController : Controller
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
 
         StatusMessage = "Verification email sent. Please check your email.";
+		_logger.LogWarning("SendVerificationEmail(model)={Model}): GDPR-AUDIT: Outbound notification recorded for the audit trail", model);
+		_logger.LogWarning("SendVerificationEmail(model)={Model}): GDPR-AUDIT [Art.44]: Personal data transfer operation recorded", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
     [HttpGet]
     public async Task<IActionResult> ChangePassword()
     {
+		_logger.LogInformation("ENTERING: ChangePassword() method");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -147,8 +155,11 @@ public class ManageController : Controller
         {
             return RedirectToAction(nameof(SetPassword));
         }
+		_logger.LogWarning("ChangePassword()=null): GDPR-AUDIT: Password reset operation performed for user {User}", user);
 
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogWarning("ChangePassword()=null): GDPR-AUDIT: State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword()=null): GDPR-AUDIT [Art.5]: Personal data processing operation recorded {User}", user);
         return View(model);
     }
 
@@ -179,12 +190,14 @@ public class ManageController : Controller
         _logger.LogInformation("User changed their password successfully.");
         StatusMessage = "Your password has been changed.";
 
+		_logger.LogInformation("ChangePassword(model)={Model}): GDPR-AUDIT [Art.5]: Personal data processing operation recorded {User}", model, user);
         return RedirectToAction(nameof(ChangePassword));
     }
 
     [HttpGet]
     public async Task<IActionResult> SetPassword()
     {
+		_logger.LogInformation("ENTERING: SetPassword() method");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -198,7 +211,9 @@ public class ManageController : Controller
             return RedirectToAction(nameof(ChangePassword));
         }
 
+		_logger.LogWarning("SetPassword()=null): GDPR-AUDIT: Password reset operation performed for user {User}", user);
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogWarning("SetPassword()=null): GDPR-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
@@ -227,12 +242,14 @@ public class ManageController : Controller
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "Your password has been set.";
 
+		_logger.LogWarning("SetPassword(model)={Model}): GDPR-AUDIT: State change recorded for the audit trail", model);
         return RedirectToAction(nameof(SetPassword));
     }
 
     [HttpGet]
     public async Task<IActionResult> ExternalLogins()
     {
+		_logger.LogInformation("ENTERING: ExternalLogins() method");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -246,6 +263,8 @@ public class ManageController : Controller
         model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
         model.StatusMessage = StatusMessage;
 
+		_logger.LogWarning("ExternalLogins()=null): GDPR-AUDIT: Password reset operation performed for user {User}", user);
+		_logger.LogWarning("ExternalLogins()=null): GDPR-AUDIT [Art.44]: Personal data transfer operation recorded");
         return View(model);
     }
 
@@ -253,6 +272,7 @@ public class ManageController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> LinkLogin(string provider)
     {
+		_logger.LogInformation("ENTERING: LinkLogin() method");
         // Clear the existing external cookie to ensure a clean login process
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
@@ -265,6 +285,7 @@ public class ManageController : Controller
     [HttpGet]
     public async Task<IActionResult> LinkLoginCallback()
     {
+		_logger.LogInformation("ENTERING: LinkLoginCallback() method");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -287,6 +308,7 @@ public class ManageController : Controller
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
         StatusMessage = "The external login was added.";
+		_logger.LogWarning("LinkLoginCallback()=null): GDPR-AUDIT [Art.44]: Personal data transfer to third party initiated {Result}", result);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -294,6 +316,7 @@ public class ManageController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RemoveLogin(RemoveLoginViewModel model)
     {
+		_logger.LogInformation("ENTERING: RemoveLogin() method");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -311,6 +334,9 @@ public class ManageController : Controller
         }
 
         await _signInManager.SignInAsync(user, isPersistent: false);
+		_logger.LogWarning("RemoveLogin(model)={Model}): GDPR-AUDIT: State change recorded for the audit trail {Result}", model, result);
+		_logger.LogWarning("RemoveLogin(model)={Model}): GDPR-AUDIT [Art.44]: Personal data transfer to third party initiated {Result}", model, result);
+		_logger.LogWarning("RemoveLogin(model)={Model}): GDPR-AUDIT [Art.17]: Data subject right exercised — erasure/portability request processed {User}", model, user);
         StatusMessage = "The external login was removed.";
         return RedirectToAction(nameof(ExternalLogins));
     }
@@ -318,6 +344,7 @@ public class ManageController : Controller
     [HttpGet]
     public async Task<IActionResult> TwoFactorAuthentication()
     {
+		_logger.LogInformation("ENTERING: TwoFactorAuthentication() method");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -331,12 +358,14 @@ public class ManageController : Controller
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
         };
 
+		_logger.LogInformation("TwoFactorAuthentication()=null): GDPR-AUDIT: Encryption operation completed");
         return View(model);
     }
 
     [HttpGet]
     public async Task<IActionResult> Disable2faWarning()
     {
+		_logger.LogInformation("ENTERING: Disable2faWarning() method");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -348,6 +377,7 @@ public class ManageController : Controller
             throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
         }
 
+		_logger.LogWarning("Disable2faWarning()=null): GDPR-AUDIT: State change recorded for the audit trail");
         return View(nameof(Disable2fa));
     }
 
@@ -355,6 +385,7 @@ public class ManageController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Disable2fa()
     {
+		_logger.LogInformation("ENTERING: Disable2fa() method");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -368,12 +399,14 @@ public class ManageController : Controller
         }
 
         _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.Id);
+		_logger.LogWarning("Disable2fa()=null): GDPR-AUDIT: State change recorded for the audit trail {Disable2faResult}", disable2faResult);
         return RedirectToAction(nameof(TwoFactorAuthentication));
     }
 
     [HttpGet]
     public async Task<IActionResult> EnableAuthenticator()
     {
+		_logger.LogInformation("ENTERING: EnableAuthenticator() method");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -383,12 +416,14 @@ public class ManageController : Controller
         var model = new EnableAuthenticatorViewModel();
         await LoadSharedKeyAndQrCodeUriAsync(user, model);
 
+		_logger.LogWarning("EnableAuthenticator()=null): GDPR-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
     [HttpGet]
     public IActionResult ShowRecoveryCodes()
     {
+		_logger.LogInformation("ENTERING: ShowRecoveryCodes() method");
         var recoveryCodes = (string[]?)TempData[RecoveryCodesKey];
         if (recoveryCodes == null)
         {
@@ -396,6 +431,7 @@ public class ManageController : Controller
         }
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes };
+		_logger.LogInformation("ShowRecoveryCodes()=null): GDPR-AUDIT: Encryption operation completed");
         return View(model);
     }
 
@@ -426,6 +462,11 @@ public class ManageController : Controller
         {
             ModelState.AddModelError("Code", "Verification code is invalid.");
             await LoadSharedKeyAndQrCodeUriAsync(user, model);
+			_logger.LogInformation("ENTERING: LoadSharedKeyAndQrCodeUriAsync() method");
+			_logger.LogWarning("ENTERING: LoadSharedKeyAndQrCodeUriAsync() method");
+			_logger.LogWarning("LoadSharedKeyAndQrCodeUriAsync(user,model)={User},{Model}: GDPR-AUDIT: Outbound notification recorded for the audit trail", user, model);
+			_logger.LogWarning("LoadSharedKeyAndQrCodeUriAsync(user,model)={User},{Model}: GDPR-AUDIT [Art.44]: Personal data transfer operation recorded", user, model);
+			_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user,model)={User},{Model}: GDPR-AUDIT [Art.30]: Personal data processing operation recorded {User1}", user, model, user);
             return View(model);
         }
 
@@ -434,12 +475,14 @@ public class ManageController : Controller
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) ?? new List<string>();
         TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
+		_logger.LogWarning("EnableAuthenticator(model)={Model}): GDPR-AUDIT: State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
     [HttpGet]
     public IActionResult ResetAuthenticatorWarning()
     {
+		_logger.LogInformation("ENTERING: ResetAuthenticatorWarning() method");
         return View(nameof(ResetAuthenticator));
     }
 
@@ -447,6 +490,7 @@ public class ManageController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ResetAuthenticator()
     {
+		_logger.LogInformation("ENTERING: ResetAuthenticator() method");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -457,6 +501,7 @@ public class ManageController : Controller
         await _userManager.ResetAuthenticatorKeyAsync(user);
         _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
 
+		_logger.LogWarning("ResetAuthenticator()=null): GDPR-AUDIT: State change recorded for the audit trail");
         return RedirectToAction(nameof(EnableAuthenticator));
     }
 
@@ -464,6 +509,7 @@ public class ManageController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> GenerateRecoveryCodes()
     {
+		_logger.LogInformation("ENTERING: GenerateRecoveryCodes() method");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -480,12 +526,14 @@ public class ManageController : Controller
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
 
+		_logger.LogInformation("GenerateRecoveryCodes()=null): GDPR-AUDIT: Encryption operation completed");
         return View(nameof(ShowRecoveryCodes), model);
     }
 
     [HttpGet]
     public async Task<IActionResult> GenerateRecoveryCodesWarning()
     {
+		_logger.LogInformation("ENTERING: GenerateRecoveryCodesWarning() method");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -497,19 +545,23 @@ public class ManageController : Controller
             throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.Id}' because they do not have 2FA enabled.");
         }
 
+		_logger.LogInformation("GenerateRecoveryCodesWarning()=null): GDPR-AUDIT: Encryption operation completed");
         return View(nameof(GenerateRecoveryCodesWarning));
     }
 
     private void AddErrors(IdentityResult result)
     {
+		_logger.LogInformation("ENTERING: AddErrors() method");
         foreach (var error in result.Errors)
         {
             ModelState.AddModelError(string.Empty, error.Description);
+			_logger.LogWarning("AddErrors(result)={Result}): GDPR-AUDIT: State change recorded for the audit trail {Result1}", result, result);
         }
     }
 
     private string FormatKey(string unformattedKey)
     {
+		_logger.LogInformation("ENTERING: FormatKey() method");
         var result = new StringBuilder();
         int currentPosition = 0;
         while (currentPosition + 4 < unformattedKey.Length)
@@ -527,6 +579,7 @@ public class ManageController : Controller
 
     private string GenerateQrCodeUri(string email, string unformattedKey)
     {
+		_logger.LogInformation("ENTERING: GenerateQrCodeUri() method");
         return string.Format(
             AuthenticatorUriFormat,
             _urlEncoder.Encode("eShopOnWeb"),

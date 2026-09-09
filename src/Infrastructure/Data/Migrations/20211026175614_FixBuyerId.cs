@@ -1,11 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations;
 
 public partial class FixBuyerId : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
+		_logger.LogInformation("ENTERING: Up() method");
         migrationBuilder.AlterColumn<string>(
             name: "BuyerId",
             table: "Orders",
@@ -30,6 +33,7 @@ public partial class FixBuyerId : Migration
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
+		_logger.LogInformation("ENTERING: Down() method");
         migrationBuilder.AlterColumn<string>(
             name: "BuyerId",
             table: "Orders",

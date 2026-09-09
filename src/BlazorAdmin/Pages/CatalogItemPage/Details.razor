@@ -110,6 +110,7 @@
 
     public async Task EditClick()
     {
+		Logger.LogInformation("ENTERING: EditClick() method");
         await OnEditClick.InvokeAsync(_item.Id);
         await Close();
     }
@@ -128,6 +129,7 @@
         _showDetailsModal = true;
 
         StateHasChanged();
+		Logger.LogInformation("ENTERING: Close() method");
     }
 
     public async Task Close()
