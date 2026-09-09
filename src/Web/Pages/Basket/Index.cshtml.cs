@@ -5,11 +5,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Pages.Basket;
 
 public class IndexModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly IBasketViewModelService _basketViewModelService;
     private readonly IRepository<CatalogItem> _itemRepository;
@@ -28,6 +30,7 @@ public class IndexModel : PageModel
     public async Task OnGet()
     {
         BasketModel = await _basketViewModelService.GetOrCreateBasketForUser(GetOrSetBasketCookieAndUserName());
+		_logger.LogWarning("OnGet()=null): GEN-AUDIT: Record access recorded for the audit trail");
     }
 
     public async Task<IActionResult> OnPost(CatalogItemViewModel productDetails)
@@ -49,6 +52,7 @@ public class IndexModel : PageModel
 
         BasketModel = await _basketViewModelService.Map(basket);
 
+		_logger.LogWarning("OnPost(productDetails)={ProductDetails}): GEN-AUDIT: State change recorded for the audit trail", productDetails);
         return RedirectToPage();
     }
 
@@ -63,6 +67,7 @@ public class IndexModel : PageModel
         var updateModel = items.ToDictionary(b => b.Id.ToString(), b => b.Quantity);
         var basket = await _basketService.SetQuantities(basketView.Id, updateModel);
         BasketModel = await _basketViewModelService.Map(basket);
+		_logger.LogWarning("OnPostUpdate(items)={Items}): GEN-AUDIT: State change recorded for the audit trail", items);
     }
 
     private string GetOrSetBasketCookieAndUserName()
@@ -95,6 +100,7 @@ public class IndexModel : PageModel
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, userName, cookieOptions);
 
+		_logger.LogWarning("GetOrSetBasketCookieAndUserName()=null): GEN-AUDIT: State change recorded for the audit trail");
         return userName;
     }
 }
