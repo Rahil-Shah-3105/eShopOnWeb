@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations;
 
 public partial class FixBuyerId : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.AlterColumn<string>(
@@ -26,6 +28,7 @@ public partial class FixBuyerId : Migration
             oldClrType: typeof(string),
             oldType: "nvarchar(40)",
             oldMaxLength: 40);
+			_logger.LogInformation("Up(migrationBuilder)={MigrationBuilder}): ISO42001-AUDIT: Change management operation performed", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
@@ -48,5 +51,6 @@ public partial class FixBuyerId : Migration
             oldClrType: typeof(string),
             oldType: "nvarchar(256)",
             oldMaxLength: 256);
+			_logger.LogInformation("Down(migrationBuilder)={MigrationBuilder}): ISO42001-AUDIT: Change management operation performed", migrationBuilder);
     }
 }
