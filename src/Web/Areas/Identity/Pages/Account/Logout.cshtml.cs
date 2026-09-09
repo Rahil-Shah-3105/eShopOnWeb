@@ -13,12 +13,14 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 //TODO : replace IMemoryCache by distributed cache if you are in multi-host scenario
 public class LogoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<LogoutModel> _logger;
     private readonly IMemoryCache _cache;
 
     public LogoutModel(SignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger, IMemoryCache cache)
     {
+		_logger.LogInformation("ENTERING: LogoutModel() method");
         _signInManager = signInManager;
         _logger = logger;
         _cache = cache;
@@ -26,10 +28,12 @@ public class LogoutModel : PageModel
 
     public void OnGet()
     {
+	_logger.LogInformation("ENTERING: OnGet() method");
     }
 
     public async Task<IActionResult> OnPost(string? returnUrl = null)
     {
+		_logger.LogInformation("ENTERING: OnPost() method");
         await _signInManager.SignOutAsync();
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         var userId = _signInManager.Context.User.Claims.First(c => c.Type == ClaimTypes.Name);

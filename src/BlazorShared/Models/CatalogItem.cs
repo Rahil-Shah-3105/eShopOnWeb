@@ -3,11 +3,13 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading.Tasks;
 using BlazorInputFile;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorShared.Models;
 
 public class CatalogItem
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public int Id { get; set; }
 
     public int CatalogTypeId { get; set; }
@@ -36,8 +38,10 @@ public class CatalogItem
 
     public static string IsValidImage(string pictureName, string pictureBase64)
     {
+		_logger.LogInformation("ENTERING: IsValidImage() method");
         if (string.IsNullOrEmpty(pictureBase64))
         {
+			_logger.LogWarning("ENTERING: IsValidImage() method");
             return "File not found!";
         }
         var fileData = Convert.FromBase64String(pictureBase64);
@@ -62,6 +66,7 @@ public class CatalogItem
 
     public static async Task<string> DataToBase64(IFileListEntry fileItem)
     {
+		_logger.LogInformation("ENTERING: DataToBase64() method");
         using (var reader = new StreamReader(fileItem.Data))
         {
             using (var memStream = new MemoryStream())
@@ -77,6 +82,7 @@ public class CatalogItem
 
     private static bool IsExtensionValid(string fileName)
     {
+		_logger.LogInformation("ENTERING: IsExtensionValid() method");
         var extension = Path.GetExtension(fileName);
 
         return string.Equals(extension, ".jpg", StringComparison.OrdinalIgnoreCase) ||

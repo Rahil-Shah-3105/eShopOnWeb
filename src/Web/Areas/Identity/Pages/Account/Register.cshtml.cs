@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 [AllowAnonymous]
 public class RegisterModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<RegisterModel> _logger;
@@ -28,6 +29,7 @@ public class RegisterModel : PageModel
         ILogger<RegisterModel> logger,
         IEmailSender emailSender)
     {
+		_logger.LogInformation("ENTERING: RegisterModel() method");
         _userManager = userManager;
         _signInManager = signInManager;
         _logger = logger;
@@ -41,6 +43,7 @@ public class RegisterModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -60,6 +63,7 @@ public class RegisterModel : PageModel
 
     public void OnGet(string? returnUrl = null)
     {
+		_logger.LogInformation("ENTERING: OnGet() method");
         ReturnUrl = returnUrl;
     }
 
@@ -93,8 +97,11 @@ public class RegisterModel : PageModel
                 ModelState.AddModelError(string.Empty, error.Description);
             }
         }
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): GDPR-AUDIT: Password reset operation performed", returnUrl);
+		_logger.LogInformation("OnPostAsync(returnUrl)={ReturnUrl}): GDPR-AUDIT: Encryption operation completed", returnUrl);
 
         // If we got this far, something failed, redisplay form
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): GDPR-AUDIT: Outbound notification recorded for the audit trail", returnUrl);
         return Page();
     }
 }

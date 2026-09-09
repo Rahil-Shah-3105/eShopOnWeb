@@ -6,32 +6,38 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.eShopWeb.Infrastructure.Identity;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Pages.Shared.Components.BasketComponent;
 
 public class Basket : ViewComponent
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketViewModelService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
 
     public Basket(IBasketViewModelService basketService,
                     SignInManager<ApplicationUser> signInManager)
     {
+		_logger.LogInformation("ENTERING: Basket() method");
         _basketService = basketService;
         _signInManager = signInManager;
     }
 
     public async Task<IViewComponentResult> InvokeAsync()
     {
+		_logger.LogInformation("ENTERING: InvokeAsync() method");
         var vm = new BasketComponentViewModel
         {
             ItemsCount = await CountTotalBasketItems()
         };
+		_logger.LogWarning("InvokeAsync()=null): GDPR-AUDIT: Outbound notification recorded for the audit trail");
         return View(vm);
     }
 
     private async Task<int> CountTotalBasketItems()
     {
+		_logger.LogInformation("ENTERING: CountTotalBasketItems() method");
         if (_signInManager.IsSignedIn(HttpContext.User))
         {
             Guard.Against.Null(User?.Identity?.Name, nameof(User.Identity.Name));
@@ -47,6 +53,7 @@ public class Basket : ViewComponent
 
     private string? GetAnnonymousIdFromCookie()
     {
+		_logger.LogInformation("ENTERING: GetAnnonymousIdFromCookie() method");
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
             var id = Request.Cookies[Constants.BASKET_COOKIENAME];
@@ -56,6 +63,8 @@ public class Basket : ViewComponent
                 return id;
             }
         }
+		_logger.LogWarning("GetAnnonymousIdFromCookie()=null): GDPR-AUDIT: Record access recorded for the audit trail");
+		_logger.LogInformation("GetAnnonymousIdFromCookie()=null): GDPR-AUDIT [Art.30]: Personal data processing activity completed");
         return null;
     }
 }

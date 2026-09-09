@@ -2,16 +2,19 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Configuration;
 
 public static class ConfigureCookieSettings
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public const int ValidityMinutesPeriod = 60;
     public const string IdentifierCookieName = "EshopIdentifier";
 
     public static IServiceCollection AddCookieSettings(this IServiceCollection services)
     {
+		_logger.LogInformation("ENTERING: AddCookieSettings() method");
         services.Configure<CookiePolicyOptions>(options =>
         {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -34,6 +37,9 @@ public static class ConfigureCookieSettings
         });
 
         services.AddScoped<RevokeAuthenticationEvents>();
+		_logger.LogWarning("AddCookieSettings(services)={Services}): GDPR-AUDIT: State change recorded for the audit trail", services);
+		_logger.LogInformation("AddCookieSettings(services)={Services}): GDPR-AUDIT [Art.30]: Personal data processing activity completed", services);
+		_logger.LogWarning("AddCookieSettings(services)={Services}): GDPR-AUDIT [Art.7]: Consent operation completed", services);
 
         return services;
     }

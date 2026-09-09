@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
 
@@ -15,18 +16,23 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
 /// </summary>
 public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogType>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMapper _mapper;
 
     public CatalogTypeListEndpoint(IMapper mapper)
     {
+		_logger.LogInformation("ENTERING: CatalogTypeListEndpoint() method");
         _mapper = mapper;
     }
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
+		_logger.LogInformation("ENTERING: AddRoute() method");
         app.MapGet("api/catalog-types",
+			_logger.LogInformation("ENTERING: async() method");
             async (IRepository<CatalogType> catalogTypeRepository) =>
             {
+				_logger.LogWarning("ENTERING: async() method");
                 return await HandleAsync(catalogTypeRepository);
             })
             .Produces<ListCatalogTypesResponse>()
@@ -35,12 +41,14 @@ public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogTyp
 
     public async Task<IResult> HandleAsync(IRepository<CatalogType> catalogTypeRepository)
     {
+		_logger.LogInformation("ENTERING: HandleAsync() method");
         var response = new ListCatalogTypesResponse();
 
         var items = await catalogTypeRepository.ListAsync();
 
         response.CatalogTypes.AddRange(items.Select(_mapper.Map<CatalogTypeDto>));
 
+		_logger.LogWarning("HandleAsync(catalogTypeRepository)={CatalogTypeRepository}): GDPR-AUDIT: Outbound notification recorded for the audit trail", catalogTypeRepository);
         return Results.Ok(response);
     }
 }

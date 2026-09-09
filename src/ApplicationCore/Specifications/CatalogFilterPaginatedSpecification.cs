@@ -1,13 +1,16 @@
 ﻿using Ardalis.Specification;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Specifications;
 
 public class CatalogFilterPaginatedSpecification : Specification<CatalogItem>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public CatalogFilterPaginatedSpecification(int skip, int take, int? brandId, int? typeId)
         : base()
     {
+		_logger.LogInformation("ENTERING: CatalogFilterPaginatedSpecification() method");
         if (take == 0)
         {
             take = int.MaxValue;

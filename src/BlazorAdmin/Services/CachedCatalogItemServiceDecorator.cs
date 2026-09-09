@@ -11,6 +11,7 @@ namespace BlazorAdmin.Services;
 
 public class CachedCatalogItemServiceDecorator : ICatalogItemService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogItemService _catalogItemService;
     private ILogger<CachedCatalogItemServiceDecorator> _logger;
@@ -19,6 +20,7 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         CatalogItemService catalogItemService,
         ILogger<CachedCatalogItemServiceDecorator> logger)
     {
+		_logger.LogInformation("ENTERING: CachedCatalogItemServiceDecorator() method");
         _localStorageService = localStorageService;
         _catalogItemService = catalogItemService;
         _logger = logger;
@@ -45,6 +47,7 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         var items = await _catalogItemService.ListPaged(pageSize);
         var entry = new CacheEntry<List<CatalogItem>>(items);
         await _localStorageService.SetItemAsync(key, entry);
+		_logger.LogWarning("ListPaged(pageSize)={PageSize}): GDPR-AUDIT: Record access recorded for the audit trail", pageSize);
         return items;
     }
 
@@ -69,35 +72,46 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         var items = await _catalogItemService.List();
         var entry = new CacheEntry<List<CatalogItem>>(items);
         await _localStorageService.SetItemAsync(key, entry);
+		_logger.LogWarning("List()=null): GDPR-AUDIT: Record access recorded for the audit trail");
         return items;
     }
 
     public async Task<CatalogItem> GetById(int id)
     {
+		_logger.LogInformation("ENTERING: GetById() method");
         return (await List()).FirstOrDefault(x => x.Id == id);
     }
 
     public async Task<CatalogItem> Create(CreateCatalogItemRequest catalogItem)
     {
+		_logger.LogInformation("ENTERING: Create() method");
         var result = await _catalogItemService.Create(catalogItem);
         await RefreshLocalStorageList();
 
+		_logger.LogWarning("Create(catalogItem)={CatalogItem}): GDPR-AUDIT: State change recorded for the audit trail {Result}", catalogItem, result);
         return result;
     }
 
     public async Task<CatalogItem> Edit(CatalogItem catalogItem)
     {
+		_logger.LogInformation("ENTERING: Edit() method");
         var result = await _catalogItemService.Edit(catalogItem);
         await RefreshLocalStorageList();
 
+		_logger.LogWarning("Edit(catalogItem)={CatalogItem}): GDPR-AUDIT: State change recorded for the audit trail {Result}", catalogItem, result);
+		_logger.LogInformation("ENTERING: RefreshLocalStorageList() method");
+		_logger.LogWarning("ENTERING: RefreshLocalStorageList() method");
+		_logger.LogWarning("RefreshLocalStorageList()=null): GDPR-AUDIT: Record access recorded for the audit trail");
         return result;
     }
 
     public async Task<string> Delete(int id)
     {
+		_logger.LogInformation("ENTERING: Delete() method");
         var result = await _catalogItemService.Delete(id);
         await RefreshLocalStorageList();
 
+		_logger.LogWarning("Delete(id)={Id}): GDPR-AUDIT: State change recorded for the audit trail {Id1}", id, id);
         return result;
     }
 

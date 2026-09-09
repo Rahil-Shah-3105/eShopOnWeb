@@ -1,12 +1,15 @@
-﻿@page "/logout"
+﻿using Microsoft.Extensions.Logging;
+@page "/logout"
 @inject IJSRuntime JSRuntime
 @inject HttpClient HttpClient
 @inherits BlazorAdmin.Helpers.BlazorComponent
 
 @code {
+private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     protected override async Task OnInitializedAsync()
     {
+		_logger.LogInformation("ENTERING: OnInitializedAsync() method");
         await HttpClient.PostAsync("User/Logout", null);
         await new Route(JSRuntime).RouteOutside("/Identity/Account/Login");
     }
