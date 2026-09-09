@@ -41,6 +41,7 @@ public class RegisterModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -61,6 +62,7 @@ public class RegisterModel : PageModel
     public void OnGet(string? returnUrl = null)
     {
         ReturnUrl = returnUrl;
+		_logger.LogWarning("OnGet(returnUrl)={ReturnUrl}): NIS2-AUDIT: Record access recorded for the audit trail", returnUrl);
     }
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
@@ -95,6 +97,7 @@ public class RegisterModel : PageModel
         }
 
         // If we got this far, something failed, redisplay form
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): NIS2-AUDIT: Outbound notification recorded for the audit trail", returnUrl);
         return Page();
     }
 }

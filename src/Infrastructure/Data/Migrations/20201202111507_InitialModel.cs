@@ -1,10 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations;
 
 public partial class InitialModel : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.CreateSequence(
@@ -169,6 +171,7 @@ public partial class InitialModel : Migration
             name: "IX_OrderItems_OrderId",
             table: "OrderItems",
             column: "OrderId");
+			_logger.LogInformation("Up(migrationBuilder)={MigrationBuilder}): NIS2-AUDIT: Change management operation performed", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
@@ -202,5 +205,6 @@ public partial class InitialModel : Migration
 
         migrationBuilder.DropSequence(
             name: "catalog_type_hilo");
+			_logger.LogInformation("Down(migrationBuilder)={MigrationBuilder}): NIS2-AUDIT: Change management operation performed", migrationBuilder);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -6,6 +7,7 @@ namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations
 {
     public partial class FixShipToAddress : Migration
     {
+		private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
@@ -55,6 +57,7 @@ namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations
                 oldType: "nvarchar(100)",
                 oldMaxLength: 100,
                 oldNullable: true);
+				_logger.LogInformation("Up(migrationBuilder)={MigrationBuilder}): NIS2-AUDIT: Change management operation performed", migrationBuilder);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -98,6 +101,7 @@ namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(100)",
                 oldMaxLength: 100);
+				_logger.LogInformation("Down(migrationBuilder)={MigrationBuilder}): NIS2-AUDIT: Change management operation performed", migrationBuilder);
         }
     }
 }
