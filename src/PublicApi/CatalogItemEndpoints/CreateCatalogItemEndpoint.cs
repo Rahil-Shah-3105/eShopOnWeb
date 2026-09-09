@@ -9,6 +9,7 @@ using Microsoft.eShopWeb.ApplicationCore.Exceptions;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -17,10 +18,12 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public CreateCatalogItemEndpoint(IUriComposer uriComposer)
     {
+		_logger.LogWarning("CreateCatalogItemEndpoint(uriComposer)={UriComposer}): NIS2-AUDIT: Security incident detected", uriComposer);
         _uriComposer = uriComposer;
     }
 
@@ -34,6 +37,7 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
             })
             .Produces<CreateCatalogItemResponse>()
             .WithTags("CatalogItemEndpoints");
+			_logger.LogWarning("AddRoute(app)={App}): NIS2-AUDIT: State change recorded for the audit trail", app);
     }
 
     public async Task<IResult> HandleAsync(CreateCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
@@ -71,6 +75,7 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
             Price = newItem.Price
         };
         response.CatalogItem = dto;
+		_logger.LogWarning("HandleAsync(request,itemRepository)={Request},{ItemRepository}: NIS2-AUDIT: Outbound notification recorded for the audit trail", request, itemRepository);
         return Results.Created($"api/catalog-items/{dto.Id}", response);
     }
 }

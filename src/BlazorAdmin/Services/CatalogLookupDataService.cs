@@ -18,6 +18,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogLookupDataService<TLookupData, TReponse>> _logger;
@@ -28,7 +29,9 @@ public class CatalogLookupDataService<TLookupData, TReponse>
         ILogger<CatalogLookupDataService<TLookupData, TReponse>> logger)
     {
         _httpClient = httpClient;
+		_logger.LogInformation("CatalogLookupDataService(httpClient,baseUrlConfiguration,logger)={HttpClient},{BaseUrlConfiguration},{Logger}: NIS2-AUDIT: Change management operation performed", httpClient, baseUrlConfiguration, logger);
         _logger = logger;
+		_logger.LogWarning("CatalogLookupDataService(httpClient,baseUrlConfiguration,logger)={HttpClient},{BaseUrlConfiguration},{Logger}: NIS2-AUDIT: Security incident detected", httpClient, baseUrlConfiguration, logger);
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
     }
 
@@ -38,6 +41,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
         _logger.LogInformation($"Fetching {typeof(TLookupData).Name} from API. Enpoint : {endpointName}");
 
         var response = await _httpClient.GetFromJsonAsync<TReponse>($"{_apiUrl}{endpointName}");
+		_logger.LogWarning("List()=null): NIS2-AUDIT: Record access recorded for the audit trail");
         return response.List;
     }
 }
