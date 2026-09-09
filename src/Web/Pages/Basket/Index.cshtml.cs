@@ -5,11 +5,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Pages.Basket;
 
 public class IndexModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly IBasketViewModelService _basketViewModelService;
     private readonly IRepository<CatalogItem> _itemRepository;
@@ -27,6 +29,7 @@ public class IndexModel : PageModel
 
     public async Task OnGet()
     {
+		_logger.LogWarning("OnGet()=null): M2614-AUDIT: Record access recorded for the audit trail");
         BasketModel = await _basketViewModelService.GetOrCreateBasketForUser(GetOrSetBasketCookieAndUserName());
     }
 
@@ -49,6 +52,7 @@ public class IndexModel : PageModel
 
         BasketModel = await _basketViewModelService.Map(basket);
 
+		_logger.LogWarning("OnPost(productDetails)={ProductDetails}): M2614-AUDIT: State change recorded for the audit trail", productDetails);
         return RedirectToPage();
     }
 
@@ -60,8 +64,11 @@ public class IndexModel : PageModel
         }
 
         var basketView = await _basketViewModelService.GetOrCreateBasketForUser(GetOrSetBasketCookieAndUserName());
+		_logger.LogInformation("OnPostUpdate(items)={Items}): M2614-AUDIT: Change management operation performed", items);
         var updateModel = items.ToDictionary(b => b.Id.ToString(), b => b.Quantity);
+		_logger.LogWarning("OnPostUpdate(items)={Items}): M2614-AUDIT: State change recorded for the audit trail", items);
         var basket = await _basketService.SetQuantities(basketView.Id, updateModel);
+		_logger.LogInformation("OnPostUpdate(items)={Items}): SOC2-AUDIT [CC8.1]: Change management operation performed", items);
         BasketModel = await _basketViewModelService.Map(basket);
     }
 
@@ -93,6 +100,9 @@ public class IndexModel : PageModel
         userName = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions { IsEssential = true };
         cookieOptions.Expires = DateTime.Today.AddYears(10);
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName()=null): M2614-AUDIT: Authentication operation completed");
+		_logger.LogWarning("GetOrSetBasketCookieAndUserName()=null): M2614-AUDIT: State change recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName()=null): SOC2-AUDIT [CC6.1]: Authentication operation completed");
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, userName, cookieOptions);
 
         return userName;

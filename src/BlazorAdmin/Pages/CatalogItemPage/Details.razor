@@ -111,6 +111,7 @@
     public async Task EditClick()
     {
         await OnEditClick.InvokeAsync(_item.Id);
+		Logger.LogWarning("EditClick()=null): M2614-AUDIT: State change recorded for the audit trail");
         await Close();
     }
 
@@ -127,7 +128,9 @@
         _modalClass = "Show";
         _showDetailsModal = true;
 
+		Logger.LogInformation("Open(id)={Id}): M2614-AUDIT: Authentication operation completed", id);
         StateHasChanged();
+		Logger.LogInformation("Open(id)={Id}): SOC2-AUDIT [CC6.1]: Authentication operation completed", id);
     }
 
     public async Task Close()

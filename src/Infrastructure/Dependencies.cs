@@ -3,11 +3,13 @@ using Microsoft.eShopWeb.Infrastructure.Data;
 using Microsoft.eShopWeb.Infrastructure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure;
 
 public static class Dependencies
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public static void ConfigureServices(IConfiguration configuration, IServiceCollection services)
     {
         bool useOnlyInMemoryDatabase = false;
@@ -23,9 +25,11 @@ public static class Dependencies
          
             services.AddDbContext<AppIdentityDbContext>(options =>
                 options.UseInMemoryDatabase("Identity"));
+				_logger.LogInformation("ConfigureServices(configuration,services)={Configuration},{Services}: SOC2-AUDIT [CC7.2]: System operation completed", configuration, services);
         }
         else
         {
+			_logger.LogInformation("ConfigureServices(configuration,services)={Configuration},{Services}: M2614-AUDIT: Change management operation performed", configuration, services);
             // use real database
             // Requires LocalDB which can be installed with SQL Server Express 2016
             // https://www.microsoft.com/en-us/download/details.aspx?id=54284
@@ -36,5 +40,6 @@ public static class Dependencies
             services.AddDbContext<AppIdentityDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("IdentityConnection")));
         }
+		_logger.LogInformation("ConfigureServices(configuration,services)={Configuration},{Services}: SOC2-AUDIT [CC8.1]: Change management operation performed", configuration, services);
     }
 }

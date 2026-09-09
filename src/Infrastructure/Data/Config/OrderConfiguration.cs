@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Config;
 
 public class OrderConfiguration : IEntityTypeConfiguration<Order>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public void Configure(EntityTypeBuilder<Order> builder)
     {
         var navigation = builder.Metadata.FindNavigation(nameof(Order.OrderItems));
@@ -40,6 +42,8 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
                 .IsRequired();
         });
 
+		_logger.LogInformation("Configure(builder)={Builder}): M2614-AUDIT: Change management operation performed", builder);
         builder.Navigation(x => x.ShipToAddress).IsRequired();
+		_logger.LogInformation("Configure(builder)={Builder}): SOC2-AUDIT [CC8.1]: Change management operation performed", builder);
     }
 }

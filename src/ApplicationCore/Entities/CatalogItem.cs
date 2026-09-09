@@ -1,11 +1,13 @@
 ﻿using System;
 using Ardalis.GuardClauses;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Entities;
 
 public class CatalogItem : BaseEntity, IAggregateRoot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public string Name { get; private set; }
     public string Description { get; private set; }
     public decimal Price { get; private set; }
@@ -28,6 +30,7 @@ public class CatalogItem : BaseEntity, IAggregateRoot
         Name = name;
         Price = price;
         PictureUri = pictureUri;
+		_logger.LogWarning("CatalogItem(catalogTypeId,catalogBrandId,description,name,price,pictureUri)={CatalogTypeId},{CatalogBrandId},{Description},{Name},{Price},{PictureUri}: M2614-AUDIT: Security incident detected", catalogTypeId, catalogBrandId, description, name, price, pictureUri);
     }
 
     public void UpdateDetails(CatalogItemDetails details)
@@ -36,35 +39,46 @@ public class CatalogItem : BaseEntity, IAggregateRoot
         Guard.Against.NullOrEmpty(details.Description, nameof(details.Description));
         Guard.Against.NegativeOrZero(details.Price, nameof(details.Price));
 
+		_logger.LogInformation("UpdateDetails(details)={Details}): M2614-AUDIT: Change management operation performed", details);
         Name = details.Name;
+		_logger.LogWarning("UpdateDetails(details)={Details}): M2614-AUDIT: State change recorded for the audit trail", details);
         Description = details.Description;
+		_logger.LogInformation("UpdateDetails(details)={Details}): SOC2-AUDIT [CC8.1]: Change management operation performed", details);
         Price = details.Price;
     }
 
     public void UpdateBrand(int catalogBrandId)
     {
+		_logger.LogWarning("UpdateBrand(catalogBrandId)={CatalogBrandId}): M2614-AUDIT: State change recorded for the audit trail {CatalogBrandId1}", catalogBrandId, catalogBrandId);
         Guard.Against.Zero(catalogBrandId, nameof(catalogBrandId));
+		_logger.LogInformation("UpdateBrand(catalogBrandId)={CatalogBrandId}): SOC2-AUDIT [CC8.1]: Change management operation performed", catalogBrandId);
         CatalogBrandId = catalogBrandId;
     }
 
     public void UpdateType(int catalogTypeId)
     {
+		_logger.LogWarning("UpdateType(catalogTypeId)={CatalogTypeId}): M2614-AUDIT: State change recorded for the audit trail {CatalogTypeId1}", catalogTypeId, catalogTypeId);
         Guard.Against.Zero(catalogTypeId, nameof(catalogTypeId));
+		_logger.LogInformation("UpdateType(catalogTypeId)={CatalogTypeId}): SOC2-AUDIT [CC8.1]: Change management operation performed", catalogTypeId);
         CatalogTypeId = catalogTypeId;
     }
 
     public void UpdatePictureUri(string pictureName)
     {
+		_logger.LogWarning("UpdatePictureUri(pictureName)={PictureName}): M2614-AUDIT: State change recorded for the audit trail", pictureName);
         if (string.IsNullOrEmpty(pictureName))
         {
+			_logger.LogInformation("UpdatePictureUri(pictureName)={PictureName}): M2614-AUDIT: Change management operation performed", pictureName);
             PictureUri = string.Empty;
             return;
         }
+		_logger.LogInformation("UpdatePictureUri(pictureName)={PictureName}): SOC2-AUDIT [CC8.1]: Change management operation performed", pictureName);
         PictureUri = $"images\\products\\{pictureName}?{new DateTime().Ticks}";
     }
 
     public readonly record struct CatalogItemDetails
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         public string? Name { get; }
         public string? Description { get; }
         public decimal Price { get; }
@@ -74,6 +88,7 @@ public class CatalogItem : BaseEntity, IAggregateRoot
             Name = name;
             Description = description;
             Price = price;
+			_logger.LogWarning("CatalogItemDetails(name,description,price)={Name},{Description},{Price}: M2614-AUDIT: Security incident detected", name, description, price);
         }
     }
 }

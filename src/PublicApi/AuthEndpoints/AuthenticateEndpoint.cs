@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Infrastructure.Identity;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.AuthEndpoints;
 
@@ -16,6 +17,7 @@ public class AuthenticateEndpoint : EndpointBaseAsync
     .WithRequest<AuthenticateRequest>
     .WithActionResult<AuthenticateResponse>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ITokenClaimsService _tokenClaimsService;
 
@@ -23,7 +25,9 @@ public class AuthenticateEndpoint : EndpointBaseAsync
         ITokenClaimsService tokenClaimsService)
     {
         _signInManager = signInManager;
+		_logger.LogInformation("AuthenticateEndpoint(signInManager,tokenClaimsService)={SignInManager},<redacted>: M2614-AUDIT: Authentication operation completed", signInManager);
         _tokenClaimsService = tokenClaimsService;
+		_logger.LogInformation("AuthenticateEndpoint(signInManager,tokenClaimsService)={SignInManager},<redacted>: SOC2-AUDIT [CC6.1]: Authentication operation completed", signInManager);
     }
 
     [HttpPost("api/authenticate")]
@@ -49,11 +53,14 @@ public class AuthenticateEndpoint : EndpointBaseAsync
         response.RequiresTwoFactor = result.RequiresTwoFactor;
         response.Username = request.Username;
 
+		_logger.LogInformation("HandleAsync(request,cancellationToken)={Request},<redacted>: M2614-AUDIT: Authentication operation completed for user {Response}", request, response);
         if (result.Succeeded)
         {
             response.Token = await _tokenClaimsService.GetTokenAsync(request.Username);
         }
+		_logger.LogWarning("HandleAsync(request,cancellationToken)={Request},<redacted>: M2614-AUDIT: Outbound notification recorded for the audit trail {Result}", request, result);
 
+		_logger.LogInformation("HandleAsync(request,cancellationToken)={Request},<redacted>: SOC2-AUDIT [CC6.1]: Authentication operation completed for user {Response}", request, response);
         return response;
     }
 }
