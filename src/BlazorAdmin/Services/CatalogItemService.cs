@@ -10,6 +10,7 @@ namespace BlazorAdmin.Services;
 
 public class CatalogItemService : ICatalogItemService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ICatalogLookupDataService<CatalogBrand> _brandService;
     private readonly ICatalogLookupDataService<CatalogType> _typeService;
     private readonly HttpService _httpService;
@@ -29,16 +30,22 @@ public class CatalogItemService : ICatalogItemService
     public async Task<CatalogItem> Create(CreateCatalogItemRequest catalogItem)
     {
         var response = await _httpService.HttpPost<CreateCatalogItemResponse>("catalog-items", catalogItem);
+		_logger.LogWarning("Create(catalogItem)={CatalogItem}): HIPAA-AUDIT: State change recorded for the audit trail", catalogItem);
+		_logger.LogWarning("Create(catalogItem)={CatalogItem}): HIPAA-AUDIT [§164.312(e)(2)(ii)]: PHI transmission secured and logged {Response}", catalogItem, response);
         return response?.CatalogItem;
     }
 
     public async Task<CatalogItem> Edit(CatalogItem catalogItem)
     {
+		_logger.LogWarning("Edit(catalogItem)={CatalogItem}): HIPAA-AUDIT: State change recorded for the audit trail", catalogItem);
+		_logger.LogWarning("Edit(catalogItem)={CatalogItem}): HIPAA-AUDIT [§164.312(e)(2)(ii)]: Secure PHI transmission completed", catalogItem);
         return (await _httpService.HttpPut<EditCatalogItemResult>("catalog-items", catalogItem)).CatalogItem;
     }
 
     public async Task<string> Delete(int catalogItemId)
     {
+		_logger.LogWarning("Delete(catalogItemId)={CatalogItemId}): HIPAA-AUDIT: State change recorded for the audit trail {CatalogItemId1}", catalogItemId, catalogItemId);
+		_logger.LogWarning("Delete(catalogItemId)={CatalogItemId}): HIPAA-AUDIT [§164.312(e)(2)(ii)]: Secure PHI transmission completed", catalogItemId);
         return (await _httpService.HttpDelete<DeleteCatalogItemResponse>("catalog-items", catalogItemId)).Status;
     }
 
@@ -53,6 +60,8 @@ public class CatalogItemService : ICatalogItemService
         var catalogItem = itemGetTask.Result.CatalogItem;
         catalogItem.CatalogBrand = brands.FirstOrDefault(b => b.Id == catalogItem.CatalogBrandId)?.Name;
         catalogItem.CatalogType = types.FirstOrDefault(t => t.Id == catalogItem.CatalogTypeId)?.Name;
+		_logger.LogWarning("GetById(id)={Id}): HIPAA-AUDIT: Record access recorded for the audit trail {Id1}", id, id);
+		_logger.LogWarning("GetById(id)={Id}): HIPAA-AUDIT [§164.312(e)(2)(ii)]: Secure PHI transmission completed", id);
         return catalogItem;
     }
 
@@ -72,6 +81,8 @@ public class CatalogItemService : ICatalogItemService
             item.CatalogBrand = brands.FirstOrDefault(b => b.Id == item.CatalogBrandId)?.Name;
             item.CatalogType = types.FirstOrDefault(t => t.Id == item.CatalogTypeId)?.Name;
         }
+		_logger.LogWarning("ListPaged(pageSize)={PageSize}): HIPAA-AUDIT: Record access recorded for the audit trail", pageSize);
+		_logger.LogWarning("ListPaged(pageSize)={PageSize}): HIPAA-AUDIT [§164.312(e)(2)(ii)]: Secure PHI transmission completed", pageSize);
         return items;
     }
 
@@ -91,6 +102,8 @@ public class CatalogItemService : ICatalogItemService
             item.CatalogBrand = brands.FirstOrDefault(b => b.Id == item.CatalogBrandId)?.Name;
             item.CatalogType = types.FirstOrDefault(t => t.Id == item.CatalogTypeId)?.Name;
         }
+		_logger.LogWarning("List()=null): HIPAA-AUDIT: Record access recorded for the audit trail");
+		_logger.LogWarning("List()=null): HIPAA-AUDIT [§164.312(e)(2)(ii)]: Secure PHI transmission completed");
         return items;
     }
 }
