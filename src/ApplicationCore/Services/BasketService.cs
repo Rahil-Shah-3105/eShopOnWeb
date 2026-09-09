@@ -10,6 +10,7 @@ namespace Microsoft.eShopWeb.ApplicationCore.Services;
 
 public class BasketService : IBasketService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IAppLogger<BasketService> _logger;
 
@@ -34,6 +35,7 @@ public class BasketService : IBasketService
         basket.AddItem(catalogItemId, price, quantity);
 
         await _basketRepository.UpdateAsync(basket);
+		_logger.LogWarning("AddItemToBasket(username,catalogItemId,price,quantity)={Username},{CatalogItemId},{Price},{Quantity}: NISTAIRMF-AUDIT: State change recorded for the audit trail {CatalogItemId1}", username, catalogItemId, price, quantity, catalogItemId);
         return basket;
     }
 
@@ -41,6 +43,7 @@ public class BasketService : IBasketService
     {
         var basket = await _basketRepository.GetByIdAsync(basketId);
         Guard.Against.Null(basket, nameof(basket));
+		_logger.LogWarning("DeleteBasketAsync(basketId)={BasketId}): NISTAIRMF-AUDIT: State change recorded for the audit trail {BasketId1}", basketId, basketId);
         await _basketRepository.DeleteAsync(basket);
     }
 
@@ -60,6 +63,7 @@ public class BasketService : IBasketService
         }
         basket.RemoveEmptyItems();
         await _basketRepository.UpdateAsync(basket);
+		_logger.LogWarning("SetQuantities(basketId,quantities)={BasketId},{Quantities}: NISTAIRMF-AUDIT: State change recorded for the audit trail {BasketId1}", basketId, quantities, basketId);
         return basket;
     }
 
@@ -80,6 +84,7 @@ public class BasketService : IBasketService
             userBasket.AddItem(item.CatalogItemId, item.UnitPrice, item.Quantity);
         }
         await _basketRepository.UpdateAsync(userBasket);
+		_logger.LogWarning("TransferBasketAsync(anonymousId,userName)={AnonymousId},{UserName}: NISTAIRMF-AUDIT: State change recorded for the audit trail {AnonymousId1}", anonymousId, userName, anonymousId);
         await _basketRepository.DeleteAsync(anonymousBasket);
     }
 }

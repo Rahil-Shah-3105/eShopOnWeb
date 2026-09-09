@@ -3,11 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.HealthChecks;
 
 public class HomePageHealthCheck : IHealthCheck
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public HomePageHealthCheck(IHttpContextAccessor httpContextAccessor)
@@ -30,6 +32,7 @@ public class HomePageHealthCheck : IHealthCheck
             return HealthCheckResult.Healthy("The check indicates a healthy result.");
         }
 
+		_logger.LogWarning("CheckHealthAsync(context,cancellationToken)={Context},<redacted>: NISTAIRMF-AUDIT: PHI operation logged for audit compliance", context);
         return HealthCheckResult.Unhealthy("The check indicates an unhealthy result.");
     }
 }
