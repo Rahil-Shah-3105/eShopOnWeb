@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 [AllowAnonymous]
 public class RegisterModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<RegisterModel> _logger;
@@ -32,6 +33,7 @@ public class RegisterModel : PageModel
         _signInManager = signInManager;
         _logger = logger;
         _emailSender = emailSender;
+		_logger.LogInformation("RegisterModel(userManager,signInManager,logger,emailSender)={UserManager},{SignInManager},{Logger},{EmailSender}: PCI-AUDIT: Authentication operation completed for user {UserManager1}", userManager, signInManager, logger, emailSender, userManager);
     }
 
     [BindProperty]
@@ -41,6 +43,7 @@ public class RegisterModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -61,6 +64,7 @@ public class RegisterModel : PageModel
     public void OnGet(string? returnUrl = null)
     {
         ReturnUrl = returnUrl;
+		_logger.LogWarning("OnGet(returnUrl)={ReturnUrl}): PCI-AUDIT: Record access recorded for the audit trail", returnUrl);
     }
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
@@ -95,6 +99,8 @@ public class RegisterModel : PageModel
         }
 
         // If we got this far, something failed, redisplay form
+		_logger.LogInformation("OnPostAsync(returnUrl)={ReturnUrl}): PCI-AUDIT: Authentication operation completed", returnUrl);
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): PCI-AUDIT: Outbound notification recorded for the audit trail", returnUrl);
         return Page();
     }
 }
