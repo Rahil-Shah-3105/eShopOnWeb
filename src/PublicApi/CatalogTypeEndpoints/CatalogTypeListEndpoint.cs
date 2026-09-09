@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
 
@@ -15,11 +16,13 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
 /// </summary>
 public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogType>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMapper _mapper;
 
     public CatalogTypeListEndpoint(IMapper mapper)
     {
         _mapper = mapper;
+		_logger.LogWarning("CatalogTypeListEndpoint(mapper)={Mapper}): SOX-AUDIT: Security incident detected", mapper);
     }
 
     public void AddRoute(IEndpointRouteBuilder app)

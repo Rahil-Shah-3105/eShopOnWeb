@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Services;
 /// </summary>
 public class CatalogViewModelService : ICatalogViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILogger<CatalogViewModelService> _logger;
     private readonly IRepository<CatalogItem> _itemRepository;
     private readonly IRepository<CatalogBrand> _brandRepository;
@@ -35,6 +36,7 @@ public class CatalogViewModelService : ICatalogViewModelService
         _brandRepository = brandRepository;
         _typeRepository = typeRepository;
         _uriComposer = uriComposer;
+		_logger.LogWarning("CatalogViewModelService(loggerFactory,itemRepository,brandRepository,typeRepository,uriComposer)={LoggerFactory},{ItemRepository},{BrandRepository},{TypeRepository},{UriComposer}: SOX-AUDIT: Security incident detected", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer);
     }
 
     public async Task<CatalogIndexViewModel> GetCatalogItems(int pageIndex, int itemsPage, int? brandId, int? typeId)

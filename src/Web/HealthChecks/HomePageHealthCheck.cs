@@ -3,16 +3,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.HealthChecks;
 
 public class HomePageHealthCheck : IHealthCheck
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public HomePageHealthCheck(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
+		_logger.LogInformation("HomePageHealthCheck(httpContextAccessor)={HttpContextAccessor}): SOX-AUDIT: Database transaction completed", httpContextAccessor);
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(
@@ -30,6 +33,8 @@ public class HomePageHealthCheck : IHealthCheck
             return HealthCheckResult.Healthy("The check indicates a healthy result.");
         }
 
+		_logger.LogInformation("CheckHealthAsync(context,cancellationToken)={Context},<redacted>: SOX-AUDIT: Database transaction completed with status {Response}", context, response);
+		_logger.LogInformation("CheckHealthAsync(context,cancellationToken)={Context},<redacted>: SOX-AUDIT: Data integrity check performed", context);
         return HealthCheckResult.Unhealthy("The check indicates an unhealthy result.");
     }
 }

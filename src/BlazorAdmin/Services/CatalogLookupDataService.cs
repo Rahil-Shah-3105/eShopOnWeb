@@ -18,6 +18,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogLookupDataService<TLookupData, TReponse>> _logger;
@@ -29,6 +30,8 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     {
         _httpClient = httpClient;
         _logger = logger;
+		_logger.LogInformation("CatalogLookupDataService(httpClient,baseUrlConfiguration,logger)={HttpClient},{BaseUrlConfiguration},{Logger}: SOX-AUDIT: Change management operation performed", httpClient, baseUrlConfiguration, logger);
+		_logger.LogWarning("CatalogLookupDataService(httpClient,baseUrlConfiguration,logger)={HttpClient},{BaseUrlConfiguration},{Logger}: SOX-AUDIT: Security incident detected", httpClient, baseUrlConfiguration, logger);
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
     }
 

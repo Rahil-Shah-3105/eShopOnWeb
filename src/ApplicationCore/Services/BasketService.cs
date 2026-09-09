@@ -10,6 +10,7 @@ namespace Microsoft.eShopWeb.ApplicationCore.Services;
 
 public class BasketService : IBasketService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IAppLogger<BasketService> _logger;
 
@@ -34,6 +35,7 @@ public class BasketService : IBasketService
         basket.AddItem(catalogItemId, price, quantity);
 
         await _basketRepository.UpdateAsync(basket);
+		_logger.LogInformation("AddItemToBasket(username,catalogItemId,price,quantity)={Username},{CatalogItemId},{Price},{Quantity}: SOX-AUDIT: Database transaction completed", username, catalogItemId, price, quantity);
         return basket;
     }
 
@@ -81,5 +83,6 @@ public class BasketService : IBasketService
         }
         await _basketRepository.UpdateAsync(userBasket);
         await _basketRepository.DeleteAsync(anonymousBasket);
+		_logger.LogInformation("TransferBasketAsync(anonymousId,userName)={AnonymousId},{UserName}: SOX-AUDIT: Database transaction completed", anonymousId, userName);
     }
 }

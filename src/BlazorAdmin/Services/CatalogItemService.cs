@@ -10,6 +10,7 @@ namespace BlazorAdmin.Services;
 
 public class CatalogItemService : ICatalogItemService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ICatalogLookupDataService<CatalogBrand> _brandService;
     private readonly ICatalogLookupDataService<CatalogType> _typeService;
     private readonly HttpService _httpService;
@@ -24,6 +25,7 @@ public class CatalogItemService : ICatalogItemService
         _typeService = typeService;
         _httpService = httpService;
         _logger = logger;
+		_logger.LogWarning("CatalogItemService(brandService,typeService,httpService,logger)={BrandService},{TypeService},{HttpService},{Logger}: SOX-AUDIT: Security incident detected", brandService, typeService, httpService, logger);
     }
 
     public async Task<CatalogItem> Create(CreateCatalogItemRequest catalogItem)

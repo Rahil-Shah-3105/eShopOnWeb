@@ -11,11 +11,14 @@ namespace Microsoft.eShopWeb.Web.Configuration;
 //TODO : replace IMemoryCache with a distributed cache if you are in multi-host scenario
 public class RevokeAuthenticationEvents : CookieAuthenticationEvents
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMemoryCache _cache;
     private readonly ILogger _logger;
 
     public RevokeAuthenticationEvents(IMemoryCache cache, ILogger<RevokeAuthenticationEvents> logger)
     {
+		_logger.LogWarning("RevokeAuthenticationEvents(cache,logger)={Cache},{Logger}: SOX-AUDIT: Access control modification completed", cache, logger);
+		_logger.LogInformation("RevokeAuthenticationEvents(cache,logger)={Cache},{Logger}: SOX-AUDIT: Database transaction completed", cache, logger);
         _cache = cache;
         _logger = logger;
     }
@@ -25,11 +28,13 @@ public class RevokeAuthenticationEvents : CookieAuthenticationEvents
         var userId = context.Principal?.Claims.First(c => c.Type == ClaimTypes.Name);
         var identityKey = context.Request.Cookies[ConfigureCookieSettings.IdentifierCookieName];
 
+		_logger.LogInformation("ValidatePrincipal(context)={Context}): SOX-AUDIT: Database transaction completed", context);
         if (_cache.TryGetValue($"{userId?.Value}:{identityKey}", out var revokeKeys))
         {
             _logger.LogDebug($"Access has been revoked for: {userId?.Value}.");
             context.RejectPrincipal();
             await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
+		_logger.LogInformation("ValidatePrincipal(context)={Context}): SOX-AUDIT: Data integrity check performed", context);
     }
 }

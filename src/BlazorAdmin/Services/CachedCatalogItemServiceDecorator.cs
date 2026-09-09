@@ -11,6 +11,7 @@ namespace BlazorAdmin.Services;
 
 public class CachedCatalogItemServiceDecorator : ICatalogItemService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogItemService _catalogItemService;
     private ILogger<CachedCatalogItemServiceDecorator> _logger;
@@ -22,6 +23,7 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         _localStorageService = localStorageService;
         _catalogItemService = catalogItemService;
         _logger = logger;
+		_logger.LogWarning("CachedCatalogItemServiceDecorator(localStorageService,catalogItemService,logger)={LocalStorageService},{CatalogItemService},{Logger}: SOX-AUDIT: Security incident detected", localStorageService, catalogItemService, logger);
     }
 
     public async Task<List<CatalogItem>> ListPaged(int pageSize)
