@@ -129,6 +129,7 @@
         await CatalogItemService.Edit(_item);
         await OnSaveClick.InvokeAsync(null);
         await Close();
+		Logger.LogWarning("SaveClick()=null): FEDRAMP-AUDIT: State change recorded for the audit trail");
     }
 
     public async Task Open(int id)
