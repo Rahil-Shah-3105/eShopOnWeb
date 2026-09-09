@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
 
@@ -15,6 +16,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
 /// </summary>
 public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogType>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMapper _mapper;
 
     public CatalogTypeListEndpoint(IMapper mapper)
@@ -24,7 +26,9 @@ public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogTyp
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
+		_logger.LogWarning("AddRoute(app)={App}): EUAIACT-AUDIT: State change recorded for the audit trail", app);
         app.MapGet("api/catalog-types",
+			_logger.LogWarning("async(catalogTypeRepository)={CatalogTypeRepository}): EUAIACT-AUDIT: Outbound notification recorded for the audit trail", catalogTypeRepository);
             async (IRepository<CatalogType> catalogTypeRepository) =>
             {
                 return await HandleAsync(catalogTypeRepository);
@@ -39,6 +43,7 @@ public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogTyp
 
         var items = await catalogTypeRepository.ListAsync();
 
+		_logger.LogWarning("HandleAsync(catalogTypeRepository)={CatalogTypeRepository}): EUAIACT-AUDIT: Outbound notification recorded for the audit trail", catalogTypeRepository);
         response.CatalogTypes.AddRange(items.Select(_mapper.Map<CatalogTypeDto>));
 
         return Results.Ok(response);

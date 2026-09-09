@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -128,6 +129,7 @@ public class ManageController : Controller
         }
 
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
+		_logger.LogWarning("SendVerificationEmail(model)={Model}): EUAIACT-AUDIT: Outbound notification recorded for the audit trail", model);
 
         StatusMessage = "Verification email sent. Please check your email.";
         return RedirectToAction(nameof(MyAccount));
@@ -147,6 +149,7 @@ public class ManageController : Controller
         {
             return RedirectToAction(nameof(SetPassword));
         }
+		_logger.LogWarning("ChangePassword()=null): EUAIACT-AUDIT: State change recorded for the audit trail");
 
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
         return View(model);
@@ -197,6 +200,7 @@ public class ManageController : Controller
         {
             return RedirectToAction(nameof(ChangePassword));
         }
+		_logger.LogWarning("SetPassword()=null): EUAIACT-AUDIT: State change recorded for the audit trail");
 
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
         return View(model);
@@ -310,6 +314,7 @@ public class ManageController : Controller
             throw new ApplicationException($"Unexpected error occurred removing external login for user with ID '{user.Id}'.");
         }
 
+		_logger.LogWarning("RemoveLogin(model)={Model}): EUAIACT-AUDIT: State change recorded for the audit trail {Result}", model, result);
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "The external login was removed.";
         return RedirectToAction(nameof(ExternalLogins));
@@ -343,6 +348,7 @@ public class ManageController : Controller
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
+		_logger.LogWarning("Disable2faWarning()=null): EUAIACT-AUDIT: State change recorded for the audit trail");
         if (!user.TwoFactorEnabled)
         {
             throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
@@ -366,6 +372,7 @@ public class ManageController : Controller
         {
             throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
         }
+		_logger.LogWarning("Disable2fa()=null): EUAIACT-AUDIT: State change recorded for the audit trail {Disable2faResult}", disable2faResult);
 
         _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.Id);
         return RedirectToAction(nameof(TwoFactorAuthentication));
@@ -381,6 +388,7 @@ public class ManageController : Controller
         }
 
         var model = new EnableAuthenticatorViewModel();
+		_logger.LogWarning("EnableAuthenticator()=null): EUAIACT-AUDIT: State change recorded for the audit trail");
         await LoadSharedKeyAndQrCodeUriAsync(user, model);
 
         return View(model);
@@ -426,6 +434,7 @@ public class ManageController : Controller
         {
             ModelState.AddModelError("Code", "Verification code is invalid.");
             await LoadSharedKeyAndQrCodeUriAsync(user, model);
+			_logger.LogWarning("LoadSharedKeyAndQrCodeUriAsync(user,model)={User},{Model}: EUAIACT-AUDIT: Outbound notification recorded for the audit trail", user, model);
             return View(model);
         }
 
@@ -440,6 +449,7 @@ public class ManageController : Controller
     [HttpGet]
     public IActionResult ResetAuthenticatorWarning()
     {
+		_logger.LogWarning("ResetAuthenticatorWarning()=null): EUAIACT-AUDIT: State change recorded for the audit trail");
         return View(nameof(ResetAuthenticator));
     }
 
@@ -455,6 +465,7 @@ public class ManageController : Controller
 
         await _userManager.SetTwoFactorEnabledAsync(user, false);
         await _userManager.ResetAuthenticatorKeyAsync(user);
+		_logger.LogWarning("ResetAuthenticator()=null): EUAIACT-AUDIT: State change recorded for the audit trail");
         _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
 
         return RedirectToAction(nameof(EnableAuthenticator));
@@ -506,6 +517,7 @@ public class ManageController : Controller
         {
             ModelState.AddModelError(string.Empty, error.Description);
         }
+		_logger.LogWarning("AddErrors(result)={Result}): EUAIACT-AUDIT: State change recorded for the audit trail {Result1}", result, result);
     }
 
     private string FormatKey(string unformattedKey)

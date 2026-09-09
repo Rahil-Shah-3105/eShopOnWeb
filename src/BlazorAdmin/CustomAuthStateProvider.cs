@@ -12,6 +12,7 @@ namespace BlazorAdmin;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // TODO: Get Default Cache Duration from Config
     private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
 
@@ -42,6 +43,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         }
 
         _cachedUser = await FetchUser();
+		_logger.LogWarning("GetUser(useCache)={UseCache}): EUAIACT-AUDIT: Record access recorded for the audit trail", useCache);
         _userLastCheck = now;
 
         return _cachedUser;
@@ -79,6 +81,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
             }
         }
 
+		_logger.LogWarning("FetchUser()=null): EUAIACT-AUDIT: Record access recorded for the audit trail {Identity}", identity);
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
 
         return new ClaimsPrincipal(identity);
