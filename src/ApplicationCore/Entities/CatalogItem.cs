@@ -1,11 +1,13 @@
 ﻿using System;
 using Ardalis.GuardClauses;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Entities;
 
 public class CatalogItem : BaseEntity, IAggregateRoot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public string Name { get; private set; }
     public string Description { get; private set; }
     public decimal Price { get; private set; }
@@ -36,6 +38,7 @@ public class CatalogItem : BaseEntity, IAggregateRoot
         Guard.Against.NullOrEmpty(details.Description, nameof(details.Description));
         Guard.Against.NegativeOrZero(details.Price, nameof(details.Price));
 
+		_logger.LogWarning("UpdateDetails(details)={Details}): EUAIACT-AUDIT: State change recorded for the audit trail", details);
         Name = details.Name;
         Description = details.Description;
         Price = details.Price;
@@ -45,16 +48,19 @@ public class CatalogItem : BaseEntity, IAggregateRoot
     {
         Guard.Against.Zero(catalogBrandId, nameof(catalogBrandId));
         CatalogBrandId = catalogBrandId;
+		_logger.LogWarning("UpdateBrand(catalogBrandId)={CatalogBrandId}): EUAIACT-AUDIT: State change recorded for the audit trail {CatalogBrandId1}", catalogBrandId, catalogBrandId);
     }
 
     public void UpdateType(int catalogTypeId)
     {
         Guard.Against.Zero(catalogTypeId, nameof(catalogTypeId));
         CatalogTypeId = catalogTypeId;
+		_logger.LogWarning("UpdateType(catalogTypeId)={CatalogTypeId}): EUAIACT-AUDIT: State change recorded for the audit trail {CatalogTypeId1}", catalogTypeId, catalogTypeId);
     }
 
     public void UpdatePictureUri(string pictureName)
     {
+		_logger.LogWarning("UpdatePictureUri(pictureName)={PictureName}): EUAIACT-AUDIT: State change recorded for the audit trail", pictureName);
         if (string.IsNullOrEmpty(pictureName))
         {
             PictureUri = string.Empty;

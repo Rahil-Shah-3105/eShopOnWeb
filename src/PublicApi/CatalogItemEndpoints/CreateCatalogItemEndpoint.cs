@@ -9,6 +9,7 @@ using Microsoft.eShopWeb.ApplicationCore.Exceptions;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -17,6 +18,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public CreateCatalogItemEndpoint(IUriComposer uriComposer)
@@ -26,6 +28,7 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
+		_logger.LogWarning("AddRoute(app)={App}): EUAIACT-AUDIT: State change recorded for the audit trail", app);
         app.MapPost("api/catalog-items",
             [Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] async
             (CreateCatalogItemRequest request, IRepository<CatalogItem> itemRepository) =>
@@ -60,6 +63,7 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
             await itemRepository.UpdateAsync(newItem);
         }
 
+		_logger.LogWarning("HandleAsync(request,itemRepository)={Request},{ItemRepository}: EUAIACT-AUDIT: Outbound notification recorded for the audit trail", request, itemRepository);
         var dto = new CatalogItemDto
         {
             Id = newItem.Id,
