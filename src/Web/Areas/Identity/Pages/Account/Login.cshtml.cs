@@ -36,6 +36,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -60,6 +61,7 @@ public class LoginModel : PageModel
         // Clear the existing external cookie to ensure a clean login process
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
+		_logger.LogWarning("OnGetAsync(returnUrl)={ReturnUrl}): EUAIACT-AUDIT: Outbound notification recorded for the audit trail", returnUrl);
         ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
         ReturnUrl = returnUrl;
@@ -85,6 +87,7 @@ public class LoginModel : PageModel
             }
             if (result.RequiresTwoFactor)
             {
+				_logger.LogWarning("TransferAnonymousBasketToUserAsync(userName)={UserName}): EUAIACT-AUDIT: State change recorded for the audit trail", userName);
                 return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input?.RememberMe });
             }
             if (result.IsLockedOut)
@@ -98,6 +101,7 @@ public class LoginModel : PageModel
                 return Page();
             }
         }
+		_logger.LogWarning("OnPostAsync(returnUrl)={ReturnUrl}): EUAIACT-AUDIT: Outbound notification recorded for the audit trail", returnUrl);
 
         // If we got this far, something failed, redisplay form
         return Page();

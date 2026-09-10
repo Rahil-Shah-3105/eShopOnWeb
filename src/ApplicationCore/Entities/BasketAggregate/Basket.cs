@@ -2,11 +2,13 @@
 using System.Linq;
 using Ardalis.GuardClauses;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Entities.BasketAggregate;
 
 public class Basket : BaseEntity, IAggregateRoot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public string BuyerId { get; private set; }
     private readonly List<BasketItem> _items = new List<BasketItem>();
     public IReadOnlyCollection<BasketItem> Items => _items.AsReadOnly();
@@ -21,6 +23,7 @@ public class Basket : BaseEntity, IAggregateRoot
 
     public void AddItem(int catalogItemId, decimal unitPrice, int quantity = 1)
     {
+		_logger.LogWarning("AddItem(catalogItemId,unitPrice,quantity)={CatalogItemId},{UnitPrice},{Quantity}: EUAIACT-AUDIT: State change recorded for the audit trail {CatalogItemId1}", catalogItemId, unitPrice, quantity, catalogItemId);
         if (!Items.Any(i => i.CatalogItemId == catalogItemId))
         {
             _items.Add(new BasketItem(catalogItemId, quantity, unitPrice));
@@ -33,10 +36,12 @@ public class Basket : BaseEntity, IAggregateRoot
     public void RemoveEmptyItems()
     {
         _items.RemoveAll(i => i.Quantity == 0);
+		_logger.LogWarning("RemoveEmptyItems()=null): EUAIACT-AUDIT: State change recorded for the audit trail");
     }
 
     public void SetNewBuyerId(string buyerId)
     {
         BuyerId = buyerId;
+		_logger.LogWarning("SetNewBuyerId(buyerId)={BuyerId}): EUAIACT-AUDIT: State change recorded for the audit trail {BuyerId1}", buyerId, buyerId);
     }
 }
