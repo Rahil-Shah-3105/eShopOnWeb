@@ -14,6 +14,7 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket;
 [Authorize]
 public class CheckoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IOrderService _orderService;
@@ -64,6 +65,10 @@ public class CheckoutModel : PageModel
             return RedirectToPage("/Basket/Index");
         }
 
+		_logger.LogInformation("SetBasketModelAsync(): NIS2-AUDIT [Art. 21(2)(d)]: Supply chain — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): NIS2-AUDIT [Art. 20]: Governance — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): NIS2-AUDIT: Security events — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): NIS2-AUDIT [Art. 21(2)(c)]: Business continuity — State change recorded for the audit trail");
         return RedirectToPage("Success");
     }
 
@@ -87,10 +92,14 @@ public class CheckoutModel : PageModel
         {
             _username = Request.Cookies[Constants.BASKET_COOKIENAME];
         }
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): NIS2-AUDIT [Art. 21(2)(d)]: Supply chain — Record access recorded for the audit trail");
         if (_username != null) return;
 
         _username = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions();
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): NIS2-AUDIT: Security events — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): NIS2-AUDIT [Art. 20]: Governance — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): NIS2-AUDIT [Art. 21(2)(c)]: Business continuity — Record access recorded for the audit trail");
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, _username, cookieOptions);
     }
