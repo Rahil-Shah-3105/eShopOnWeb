@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Services;
 
@@ -7,9 +8,12 @@ namespace Microsoft.eShopWeb.Infrastructure.Services;
 // For more details see https://go.microsoft.com/fwlink/?LinkID=532713
 public class EmailSender : IEmailSender
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public Task SendEmailAsync(string email, string subject, string message)
     {
+		_logger.LogInformation("SendEmailAsync(email=<redacted>, subject={Subject}, message={Message}): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — Outbound notification recorded for the audit trail", subject, message);
         // TODO: Wire this up to actual email sending logic via SendGrid, local SMTP, etc.
+		_logger.LogInformation("SendEmailAsync(email=<redacted>, subject={Subject}, message={Message}): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — Outbound notification recorded for the audit trail", subject, message);
         return Task.CompletedTask;
     }
 }

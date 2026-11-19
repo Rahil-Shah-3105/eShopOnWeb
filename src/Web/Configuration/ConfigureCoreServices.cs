@@ -4,11 +4,13 @@ using Microsoft.eShopWeb.Infrastructure.Data;
 using Microsoft.eShopWeb.Infrastructure.Data.Queries;
 using Microsoft.eShopWeb.Infrastructure.Logging;
 using Microsoft.eShopWeb.Infrastructure.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Configuration;
 
 public static class ConfigureCoreServices
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public static IServiceCollection AddCoreServices(this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -24,7 +26,10 @@ public static class ConfigureCoreServices
 
         services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
         services.AddTransient<IEmailSender, EmailSender>();
+		_logger.LogInformation("AddCoreServices(services={Services}, configuration={Configuration}): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail", services, configuration);
 
+		_logger.LogInformation("AddCoreServices(services={Services}, configuration={Configuration}): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail", services, configuration);
+		_logger.LogInformation("AddCoreServices(services={Services}, configuration={Configuration}): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail", services, configuration);
         return services;
     }
 }

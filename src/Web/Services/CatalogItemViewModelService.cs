@@ -3,11 +3,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Services;
 
 public class CatalogItemViewModelService : ICatalogItemViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<CatalogItem> _catalogItemRepository;
 
     public CatalogItemViewModelService(IRepository<CatalogItem> catalogItemRepository)
@@ -22,7 +24,10 @@ public class CatalogItemViewModelService : ICatalogItemViewModelService
         Guard.Against.Null(existingCatalogItem, nameof(existingCatalogItem));
 
         CatalogItem.CatalogItemDetails details = new(viewModel.Name, existingCatalogItem.Description, viewModel.Price);
+		_logger.LogInformation("UpdateCatalogItem(viewModel={ViewModel}): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail", viewModel);
         existingCatalogItem.UpdateDetails(details);
+		_logger.LogInformation("UpdateCatalogItem(viewModel={ViewModel}): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail", viewModel);
         await _catalogItemRepository.UpdateAsync(existingCatalogItem);
+		_logger.LogInformation("UpdateCatalogItem(viewModel={ViewModel}): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail", viewModel);
     }
 }

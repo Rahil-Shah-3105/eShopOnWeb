@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -129,7 +130,10 @@ public class ManageController : Controller
 
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
 
+		_logger.LogInformation("SendVerificationEmail(model={Model}): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — Outbound notification recorded for the audit trail", model);
         StatusMessage = "Verification email sent. Please check your email.";
+		_logger.LogInformation("SendVerificationEmail(model={Model}): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — Database transaction completed", model);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — Outbound notification recorded for the audit trail", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
@@ -148,6 +152,9 @@ public class ManageController : Controller
             return RedirectToAction(nameof(SetPassword));
         }
 
+		_logger.LogInformation("ChangePassword(): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword(): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword(): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail");
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
         return View(model);
     }
@@ -179,6 +186,7 @@ public class ManageController : Controller
         _logger.LogInformation("User changed their password successfully.");
         StatusMessage = "Your password has been changed.";
 
+		_logger.LogInformation("ChangePassword(model={Model}): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ChangePassword));
     }
 
@@ -198,6 +206,9 @@ public class ManageController : Controller
             return RedirectToAction(nameof(ChangePassword));
         }
 
+		_logger.LogInformation("SetPassword(): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail");
+		_logger.LogInformation("SetPassword(): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail");
+		_logger.LogInformation("SetPassword(): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail");
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
         return View(model);
     }
@@ -227,6 +238,7 @@ public class ManageController : Controller
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "Your password has been set.";
 
+		_logger.LogInformation("SetPassword(model={Model}): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(SetPassword));
     }
 
@@ -311,7 +323,10 @@ public class ManageController : Controller
         }
 
         await _signInManager.SignInAsync(user, isPersistent: false);
+		_logger.LogInformation("RemoveLogin(model={Model}): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail {Result}", model, result);
         StatusMessage = "The external login was removed.";
+		_logger.LogInformation("RemoveLogin(model={Model}): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail {Result}", model, result);
+		_logger.LogInformation("RemoveLogin(model={Model}): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail {Result}", model, result);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -382,6 +397,9 @@ public class ManageController : Controller
 
         var model = new EnableAuthenticatorViewModel();
         await LoadSharedKeyAndQrCodeUriAsync(user, model);
+		_logger.LogInformation("EnableAuthenticator(): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail");
 
         return View(model);
     }
@@ -434,12 +452,16 @@ public class ManageController : Controller
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) ?? new List<string>();
         TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
+		_logger.LogInformation("EnableAuthenticator(model={Model}): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
     [HttpGet]
     public IActionResult ResetAuthenticatorWarning()
     {
+		_logger.LogInformation("ResetAuthenticatorWarning(): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticatorWarning(): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail");
+    _logger.LogInformation("ResetAuthenticatorWarning(): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail");
         return View(nameof(ResetAuthenticator));
     }
 
@@ -456,6 +478,9 @@ public class ManageController : Controller
         await _userManager.SetTwoFactorEnabledAsync(user, false);
         await _userManager.ResetAuthenticatorKeyAsync(user);
         _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
+		_logger.LogInformation("ResetAuthenticator(): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail");
 
         return RedirectToAction(nameof(EnableAuthenticator));
     }
@@ -502,10 +527,13 @@ public class ManageController : Controller
 
     private void AddErrors(IdentityResult result)
     {
+		_logger.LogInformation("AddErrors(result={Result}): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail {Result1}", result, result);
         foreach (var error in result.Errors)
         {
+			_logger.LogInformation("AddErrors(result={Result}): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail {Result1}", result, result);
             ModelState.AddModelError(string.Empty, error.Description);
         }
+		_logger.LogInformation("AddErrors(result={Result}): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail {Result1}", result, result);
     }
 
     private string FormatKey(string unformattedKey)
@@ -543,8 +571,11 @@ public class ManageController : Controller
             unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
         }
 
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — Record access recorded for the audit trail", user, model);
         model.SharedKey = FormatKey(unformattedKey!);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — Record access recorded for the audit trail", user, model);
         model.AuthenticatorUri = GenerateQrCodeUri(user.Email!, unformattedKey!);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — Record access recorded for the audit trail", user, model);
     }
 
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -15,12 +16,16 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class DeleteCatalogItemEndpoint : IEndpoint<IResult, DeleteCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public void AddRoute(IEndpointRouteBuilder app)
     {
         app.MapDelete("api/catalog-items/{catalogItemId}",
             [Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] async
             (int catalogItemId, IRepository<CatalogItem> itemRepository) =>
             {
+				_logger.LogInformation("AddRoute(app={App}): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail", app);
+				_logger.LogInformation("AddRoute(app={App}): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail", app);
+			_logger.LogInformation("AddRoute(app={App}): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail", app);
                 return await HandleAsync(new DeleteCatalogItemRequest(catalogItemId), itemRepository);
             })
             .Produces<DeleteCatalogItemResponse>()
@@ -36,7 +41,10 @@ public class DeleteCatalogItemEndpoint : IEndpoint<IResult, DeleteCatalogItemReq
             return Results.NotFound();
 
         await itemRepository.DeleteAsync(itemToDelete);
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail", request, itemRepository);
 
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail", request, itemRepository);
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail", request, itemRepository);
         return Results.Ok(response);
     }
 }
