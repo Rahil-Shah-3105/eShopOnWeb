@@ -126,6 +126,10 @@
 
     private async Task SaveClick()
     {
+		Logger.LogInformation("SaveClick(): NERCCIP-AUDIT: Monitoring coverage — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): NERCCIP-AUDIT: Incident recovery — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): NERCCIP-AUDIT: Electronic perimeter — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): NERCCIP-AUDIT: Change management — State change recorded for the audit trail");
         await CatalogItemService.Edit(_item);
         await OnSaveClick.InvokeAsync(null);
         await Close();

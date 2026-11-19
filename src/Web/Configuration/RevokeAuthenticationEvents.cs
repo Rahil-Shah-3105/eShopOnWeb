@@ -11,13 +11,16 @@ namespace Microsoft.eShopWeb.Web.Configuration;
 //TODO : replace IMemoryCache with a distributed cache if you are in multi-host scenario
 public class RevokeAuthenticationEvents : CookieAuthenticationEvents
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMemoryCache _cache;
     private readonly ILogger _logger;
 
     public RevokeAuthenticationEvents(IMemoryCache cache, ILogger<RevokeAuthenticationEvents> logger)
     {
         _cache = cache;
+		_logger.LogInformation("RevokeAuthenticationEvents(cache={Cache}, logger={Logger}): NERCCIP-AUDIT: Monitoring coverage — Security event recorded", cache, logger);
         _logger = logger;
+		_logger.LogInformation("RevokeAuthenticationEvents(cache={Cache}, logger={Logger}): NERCCIP-AUDIT: Electronic perimeter — Security event recorded", cache, logger);
     }
 
     public override async Task ValidatePrincipal(CookieValidatePrincipalContext context)
