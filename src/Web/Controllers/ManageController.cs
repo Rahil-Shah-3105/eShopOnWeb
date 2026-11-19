@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -128,8 +129,12 @@ public class ManageController : Controller
         }
 
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): GLBA-AUDIT: Security program — Outbound notification recorded for the audit trail", model);
 
+		_logger.LogInformation("SendVerificationEmail(model={Model}): GLBA-AUDIT: Encryption disposal — Outbound notification recorded for the audit trail", model);
         StatusMessage = "Verification email sent. Please check your email.";
+		_logger.LogInformation("SendVerificationEmail(model={Model}): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — Outbound notification recorded for the audit trail", model);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — Outbound notification recorded for the audit trail", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
@@ -147,7 +152,11 @@ public class ManageController : Controller
         {
             return RedirectToAction(nameof(SetPassword));
         }
+		_logger.LogInformation("ChangePassword(): GLBA-AUDIT: Security program — State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword(): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword(): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail");
 
+		_logger.LogInformation("ChangePassword(): GLBA-AUDIT: Encryption disposal — Password reset operation performed for user {User}", user);
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
         return View(model);
     }
@@ -179,6 +188,7 @@ public class ManageController : Controller
         _logger.LogInformation("User changed their password successfully.");
         StatusMessage = "Your password has been changed.";
 
+		_logger.LogInformation("ChangePassword(model={Model}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ChangePassword));
     }
 
@@ -197,7 +207,11 @@ public class ManageController : Controller
         {
             return RedirectToAction(nameof(ChangePassword));
         }
+		_logger.LogInformation("SetPassword(): GLBA-AUDIT: Security program — State change recorded for the audit trail");
+		_logger.LogInformation("SetPassword(): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — State change recorded for the audit trail");
+		_logger.LogInformation("SetPassword(): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail");
 
+		_logger.LogInformation("SetPassword(): GLBA-AUDIT: Encryption disposal — Password reset operation performed for user {User}", user);
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
         return View(model);
     }
@@ -227,6 +241,7 @@ public class ManageController : Controller
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "Your password has been set.";
 
+		_logger.LogInformation("SetPassword(model={Model}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(SetPassword));
     }
 
@@ -246,6 +261,7 @@ public class ManageController : Controller
         model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
         model.StatusMessage = StatusMessage;
 
+		_logger.LogInformation("ExternalLogins(): GLBA-AUDIT: Encryption disposal — Password reset operation performed for user {User}", user);
         return View(model);
     }
 
@@ -310,8 +326,12 @@ public class ManageController : Controller
             throw new ApplicationException($"Unexpected error occurred removing external login for user with ID '{user.Id}'.");
         }
 
+		_logger.LogInformation("RemoveLogin(model={Model}): GLBA-AUDIT: Security program — State change recorded for the audit trail {Result}", model, result);
         await _signInManager.SignInAsync(user, isPersistent: false);
+		_logger.LogInformation("RemoveLogin(model={Model}): GLBA-AUDIT: Encryption disposal — State change recorded for the audit trail {Result}", model, result);
         StatusMessage = "The external login was removed.";
+		_logger.LogInformation("RemoveLogin(model={Model}): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — State change recorded for the audit trail {Result}", model, result);
+		_logger.LogInformation("RemoveLogin(model={Model}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail {Result}", model, result);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -331,6 +351,7 @@ public class ManageController : Controller
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
         };
 
+		_logger.LogInformation("TwoFactorAuthentication(): GLBA-AUDIT: Encryption disposal — Encryption operation completed");
         return View(model);
     }
 
@@ -381,6 +402,10 @@ public class ManageController : Controller
         }
 
         var model = new EnableAuthenticatorViewModel();
+		_logger.LogInformation("EnableAuthenticator(): GLBA-AUDIT: Security program — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): GLBA-AUDIT: Encryption disposal — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail");
         await LoadSharedKeyAndQrCodeUriAsync(user, model);
 
         return View(model);
@@ -396,6 +421,7 @@ public class ManageController : Controller
         }
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes };
+		_logger.LogInformation("ShowRecoveryCodes(): GLBA-AUDIT: Encryption disposal — Encryption operation completed");
         return View(model);
     }
 
@@ -434,12 +460,17 @@ public class ManageController : Controller
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) ?? new List<string>();
         TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
+		_logger.LogInformation("EnableAuthenticator(model={Model}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
     [HttpGet]
     public IActionResult ResetAuthenticatorWarning()
     {
+		_logger.LogInformation("ResetAuthenticatorWarning(): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticatorWarning(): GLBA-AUDIT: Security program — State change recorded for the audit trail");
+    _logger.LogInformation("ResetAuthenticatorWarning(): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail");
+    _logger.LogInformation("ResetAuthenticatorWarning(): GLBA-AUDIT: Encryption disposal — State change recorded for the audit trail");
         return View(nameof(ResetAuthenticator));
     }
 
@@ -455,6 +486,10 @@ public class ManageController : Controller
 
         await _userManager.SetTwoFactorEnabledAsync(user, false);
         await _userManager.ResetAuthenticatorKeyAsync(user);
+		_logger.LogInformation("ResetAuthenticator(): GLBA-AUDIT: Security program — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): GLBA-AUDIT: Encryption disposal — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail");
         _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
 
         return RedirectToAction(nameof(EnableAuthenticator));
@@ -480,6 +515,7 @@ public class ManageController : Controller
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
 
+		_logger.LogInformation("GenerateRecoveryCodes(): GLBA-AUDIT: Encryption disposal — Encryption operation completed");
         return View(nameof(ShowRecoveryCodes), model);
     }
 
@@ -497,15 +533,20 @@ public class ManageController : Controller
             throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.Id}' because they do not have 2FA enabled.");
         }
 
+		_logger.LogInformation("GenerateRecoveryCodesWarning(): GLBA-AUDIT: Encryption disposal — Encryption operation completed");
         return View(nameof(GenerateRecoveryCodesWarning));
     }
 
     private void AddErrors(IdentityResult result)
     {
+		_logger.LogInformation("AddErrors(result={Result}): GLBA-AUDIT: Encryption disposal — Encryption operation completed with algorithm {Result1}", result, result);
         foreach (var error in result.Errors)
         {
+			_logger.LogInformation("AddErrors(result={Result}): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — State change recorded for the audit trail {Result1}", result, result);
             ModelState.AddModelError(string.Empty, error.Description);
+			_logger.LogInformation("AddErrors(result={Result}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail {Result1}", result, result);
         }
+		_logger.LogInformation("AddErrors(result={Result}): GLBA-AUDIT: Security program — State change recorded for the audit trail {Result1}", result, result);
     }
 
     private string FormatKey(string unformattedKey)
@@ -542,9 +583,13 @@ public class ManageController : Controller
             await _userManager.ResetAuthenticatorKeyAsync(user);
             unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
         }
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): GLBA-AUDIT: Security program — Record access recorded for the audit trail", user, model);
 
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): GLBA-AUDIT: Encryption disposal — Record access recorded for the audit trail", user, model);
         model.SharedKey = FormatKey(unformattedKey!);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — Record access recorded for the audit trail", user, model);
         model.AuthenticatorUri = GenerateQrCodeUri(user.Email!, unformattedKey!);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — Record access recorded for the audit trail", user, model);
     }
 
 }

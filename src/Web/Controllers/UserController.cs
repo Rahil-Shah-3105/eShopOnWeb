@@ -16,6 +16,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ITokenClaimsService _tokenClaimsService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<UserController> _logger;
@@ -98,8 +99,12 @@ public class UserController : ControllerBase
         }
 
         var token = await _tokenClaimsService.GetTokenAsync(claimsPrincipal.Identity.Name);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): GLBA-AUDIT: Security program — State change recorded for the audit trail", claimsPrincipal);
         userInfo.Token = token;
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): GLBA-AUDIT: Encryption disposal — State change recorded for the audit trail", claimsPrincipal);
 
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail", claimsPrincipal);
         return userInfo;
     }
 }

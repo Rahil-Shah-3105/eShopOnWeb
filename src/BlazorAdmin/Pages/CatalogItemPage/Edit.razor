@@ -126,6 +126,10 @@
 
     private async Task SaveClick()
     {
+		Logger.LogInformation("SaveClick(): GLBA-AUDIT: Security program — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): GLBA-AUDIT: Encryption disposal — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail");
         await CatalogItemService.Edit(_item);
         await OnSaveClick.InvokeAsync(null);
         await Close();

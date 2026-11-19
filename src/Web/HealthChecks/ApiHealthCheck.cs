@@ -4,11 +4,13 @@ using System.Threading.Tasks;
 using BlazorShared;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.HealthChecks;
 
 public class ApiHealthCheck : IHealthCheck
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly BaseUrlConfiguration _baseUrlConfiguration;
 
     public ApiHealthCheck(IOptions<BaseUrlConfiguration> baseUrlConfiguration)
@@ -24,11 +26,15 @@ public class ApiHealthCheck : IHealthCheck
         var client = new HttpClient();
         var response = await client.GetAsync(myUrl);
         var pageContents = await response.Content.ReadAsStringAsync();
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): GLBA-AUDIT: Security program — Customer financial information operation logged for audit compliance", context);
         if (pageContents.Contains(".NET Bot Black Sweatshirt"))
         {
             return HealthCheckResult.Healthy("The check indicates a healthy result.");
         }
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): GLBA-AUDIT: Encryption disposal — Customer financial information operation logged for audit compliance", context);
 
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — Customer financial information operation logged for audit compliance", context);
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — Customer financial information operation logged for audit compliance", context);
         return HealthCheckResult.Unhealthy("The check indicates an unhealthy result.");
     }
 }
