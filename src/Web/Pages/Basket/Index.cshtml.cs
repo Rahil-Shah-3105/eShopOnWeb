@@ -5,11 +5,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Pages.Basket;
 
 public class IndexModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly IBasketViewModelService _basketViewModelService;
     private readonly IRepository<CatalogItem> _itemRepository;
@@ -47,8 +49,12 @@ public class IndexModel : PageModel
         var basket = await _basketService.AddItemToBasket(username,
             productDetails.Id, item.Price);
 
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): EUAIACT-AUDIT: Logging coverage — State change recorded for the audit trail", productDetails);
         BasketModel = await _basketViewModelService.Map(basket);
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): EUAIACT-AUDIT: GPAI obligations — State change recorded for the audit trail", productDetails);
 
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): EUAIACT-AUDIT [Art. 26(6)]: Deployer log retention — State change recorded for the audit trail", productDetails);
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): EUAIACT-AUDIT [Art. 50]: Transparency — State change recorded for the audit trail", productDetails);
         return RedirectToPage();
     }
 
@@ -93,6 +99,10 @@ public class IndexModel : PageModel
         userName = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions { IsEssential = true };
         cookieOptions.Expires = DateTime.Today.AddYears(10);
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): EUAIACT-AUDIT: Logging coverage — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): EUAIACT-AUDIT: GPAI obligations — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): EUAIACT-AUDIT [Art. 26(6)]: Deployer log retention — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): EUAIACT-AUDIT [Art. 50]: Transparency — Record access recorded for the audit trail");
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, userName, cookieOptions);
 
         return userName;

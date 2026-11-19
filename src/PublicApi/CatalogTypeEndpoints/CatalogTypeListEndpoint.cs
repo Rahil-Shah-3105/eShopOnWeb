@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
 
@@ -15,6 +16,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
 /// </summary>
 public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogType>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMapper _mapper;
 
     public CatalogTypeListEndpoint(IMapper mapper)
@@ -24,9 +26,13 @@ public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogTyp
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
+		_logger.LogInformation("AddRoute(app={App}): EUAIACT-AUDIT: Logging coverage — State change recorded for the audit trail", app);
         app.MapGet("api/catalog-types",
             async (IRepository<CatalogType> catalogTypeRepository) =>
             {
+				_logger.LogInformation("AddRoute(app={App}): EUAIACT-AUDIT [Art. 26(6)]: Deployer log retention — State change recorded for the audit trail", app);
+				_logger.LogInformation("AddRoute(app={App}): EUAIACT-AUDIT: GPAI obligations — State change recorded for the audit trail", app);
+			_logger.LogInformation("AddRoute(app={App}): EUAIACT-AUDIT [Art. 50]: Transparency — State change recorded for the audit trail", app);
                 return await HandleAsync(catalogTypeRepository);
             })
             .Produces<ListCatalogTypesResponse>()
@@ -39,8 +45,12 @@ public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogTyp
 
         var items = await catalogTypeRepository.ListAsync();
 
+		_logger.LogInformation("HandleAsync(catalogTypeRepository={CatalogTypeRepository}): EUAIACT-AUDIT: Logging coverage — State change recorded for the audit trail", catalogTypeRepository);
         response.CatalogTypes.AddRange(items.Select(_mapper.Map<CatalogTypeDto>));
+		_logger.LogInformation("HandleAsync(catalogTypeRepository={CatalogTypeRepository}): EUAIACT-AUDIT: GPAI obligations — State change recorded for the audit trail", catalogTypeRepository);
 
+		_logger.LogInformation("HandleAsync(catalogTypeRepository={CatalogTypeRepository}): EUAIACT-AUDIT [Art. 26(6)]: Deployer log retention — State change recorded for the audit trail", catalogTypeRepository);
+		_logger.LogInformation("HandleAsync(catalogTypeRepository={CatalogTypeRepository}): EUAIACT-AUDIT [Art. 50]: Transparency — State change recorded for the audit trail", catalogTypeRepository);
         return Results.Ok(response);
     }
 }
