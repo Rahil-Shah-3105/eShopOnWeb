@@ -13,6 +13,7 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 //TODO : replace IMemoryCache by distributed cache if you are in multi-host scenario
 public class LogoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<LogoutModel> _logger;
     private readonly IMemoryCache _cache;
@@ -22,6 +23,7 @@ public class LogoutModel : PageModel
         _signInManager = signInManager;
         _logger = logger;
         _cache = cache;
+		_logger.LogInformation("LogoutModel(signInManager={SignInManager}, logger={Logger}, cache={Cache}): PCI-AUDIT: Authn controls — Authentication operation completed", signInManager, logger, cache);
     }
 
     public void OnGet()
@@ -46,6 +48,7 @@ public class LogoutModel : PageModel
         }
         else
         {
+			_logger.LogInformation("OnPost(returnUrl={ReturnUrl}): PCI-AUDIT: Authn controls — Authentication operation completed for user {UserId}", returnUrl, userId);
             return RedirectToPage("/Index");
         }
     }

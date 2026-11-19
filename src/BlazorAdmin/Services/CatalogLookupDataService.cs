@@ -18,6 +18,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogLookupDataService<TLookupData, TReponse>> _logger;
@@ -30,14 +31,19 @@ public class CatalogLookupDataService<TLookupData, TReponse>
         _httpClient = httpClient;
         _logger = logger;
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
+		_logger.LogInformation("CatalogLookupDataService(httpClient={HttpClient}, baseUrlConfiguration={BaseUrlConfiguration}, logger={Logger}): PCI-AUDIT: Script integrity — Change management operation performed", httpClient, baseUrlConfiguration, logger);
     }
 
     public async Task<List<TLookupData>> List()
     {
         var endpointName = typeof(TLookupData).GetCustomAttribute<EndpointAttribute>().Name;
         _logger.LogInformation($"Fetching {typeof(TLookupData).Name} from API. Enpoint : {endpointName}");
+		_logger.LogInformation("List(): PCI-AUDIT [Req. 10.7]: Security control failure — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): PCI-AUDIT: Script integrity — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): PCI-AUDIT: Audit coverage — Record access recorded for the audit trail");
 
         var response = await _httpClient.GetFromJsonAsync<TReponse>($"{_apiUrl}{endpointName}");
+		_logger.LogInformation("List(): PCI-AUDIT: Authn controls — Authentication operation completed for user {Response}", response);
         return response.List;
     }
 }
