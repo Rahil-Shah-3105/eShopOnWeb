@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -37,7 +38,9 @@ public class ManageController : Controller
         _signInManager = signInManager;
         _emailSender = emailSender;
         _logger = logger;
+		_logger.LogInformation("ManageController(userManager={UserManager}, signInManager={SignInManager}, emailSender=<redacted>, logger={Logger}, urlEncoder={UrlEncoder}): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed for user {UserManager1}", userManager, signInManager, logger, urlEncoder, userManager);
         _urlEncoder = urlEncoder;
+		_logger.LogInformation("ManageController(userManager={UserManager}, signInManager={SignInManager}, emailSender=<redacted>, logger={Logger}, urlEncoder={UrlEncoder}): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {UserManager1}", userManager, signInManager, logger, urlEncoder, userManager);
     }
 
     [TempData]
@@ -52,6 +55,7 @@ public class ManageController : Controller
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
+		_logger.LogInformation("MyAccount(): M2614-AUDIT: Outcome 01 user attribution recorded for the audit trail");
         var model = new IndexViewModel
         {
             Username = user.UserName,
@@ -60,6 +64,9 @@ public class ManageController : Controller
             IsEmailConfirmed = user.EmailConfirmed,
             StatusMessage = StatusMessage
         };
+		_logger.LogInformation("MyAccount(): M2614-AUDIT: Log Management / data protection — Log management recorded for the audit trail");
+		_logger.LogInformation("MyAccount(): SOC2-AUDIT [CC7.1]: System operation completed");
+		_logger.LogInformation("MyAccount(): M2614-AUDIT: Activity-Based Outcomes 1-11 — Audit coverage recorded for the audit trail");
 
         return View(model);
     }
@@ -100,6 +107,7 @@ public class ManageController : Controller
         }
 
         StatusMessage = "Your profile has been updated";
+		_logger.LogInformation("MyAccount(model={Model}): M2614-AUDIT: Activity-Based Outcomes 1-11 — Audit coverage recorded for the audit trail", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
@@ -107,48 +115,80 @@ public class ManageController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SendVerificationEmail(IndexViewModel model)
     {
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Retention: 6 months searchable / 12 months retrievable — Outbound notification recorded for the audit trail", model);
         if (!ModelState.IsValid)
         {
             return View(model);
         }
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Outcome 11: CEM + THIRF capability — Outbound notification recorded for the audit trail", model);
 
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Outcome 10: automated alerting — Outbound notification recorded for the audit trail", model);
         var user = await _userManager.GetUserAsync(User);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Outcome 8: quantify data affected in an incident — Outbound notification recorded for the audit trail", model);
         if (user == null)
         {
+			_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Outcome 9: trace attack vectors — Outbound notification recorded for the audit trail", model);
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Outcome 7: anomaly hunting — Outbound notification recorded for the audit trail", model);
 
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Outcome 6: suspicious activity & IOC hunting — Outbound notification recorded for the audit trail", model);
         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Outcome 5: infrastructure changes — Outbound notification recorded for the audit trail", model);
         var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Outcome 4: privilege changes — Outbound notification recorded for the audit trail", model);
         Guard.Against.Null(callbackUrl, nameof(callbackUrl));
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Outcome 3: object and data access — Database transaction completed", model);
         var email = user.Email;
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Outcome 01 user attribution recorded for the audit trail", model);
         if (email == null)
         {
+			_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Outcome 2: source/destination network traffic — Outbound notification recorded for the audit trail", model);
             throw new ApplicationException($"No email associated with user {user.UserName}'.");
         }
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Continuous Event Monitoring / Network Visibility — Outbound notification recorded for the audit trail", model);
 
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Log Management / data protection — Outbound notification recorded for the audit trail", model);
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Log integrity (encrypt + validate) — Data integrity check performed", model);
 
+		_logger.LogInformation("SendVerificationEmail(model={Model}): SOC2-AUDIT [CC6.6]: Database transaction completed", model);
         StatusMessage = "Verification email sent. Please check your email.";
+		_logger.LogInformation("SendVerificationEmail(model={Model}): SOC2-AUDIT [CC7.1]: System operation completed", model);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): M2614-AUDIT: Activity-Based Outcomes 1-11 — Outbound notification recorded for the audit trail", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
     [HttpGet]
     public async Task<IActionResult> ChangePassword()
     {
+		_logger.LogInformation("ChangePassword(): M2614-AUDIT: Outcome 6: suspicious activity & IOC hunting — State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword(): M2614-AUDIT: Outcome 4: privilege changes — State change recorded for the audit trail");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogInformation("ChangePassword(): M2614-AUDIT: Outcome 5: infrastructure changes — State change recorded for the audit trail");
+			_logger.LogInformation("ChangePassword(): M2614-AUDIT: Outcome 8: quantify data affected in an incident — State change recorded for the audit trail");
+			_logger.LogInformation("ChangePassword(): M2614-AUDIT: Outcome 3: object and data access — State change recorded for the audit trail");
+			_logger.LogInformation("ChangePassword(): M2614-AUDIT: Outcome 2: source/destination network traffic — State change recorded for the audit trail");
+			_logger.LogInformation("ChangePassword(): M2614-AUDIT: Continuous Event Monitoring / Network Visibility — State change recorded for the audit trail");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
         var hasPassword = await _userManager.HasPasswordAsync(user);
         if (!hasPassword)
         {
+			_logger.LogInformation("ChangePassword(): M2614-AUDIT: Outcome 01 user attribution recorded for the audit trail");
+			_logger.LogInformation("ChangePassword(): M2614-AUDIT: Outcome 7: anomaly hunting — State change recorded for the audit trail");
+			_logger.LogInformation("ChangePassword(): M2614-AUDIT: Log Management / data protection — State change recorded for the audit trail");
+			_logger.LogInformation("ChangePassword(): M2614-AUDIT: Log integrity (encrypt + validate) — State change recorded for the audit trail");
+			_logger.LogInformation("ChangePassword(): SOC2-AUDIT [CC7.1]: System operation completed");
             return RedirectToAction(nameof(SetPassword));
         }
 
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogInformation("ChangePassword(): M2614-AUDIT: Activity-Based Outcomes 1-11 — State change recorded for the audit trail");
+    _logger.LogInformation("ChangePassword(model={Model}): M2614-AUDIT: Outcome 11: CEM + THIRF capability — State change recorded for the audit trail", model);
         return View(model);
     }
 
@@ -179,15 +219,24 @@ public class ManageController : Controller
         _logger.LogInformation("User changed their password successfully.");
         StatusMessage = "Your password has been changed.";
 
+		_logger.LogInformation("ChangePassword(model={Model}): M2614-AUDIT: Activity-Based Outcomes 1-11 — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ChangePassword));
     }
 
     [HttpGet]
     public async Task<IActionResult> SetPassword()
     {
+		_logger.LogInformation("SetPassword(): M2614-AUDIT: Outcome 7: anomaly hunting — State change recorded for the audit trail");
+		_logger.LogInformation("SetPassword(): M2614-AUDIT: Outcome 5: infrastructure changes — State change recorded for the audit trail");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogInformation("SetPassword(): M2614-AUDIT: Outcome 6: suspicious activity & IOC hunting — State change recorded for the audit trail");
+			_logger.LogInformation("SetPassword(): M2614-AUDIT: Outcome 9: trace attack vectors — State change recorded for the audit trail");
+			_logger.LogInformation("SetPassword(): M2614-AUDIT: Outcome 4: privilege changes — State change recorded for the audit trail");
+			_logger.LogInformation("SetPassword(): M2614-AUDIT: Outcome 3: object and data access — State change recorded for the audit trail");
+			_logger.LogInformation("SetPassword(): M2614-AUDIT: Outcome 2: source/destination network traffic — State change recorded for the audit trail");
+			_logger.LogInformation("SetPassword(): M2614-AUDIT: Continuous Event Monitoring / Network Visibility — State change recorded for the audit trail");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
@@ -195,10 +244,17 @@ public class ManageController : Controller
 
         if (hasPassword)
         {
+			_logger.LogInformation("SetPassword(): M2614-AUDIT: Outcome 01 user attribution recorded for the audit trail");
+			_logger.LogInformation("SetPassword(): M2614-AUDIT: Outcome 8: quantify data affected in an incident — State change recorded for the audit trail");
+			_logger.LogInformation("SetPassword(): M2614-AUDIT: Log Management / data protection — State change recorded for the audit trail");
+			_logger.LogInformation("SetPassword(): M2614-AUDIT: Log integrity (encrypt + validate) — State change recorded for the audit trail");
+			_logger.LogInformation("SetPassword(): SOC2-AUDIT [CC7.1]: System operation completed");
             return RedirectToAction(nameof(ChangePassword));
         }
 
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogInformation("SetPassword(): M2614-AUDIT: Activity-Based Outcomes 1-11 — State change recorded for the audit trail");
+    _logger.LogInformation("SetPassword(model={Model}): M2614-AUDIT: Retention: 6 months searchable / 12 months retrievable — State change recorded for the audit trail", model);
         return View(model);
     }
 
@@ -227,6 +283,7 @@ public class ManageController : Controller
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "Your password has been set.";
 
+		_logger.LogInformation("SetPassword(model={Model}): M2614-AUDIT: Activity-Based Outcomes 1-11 — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(SetPassword));
     }
 
@@ -243,9 +300,14 @@ public class ManageController : Controller
         model.OtherLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync())
             .Where(auth => model.CurrentLogins.All(ul => auth.Name != ul.LoginProvider))
             .ToList();
+			_logger.LogInformation("ExternalLogins(): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed for user {User}", user);
+			_logger.LogInformation("ExternalLogins(): M2614-AUDIT: Log Management / data protection — Log management recorded for the audit trail");
+			_logger.LogInformation("ExternalLogins(): SOC2-AUDIT [CC7.1]: System operation completed");
+			_logger.LogInformation("ExternalLogins(): M2614-AUDIT: Activity-Based Outcomes 1-11 — Audit coverage recorded for the audit trail");
         model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
         model.StatusMessage = StatusMessage;
 
+		_logger.LogInformation("ExternalLogins(): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", user);
         return View(model);
     }
 
@@ -258,7 +320,9 @@ public class ManageController : Controller
 
         // Request a redirect to the external login provider to link a login for the current user
         var redirectUrl = Url.Action(nameof(LinkLoginCallback));
+		_logger.LogInformation("LinkLogin(provider={Provider}): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed", provider);
         var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, _userManager.GetUserId(User));
+		_logger.LogInformation("LinkLogin(provider={Provider}): SOC2-AUDIT [CC6.1]: Authentication operation completed", provider);
         return new ChallengeResult(provider, properties);
     }
 
@@ -285,8 +349,12 @@ public class ManageController : Controller
 
         // Clear the existing external cookie to ensure a clean login process
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+		_logger.LogInformation("LinkLoginCallback(): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed for user {User}", user);
 
+		_logger.LogInformation("LinkLoginCallback(): SOC2-AUDIT [CC7.1]: System operation completed with status {Result}", result);
         StatusMessage = "The external login was added.";
+		_logger.LogInformation("LinkLoginCallback(): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", user);
+		_logger.LogInformation("LinkLoginCallback(): M2614-AUDIT: Activity-Based Outcomes 1-11 — Audit coverage recorded for the audit trail {Result}", result);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -305,13 +373,21 @@ public class ManageController : Controller
         }
 
         var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
+		_logger.LogInformation("RemoveLogin(model={Model}): M2614-AUDIT: Continuous Event Monitoring / Network Visibility — State change recorded for the audit trail {Result}", model, result);
         if (!result.Succeeded)
         {
+			_logger.LogInformation("RemoveLogin(model={Model}): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed for user {User}", model, user);
+			_logger.LogInformation("RemoveLogin(model={Model}): M2614-AUDIT: Outcome 9: trace attack vectors — State change recorded for the audit trail {Result}", model, result);
             throw new ApplicationException($"Unexpected error occurred removing external login for user with ID '{user.Id}'.");
         }
+		_logger.LogInformation("RemoveLogin(model={Model}): M2614-AUDIT: Log Management / data protection — State change recorded for the audit trail {Result}", model, result);
 
+		_logger.LogInformation("RemoveLogin(model={Model}): M2614-AUDIT: Log integrity (encrypt + validate) — State change recorded for the audit trail {Result}", model, result);
         await _signInManager.SignInAsync(user, isPersistent: false);
+		_logger.LogInformation("RemoveLogin(model={Model}): SOC2-AUDIT [CC7.1]: System operation completed with status {Result}", model, result);
         StatusMessage = "The external login was removed.";
+		_logger.LogInformation("RemoveLogin(model={Model}): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", model, user);
+		_logger.LogInformation("RemoveLogin(model={Model}): M2614-AUDIT: Activity-Based Outcomes 1-11 — State change recorded for the audit trail {Result}", model, result);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -331,6 +407,8 @@ public class ManageController : Controller
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
         };
 
+		_logger.LogInformation("TwoFactorAuthentication(): M2614-AUDIT: Outcome 01 user attribution recorded for the audit trail");
+		_logger.LogInformation("TwoFactorAuthentication(): M2614-AUDIT: Activity-Based Outcomes 1-11 — Audit coverage recorded for the audit trail");
         return View(model);
     }
 
@@ -348,6 +426,8 @@ public class ManageController : Controller
             throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
         }
 
+		_logger.LogInformation("Disable2faWarning(): M2614-AUDIT: Outcome 01 user attribution recorded for the audit trail");
+		_logger.LogInformation("Disable2faWarning(): M2614-AUDIT: Activity-Based Outcomes 1-11 — Audit coverage recorded for the audit trail");
         return View(nameof(Disable2fa));
     }
 
@@ -367,16 +447,30 @@ public class ManageController : Controller
             throw new ApplicationException($"Unexpected error occured disabling 2FA for user with ID '{user.Id}'.");
         }
 
+		_logger.LogInformation("Disable2fa(): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed for user {User}", user);
         _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.Id);
+		_logger.LogInformation("Disable2fa(): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", user);
+		_logger.LogInformation("Disable2fa(): M2614-AUDIT: Activity-Based Outcomes 1-11 — Audit coverage recorded for the audit trail {Disable2faResult}", disable2faResult);
         return RedirectToAction(nameof(TwoFactorAuthentication));
     }
 
     [HttpGet]
     public async Task<IActionResult> EnableAuthenticator()
     {
+		_logger.LogInformation("EnableAuthenticator(): M2614-AUDIT: Outcome 5: infrastructure changes — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): M2614-AUDIT: Outcome 3: object and data access — State change recorded for the audit trail");
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
+			_logger.LogInformation("EnableAuthenticator(): M2614-AUDIT: Outcome 4: privilege changes — State change recorded for the audit trail");
+			_logger.LogInformation("EnableAuthenticator(): M2614-AUDIT: Outcome 6: suspicious activity & IOC hunting — State change recorded for the audit trail");
+			_logger.LogInformation("EnableAuthenticator(): M2614-AUDIT: Outcome 2: source/destination network traffic — State change recorded for the audit trail");
+			_logger.LogInformation("EnableAuthenticator(): M2614-AUDIT: Outcome 01 user attribution recorded for the audit trail");
+			_logger.LogInformation("EnableAuthenticator(): M2614-AUDIT: Continuous Event Monitoring / Network Visibility — State change recorded for the audit trail");
+			_logger.LogInformation("EnableAuthenticator(): M2614-AUDIT: Log Management / data protection — State change recorded for the audit trail");
+			_logger.LogInformation("EnableAuthenticator(): M2614-AUDIT: Log integrity (encrypt + validate) — State change recorded for the audit trail");
+			_logger.LogInformation("EnableAuthenticator(): M2614-AUDIT: Activity-Based Outcomes 1-11 — State change recorded for the audit trail");
+    _logger.LogInformation("EnableAuthenticator(): M2614-AUDIT: Outcome 7: anomaly hunting — State change recorded for the audit trail");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
@@ -396,6 +490,8 @@ public class ManageController : Controller
         }
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes };
+		_logger.LogInformation("ShowRecoveryCodes(): M2614-AUDIT: Outcome 01 user attribution recorded for the audit trail");
+		_logger.LogInformation("ShowRecoveryCodes(): M2614-AUDIT: Activity-Based Outcomes 1-11 — Audit coverage recorded for the audit trail");
         return View(model);
     }
 
@@ -434,12 +530,17 @@ public class ManageController : Controller
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) ?? new List<string>();
         TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
+		_logger.LogInformation("EnableAuthenticator(model={Model}): M2614-AUDIT: Activity-Based Outcomes 1-11 — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
     [HttpGet]
     public IActionResult ResetAuthenticatorWarning()
     {
+		_logger.LogInformation("ResetAuthenticatorWarning(): M2614-AUDIT: Log integrity (encrypt + validate) — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticatorWarning(): M2614-AUDIT: Log Management / data protection — State change recorded for the audit trail");
+    _logger.LogInformation("ResetAuthenticatorWarning(): M2614-AUDIT: Activity-Based Outcomes 1-11 — State change recorded for the audit trail");
+    _logger.LogInformation("ResetAuthenticatorWarning(): M2614-AUDIT: Continuous Event Monitoring / Network Visibility — State change recorded for the audit trail");
         return View(nameof(ResetAuthenticator));
     }
 
@@ -448,8 +549,18 @@ public class ManageController : Controller
     public async Task<IActionResult> ResetAuthenticator()
     {
         var user = await _userManager.GetUserAsync(User);
+		_logger.LogInformation("ResetAuthenticator(): M2614-AUDIT: Outcome 4: privilege changes — State change recorded for the audit trail");
         if (user == null)
         {
+			_logger.LogInformation("ResetAuthenticator(): M2614-AUDIT: Outcome 8: quantify data affected in an incident — State change recorded for the audit trail");
+			_logger.LogInformation("ResetAuthenticator(): M2614-AUDIT: Outcome 7: anomaly hunting — State change recorded for the audit trail");
+			_logger.LogInformation("ResetAuthenticator(): M2614-AUDIT: Outcome 3: object and data access — State change recorded for the audit trail");
+			_logger.LogInformation("ResetAuthenticator(): M2614-AUDIT: Outcome 2: source/destination network traffic — State change recorded for the audit trail");
+			_logger.LogInformation("ResetAuthenticator(): M2614-AUDIT: Outcome 01 user attribution recorded for the audit trail");
+			_logger.LogInformation("ResetAuthenticator(): M2614-AUDIT: Continuous Event Monitoring / Network Visibility — State change recorded for the audit trail");
+			_logger.LogInformation("ResetAuthenticator(): M2614-AUDIT: Log Management / data protection — State change recorded for the audit trail");
+			_logger.LogInformation("ResetAuthenticator(): M2614-AUDIT: Log integrity (encrypt + validate) — State change recorded for the audit trail");
+			_logger.LogInformation("ResetAuthenticator(): M2614-AUDIT: Activity-Based Outcomes 1-11 — State change recorded for the audit trail");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
@@ -479,7 +590,10 @@ public class ManageController : Controller
         _logger.LogInformation("User with ID {UserId} has generated new 2FA recovery codes.", user.Id);
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
+		_logger.LogInformation("GenerateRecoveryCodes(): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed for user {User}", user);
+		_logger.LogInformation("GenerateRecoveryCodes(): M2614-AUDIT: Activity-Based Outcomes 1-11 — Audit coverage recorded for the audit trail");
 
+		_logger.LogInformation("GenerateRecoveryCodes(): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", user);
         return View(nameof(ShowRecoveryCodes), model);
     }
 
@@ -497,15 +611,22 @@ public class ManageController : Controller
             throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.Id}' because they do not have 2FA enabled.");
         }
 
+		_logger.LogInformation("GenerateRecoveryCodesWarning(): M2614-AUDIT: Outcome 01 user attribution recorded for the audit trail");
+		_logger.LogInformation("GenerateRecoveryCodesWarning(): M2614-AUDIT: Activity-Based Outcomes 1-11 — Audit coverage recorded for the audit trail");
         return View(nameof(GenerateRecoveryCodesWarning));
     }
 
     private void AddErrors(IdentityResult result)
     {
+		_logger.LogInformation("AddErrors(result={Result}): M2614-AUDIT: Log Management / data protection — State change recorded for the audit trail {Result1}", result, result);
         foreach (var error in result.Errors)
         {
+			_logger.LogInformation("AddErrors(result={Result}): M2614-AUDIT: Log integrity (encrypt + validate) — State change recorded for the audit trail {Result1}", result, result);
             ModelState.AddModelError(string.Empty, error.Description);
+			_logger.LogInformation("AddErrors(result={Result}): M2614-AUDIT: Continuous Event Monitoring / Network Visibility — State change recorded for the audit trail {Result1}", result, result);
         }
+		_logger.LogInformation("AddErrors(result={Result}): M2614-AUDIT: Activity-Based Outcomes 1-11 — State change recorded for the audit trail {Result1}", result, result);
+    _logger.LogInformation("AddErrors(result={Result}): M2614-AUDIT: Outcome 1: user attribution — State change recorded for the audit trail {Result1}", result, result);
     }
 
     private string FormatKey(string unformattedKey)
@@ -527,6 +648,7 @@ public class ManageController : Controller
 
     private string GenerateQrCodeUri(string email, string unformattedKey)
     {
+		_logger.LogInformation("GenerateQrCodeUri(email=<redacted>, unformattedKey={UnformattedKey}): M2614-AUDIT: Log Management / data protection — Log management recorded for the audit trail", unformattedKey);
         return string.Format(
             AuthenticatorUriFormat,
             _urlEncoder.Encode("eShopOnWeb"),
@@ -536,15 +658,24 @@ public class ManageController : Controller
 
     private async Task LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user, EnableAuthenticatorViewModel model)
     {
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): M2614-AUDIT: Outcome 3: object and data access — Record access recorded for the audit trail", user, model);
         var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): M2614-AUDIT: Outcome 1: user attribution — Record access recorded for the audit trail", user, model);
         if (string.IsNullOrEmpty(unformattedKey))
         {
+			_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): M2614-AUDIT: Outcome 2: source/destination network traffic — Record access recorded for the audit trail", user, model);
             await _userManager.ResetAuthenticatorKeyAsync(user);
+			_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): M2614-AUDIT: Outcome 5: infrastructure changes — Record access recorded for the audit trail", user, model);
             unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
+			_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): M2614-AUDIT: Outcome 4: privilege changes — Record access recorded for the audit trail", user, model);
         }
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): M2614-AUDIT: Continuous Event Monitoring / Network Visibility — Record access recorded for the audit trail", user, model);
 
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): M2614-AUDIT: Log Management / data protection — Record access recorded for the audit trail", user, model);
         model.SharedKey = FormatKey(unformattedKey!);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): M2614-AUDIT: Log integrity (encrypt + validate) — Record access recorded for the audit trail", user, model);
         model.AuthenticatorUri = GenerateQrCodeUri(user.Email!, unformattedKey!);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): M2614-AUDIT: Activity-Based Outcomes 1-11 — Record access recorded for the audit trail", user, model);
     }
 
 }

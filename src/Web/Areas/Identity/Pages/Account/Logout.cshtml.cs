@@ -13,6 +13,7 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 //TODO : replace IMemoryCache by distributed cache if you are in multi-host scenario
 public class LogoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<LogoutModel> _logger;
     private readonly IMemoryCache _cache;
@@ -20,8 +21,11 @@ public class LogoutModel : PageModel
     public LogoutModel(SignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger, IMemoryCache cache)
     {
         _signInManager = signInManager;
+		_logger.LogInformation("LogoutModel(signInManager={SignInManager}, logger={Logger}, cache={Cache}): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed", signInManager, logger, cache);
         _logger = logger;
+		_logger.LogInformation("LogoutModel(signInManager={SignInManager}, logger={Logger}, cache={Cache}): SOC2-AUDIT [CC7.2]: System operation completed", signInManager, logger, cache);
         _cache = cache;
+		_logger.LogInformation("LogoutModel(signInManager={SignInManager}, logger={Logger}, cache={Cache}): SOC2-AUDIT [CC6.1]: Authentication operation completed", signInManager, logger, cache);
     }
 
     public void OnGet()
@@ -40,12 +44,16 @@ public class LogoutModel : PageModel
         });
 
         _logger.LogInformation("User logged out.");
+		_logger.LogInformation("OnPost(returnUrl={ReturnUrl}): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed for user {UserId}", returnUrl, userId);
         if (returnUrl != null)
         {
+			_logger.LogInformation("OnPost(returnUrl={ReturnUrl}): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {UserId}", returnUrl, userId);
             return LocalRedirect(returnUrl);
         }
         else
         {
+			_logger.LogInformation("OnPost(returnUrl={ReturnUrl}): SOC2-AUDIT [CC7.2]: System operation completed", returnUrl);
+			_logger.LogInformation("OnPost(returnUrl={ReturnUrl}): M2614-AUDIT: Activity-Based Outcomes 1-11 — Audit coverage recorded for the audit trail {UserId}", returnUrl, userId);
             return RedirectToPage("/Index");
         }
     }

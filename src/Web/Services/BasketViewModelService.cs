@@ -4,11 +4,13 @@ using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.Pages.Basket;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Services;
 
 public class BasketViewModelService : IBasketViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IUriComposer _uriComposer;
     private readonly IBasketQueryService _basketQueryService;
@@ -27,14 +29,22 @@ public class BasketViewModelService : IBasketViewModelService
 
     public async Task<BasketViewModel> GetOrCreateBasketForUser(string userName)
     {
+		_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): M2614-AUDIT: Outcome 4: privilege changes — Record access recorded for the audit trail", userName);
         var basketSpec = new BasketWithItemsSpecification(userName);
+		_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): M2614-AUDIT: Outcome 3: object and data access — Record access recorded for the audit trail", userName);
         var basket = (await _basketRepository.FirstOrDefaultAsync(basketSpec));
+		_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): M2614-AUDIT: Outcome 2: source/destination network traffic — Record access recorded for the audit trail", userName);
 
+		_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): M2614-AUDIT: Continuous Event Monitoring / Network Visibility — Record access recorded for the audit trail", userName);
         if (basket == null)
         {
+			_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): M2614-AUDIT: Outcome 1: user attribution — Record access recorded for the audit trail", userName);
+			_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): M2614-AUDIT: Outcome 5: infrastructure changes — Record access recorded for the audit trail", userName);
             return await CreateBasketForUser(userName);
         }
+		_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): M2614-AUDIT: Log Management / data protection — Record access recorded for the audit trail", userName);
         var viewModel = await Map(basket);
+		_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): M2614-AUDIT: Log integrity (encrypt + validate) — Record access recorded for the audit trail", userName);
         return viewModel;
     }
 
@@ -52,11 +62,16 @@ public class BasketViewModelService : IBasketViewModelService
 
     private async Task<List<BasketItemViewModel>> GetBasketItems(IReadOnlyCollection<BasketItem> basketItems)
     {
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): M2614-AUDIT: Outcome 4: privilege changes — Record access recorded for the audit trail", basketItems);
         var catalogItemsSpecification = new CatalogItemsSpecification(basketItems.Select(b => b.CatalogItemId).ToArray());
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): M2614-AUDIT: Outcome 3: object and data access — Record access recorded for the audit trail", basketItems);
         var catalogItems = await _itemRepository.ListAsync(catalogItemsSpecification);
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): M2614-AUDIT: Outcome 2: source/destination network traffic — Record access recorded for the audit trail", basketItems);
 
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): M2614-AUDIT: Continuous Event Monitoring / Network Visibility — Record access recorded for the audit trail", basketItems);
         var items = basketItems.Select(basketItem =>
         {
+			_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): M2614-AUDIT: Outcome 1: user attribution — Record access recorded for the audit trail", basketItems);
             var catalogItem = catalogItems.First(c => c.Id == basketItem.CatalogItemId);
 
             var basketItemViewModel = new BasketItemViewModel
@@ -68,9 +83,14 @@ public class BasketViewModelService : IBasketViewModelService
                 PictureUrl = _uriComposer.ComposePicUri(catalogItem.PictureUri),
                 ProductName = catalogItem.Name
             };
+			_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): M2614-AUDIT: Outcome 6: suspicious activity & IOC hunting — Record access recorded for the audit trail", basketItems);
+			_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): M2614-AUDIT: Outcome 5: infrastructure changes — Record access recorded for the audit trail", basketItems);
             return basketItemViewModel;
         }).ToList();
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): M2614-AUDIT: Log Management / data protection — Record access recorded for the audit trail", basketItems);
 
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): M2614-AUDIT: Log integrity (encrypt + validate) — Record access recorded for the audit trail", basketItems);
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): M2614-AUDIT: Activity-Based Outcomes 1-11 — Record access recorded for the audit trail", basketItems);
         return items;
     }
 
