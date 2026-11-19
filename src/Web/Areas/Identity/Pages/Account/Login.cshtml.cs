@@ -26,6 +26,7 @@ public class LoginModel : PageModel
 		_logger.LogError(">>> Entering LoginModel(signInManager={SignInManager},logger={Logger},basketService={BasketService})", signInManager, logger, basketService);
         _basketService = basketService;
 		_logger.LogDebug("LoginModel(signInManager={SignInManager},logger={Logger},basketService={BasketService}): _basketService → {_basketService}", signInManager, logger, basketService, _basketService);
+		_logger.LogWarning("<<< Exiting LoginModel(signInManager={SignInManager},logger={Logger},basketService={BasketService})", signInManager, logger, basketService);
     }
 
     [BindProperty]

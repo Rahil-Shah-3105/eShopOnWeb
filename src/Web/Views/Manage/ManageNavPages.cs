@@ -59,5 +59,6 @@ public static class ManageNavPages
     {
         _logger.LogError(">>> Entering AddActivePage(viewData={ViewData},activePage={ActivePage})", viewData, activePage);
         viewData[ActivePageKey] = activePage;
+		_logger.LogWarning("<<< Exiting AddActivePage(viewData={ViewData},activePage={ActivePage})", viewData, activePage);
     }
 }

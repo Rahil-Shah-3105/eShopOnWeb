@@ -6,6 +6,8 @@ public class ClaimValue
 	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public ClaimValue()
     {
+	_logger.LogError(">>> Entering ClaimValue()");
+    _logger.LogWarning("<<< Exiting ClaimValue()");
     }
 
     public ClaimValue(string type, string value)

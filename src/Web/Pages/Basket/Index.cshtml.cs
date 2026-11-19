@@ -27,6 +27,7 @@ public class IndexModel : PageModel
 		_logger.LogDebug("IndexModel(basketService={BasketService},basketViewModelService={BasketViewModelService},itemRepository={ItemRepository}): _basketService → {_basketService}", basketService, basketViewModelService, itemRepository, _basketService);
     _logger.LogWarning("<<< Exiting IndexModel(basketService={BasketService},basketViewModelService={BasketViewModelService},itemRepository={ItemRepository})", basketService, basketViewModelService, itemRepository);
         _itemRepository = itemRepository;
+		_logger.LogDebug("IndexModel(basketService={BasketService},basketViewModelService={BasketViewModelService},itemRepository={ItemRepository}): _itemRepository → {_itemRepository}", basketService, basketViewModelService, itemRepository, _itemRepository);
     }
 
     public BasketViewModel BasketModel { get; set; } = new BasketViewModel();

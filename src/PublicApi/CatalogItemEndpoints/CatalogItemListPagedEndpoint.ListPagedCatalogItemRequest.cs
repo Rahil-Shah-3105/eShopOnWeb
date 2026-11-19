@@ -20,5 +20,6 @@ public class ListPagedCatalogItemRequest : BaseRequest
         CatalogBrandId = catalogBrandId;
 		_logger.LogDebug("ListPagedCatalogItemRequest(pageSize={PageSize},pageIndex={PageIndex},catalogBrandId={CatalogBrandId},catalogTypeId={CatalogTypeId}): CatalogBrandId → {CatalogBrandId1}", pageSize, pageIndex, catalogBrandId, catalogTypeId, CatalogBrandId);
         CatalogTypeId = catalogTypeId;
+		_logger.LogDebug("ListPagedCatalogItemRequest(pageSize={PageSize},pageIndex={PageIndex},catalogBrandId={CatalogBrandId},catalogTypeId={CatalogTypeId}): CatalogTypeId → {CatalogTypeId1}", pageSize, pageIndex, catalogBrandId, catalogTypeId, CatalogTypeId);
     }
 }

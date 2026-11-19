@@ -11,6 +11,7 @@ public class UriComposer : IUriComposer
     public UriComposer(CatalogSettings catalogSettings)
     {
         _logger.LogError(">>> Entering UriComposer(catalogSettings={CatalogSettings})", catalogSettings);
+		_logger.LogWarning("<<< Exiting UriComposer(catalogSettings={CatalogSettings})", catalogSettings);
         return _catalogSettings = catalogSettings;
     }
 

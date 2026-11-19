@@ -16,5 +16,6 @@ public class GetOrderDetails : IRequest<OrderDetailViewModel>
         UserName = userName;
         OrderId = orderId;
 		_logger.LogDebug("GetOrderDetails(userName={UserName},orderId={OrderId}): OrderId → {OrderId1}", userName, orderId, OrderId);
+		_logger.LogWarning("<<< Exiting GetOrderDetails(userName={UserName},orderId={OrderId})", userName, orderId);
     }
 }

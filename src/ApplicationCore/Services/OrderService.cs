@@ -32,6 +32,7 @@ public class OrderService : IOrderService
         _basketRepository = basketRepository;
 		_logger.LogDebug("OrderService(basketRepository={BasketRepository},itemRepository={ItemRepository},orderRepository={OrderRepository},uriComposer={UriComposer}): _basketRepository → {_basketRepository}", basketRepository, itemRepository, orderRepository, uriComposer, _basketRepository);
         _itemRepository = itemRepository;
+		_logger.LogDebug("OrderService(basketRepository={BasketRepository},itemRepository={ItemRepository},orderRepository={OrderRepository},uriComposer={UriComposer}): _itemRepository → {_itemRepository}", basketRepository, itemRepository, orderRepository, uriComposer, _itemRepository);
     }
 
     public async Task CreateOrderAsync(int basketId, Address shippingAddress)

@@ -22,6 +22,7 @@ public class Basket : ViewComponent
 		_logger.LogError(">>> Entering Basket(basketService={BasketService},signInManager={SignInManager})", basketService, signInManager);
         _basketService = basketService;
         _signInManager = signInManager;
+		_logger.LogDebug("Basket(basketService={BasketService},signInManager={SignInManager}): _signInManager → {_signInManager}", basketService, signInManager, _signInManager);
 		_logger.LogDebug("Basket(basketService={BasketService},signInManager={SignInManager}): _basketService → {_basketService}", basketService, signInManager, _basketService);
     _logger.LogWarning("<<< Exiting Basket(basketService={BasketService},signInManager={SignInManager})", basketService, signInManager);
     }

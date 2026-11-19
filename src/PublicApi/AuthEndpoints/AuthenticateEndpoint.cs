@@ -26,8 +26,10 @@ public class AuthenticateEndpoint : EndpointBaseAsync
     {
 		_logger.LogError(">>> Entering AuthenticateEndpoint(signInManager={SignInManager},tokenClaimsService={TokenClaimsService})", signInManager, tokenClaimsService);
         _signInManager = signInManager;
+		_logger.LogDebug("AuthenticateEndpoint(signInManager={SignInManager},tokenClaimsService={TokenClaimsService}): _signInManager → {_signInManager}", signInManager, tokenClaimsService, _signInManager);
         _tokenClaimsService = tokenClaimsService;
 		_logger.LogDebug("AuthenticateEndpoint(signInManager={SignInManager},tokenClaimsService={TokenClaimsService}): _tokenClaimsService → {_tokenClaimsService}", signInManager, tokenClaimsService, _tokenClaimsService);
+		_logger.LogWarning("<<< Exiting AuthenticateEndpoint(signInManager={SignInManager},tokenClaimsService={TokenClaimsService})", signInManager, tokenClaimsService);
     }
 
     [HttpPost("api/authenticate")]

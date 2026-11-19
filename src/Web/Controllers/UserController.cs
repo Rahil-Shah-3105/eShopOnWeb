@@ -36,6 +36,7 @@ public class UserController : ControllerBase
 		_logger.LogDebug("UserController(tokenClaimsService={TokenClaimsService},signInManager={SignInManager},logger={Logger},cache={Cache}): _logger → {_logger}", tokenClaimsService, signInManager, logger, cache, _logger);
     _logger.LogWarning("<<< Exiting UserController(tokenClaimsService={TokenClaimsService},signInManager={SignInManager},logger={Logger},cache={Cache})", tokenClaimsService, signInManager, logger, cache);
         _cache = cache;
+		_logger.LogDebug("UserController(tokenClaimsService={TokenClaimsService},signInManager={SignInManager},logger={Logger},cache={Cache}): _cache → {_cache}", tokenClaimsService, signInManager, logger, cache, _cache);
     }
 
     [HttpGet]

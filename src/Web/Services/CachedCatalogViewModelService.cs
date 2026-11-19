@@ -19,8 +19,10 @@ public class CachedCatalogViewModelService : ICatalogViewModelService
     {
 		_logger.LogError(">>> Entering CachedCatalogViewModelService(cache={Cache},catalogViewModelService={CatalogViewModelService})", cache, catalogViewModelService);
         _cache = cache;
+		_logger.LogDebug("CachedCatalogViewModelService(cache={Cache},catalogViewModelService={CatalogViewModelService}): _cache → {_cache}", cache, catalogViewModelService, _cache);
         _catalogViewModelService = catalogViewModelService;
 		_logger.LogDebug("CachedCatalogViewModelService(cache={Cache},catalogViewModelService={CatalogViewModelService}): _catalogViewModelService → {_catalogViewModelService}", cache, catalogViewModelService, _catalogViewModelService);
+		_logger.LogWarning("<<< Exiting CachedCatalogViewModelService(cache={Cache},catalogViewModelService={CatalogViewModelService})", cache, catalogViewModelService);
     }
 
     public async Task<IEnumerable<SelectListItem>> GetBrands()

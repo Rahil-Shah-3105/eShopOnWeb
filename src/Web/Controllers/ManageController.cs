@@ -44,6 +44,7 @@ public class ManageController : Controller
 		_logger.LogError(">>> Entering ManageController(userManager={UserManager},signInManager={SignInManager},emailSender=<redacted>,logger={Logger},urlEncoder={UrlEncoder})", userManager, signInManager, logger, urlEncoder);
         _urlEncoder = urlEncoder;
 		_logger.LogDebug("ManageController(userManager={UserManager},signInManager={SignInManager},emailSender=<redacted>,logger={Logger},urlEncoder={UrlEncoder}): _urlEncoder → {_urlEncoder}", userManager, signInManager, logger, urlEncoder, _urlEncoder);
+		_logger.LogWarning("<<< Exiting ManageController(userManager={UserManager},signInManager={SignInManager},emailSender=<redacted>,logger={Logger},urlEncoder={UrlEncoder})", userManager, signInManager, logger, urlEncoder);
     }
 
     [TempData]

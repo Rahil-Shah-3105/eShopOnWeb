@@ -35,12 +35,14 @@ public class CatalogViewModelService : ICatalogViewModelService
 		_logger.LogError(">>> Entering CatalogViewModelService(loggerFactory={LoggerFactory},itemRepository={ItemRepository},brandRepository={BrandRepository},typeRepository={TypeRepository},uriComposer={UriComposer})", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer);
         _itemRepository = itemRepository;
         _brandRepository = brandRepository;
+		_logger.LogDebug("CatalogViewModelService(loggerFactory={LoggerFactory},itemRepository={ItemRepository},brandRepository={BrandRepository},typeRepository={TypeRepository},uriComposer={UriComposer}): _brandRepository → {_brandRepository}", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer, _brandRepository);
 		_logger.LogDebug("CatalogViewModelService(loggerFactory={LoggerFactory},itemRepository={ItemRepository},brandRepository={BrandRepository},typeRepository={TypeRepository},uriComposer={UriComposer}): _logger → {_logger}", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer, _logger);
 		_logger.LogDebug("CatalogViewModelService(loggerFactory={LoggerFactory},itemRepository={ItemRepository},brandRepository={BrandRepository},typeRepository={TypeRepository},uriComposer={UriComposer}): _itemRepository → {_itemRepository}", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer, _itemRepository);
         _typeRepository = typeRepository;
 		_logger.LogDebug("CatalogViewModelService(loggerFactory={LoggerFactory},itemRepository={ItemRepository},brandRepository={BrandRepository},typeRepository={TypeRepository},uriComposer={UriComposer}): _typeRepository → {_typeRepository}", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer, _typeRepository);
 		_logger.LogWarning("<<< Exiting CatalogViewModelService(loggerFactory={LoggerFactory},itemRepository={ItemRepository},brandRepository={BrandRepository},typeRepository={TypeRepository},uriComposer={UriComposer})", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer);
         _uriComposer = uriComposer;
+		_logger.LogDebug("CatalogViewModelService(loggerFactory={LoggerFactory},itemRepository={ItemRepository},brandRepository={BrandRepository},typeRepository={TypeRepository},uriComposer={UriComposer}): _uriComposer → {_uriComposer}", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer, _uriComposer);
     }
 
     public async Task<CatalogIndexViewModel> GetCatalogItems(int pageIndex, int itemsPage, int? brandId, int? typeId)
