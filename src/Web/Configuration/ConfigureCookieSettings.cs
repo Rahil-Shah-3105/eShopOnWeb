@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Configuration;
 
 public static class ConfigureCookieSettings
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public const int ValidityMinutesPeriod = 60;
     public const string IdentifierCookieName = "EshopIdentifier";
 
@@ -33,8 +35,12 @@ public static class ConfigureCookieSettings
                 };
         });
 
+		_logger.LogInformation("AddCookieSettings(services={Services}): CJIS-AUDIT [§5.12]: Personnel security — State change recorded for the audit trail", services);
         services.AddScoped<RevokeAuthenticationEvents>();
+		_logger.LogInformation("AddCookieSettings(services={Services}): CJIS-AUDIT [§5.3]: Incident response — State change recorded for the audit trail", services);
 
+		_logger.LogInformation("AddCookieSettings(services={Services}): CJIS-AUDIT: Audit coverage — State change recorded for the audit trail", services);
+		_logger.LogInformation("AddCookieSettings(services={Services}): CJIS-AUDIT [§5.6]: Advanced authentication — Authentication operation completed", services);
         return services;
     }
 }

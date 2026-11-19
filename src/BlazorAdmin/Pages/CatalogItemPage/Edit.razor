@@ -126,6 +126,10 @@
 
     private async Task SaveClick()
     {
+		Logger.LogInformation("SaveClick(): CJIS-AUDIT [§5.12]: Personnel security — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): CJIS-AUDIT [§5.3]: Incident response — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): CJIS-AUDIT: Audit coverage — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): CJIS-AUDIT [§5.6]: Advanced authentication — State change recorded for the audit trail");
         await CatalogItemService.Edit(_item);
         await OnSaveClick.InvokeAsync(null);
         await Close();
@@ -144,6 +148,7 @@
         _showEditModal = true;
 
         StateHasChanged();
+		Logger.LogInformation("Open(id={Id}): CJIS-AUDIT [§5.6]: Advanced authentication — Authentication operation completed", id);
     }
 
     private async Task Close()

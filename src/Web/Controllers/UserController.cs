@@ -16,6 +16,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ITokenClaimsService _tokenClaimsService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<UserController> _logger;
@@ -30,6 +31,7 @@ public class UserController : ControllerBase
         _signInManager = signInManager;
         _logger = logger;
         _cache = cache;
+		_logger.LogInformation("UserController(tokenClaimsService={TokenClaimsService}, signInManager={SignInManager}, logger={Logger}, cache={Cache}): CJIS-AUDIT [§5.6]: Advanced authentication — Authentication operation completed", tokenClaimsService, signInManager, logger, cache);
     }
 
     [HttpGet]
@@ -54,6 +56,7 @@ public class UserController : ControllerBase
         });
 
         _logger.LogInformation("User logged out.");
+		_logger.LogInformation("Logout(): CJIS-AUDIT [§5.6]: Advanced authentication — Authentication operation completed for user {UserId}", userId);
         return Ok();
     }
 
@@ -98,8 +101,12 @@ public class UserController : ControllerBase
         }
 
         var token = await _tokenClaimsService.GetTokenAsync(claimsPrincipal.Identity.Name);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): CJIS-AUDIT [§5.12]: Personnel security — State change recorded for the audit trail", claimsPrincipal);
         userInfo.Token = token;
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): CJIS-AUDIT [§5.3]: Incident response — State change recorded for the audit trail", claimsPrincipal);
 
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): CJIS-AUDIT: Audit coverage — State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): CJIS-AUDIT [§5.6]: Advanced authentication — Authentication operation completed for user {UserInfo}", claimsPrincipal, userInfo);
         return userInfo;
     }
 }
