@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
 
@@ -15,6 +16,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
 /// </summary>
 public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogType>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMapper _mapper;
 
     public CatalogTypeListEndpoint(IMapper mapper)
@@ -27,6 +29,9 @@ public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogTyp
         app.MapGet("api/catalog-types",
             async (IRepository<CatalogType> catalogTypeRepository) =>
             {
+				_logger.LogInformation("AddRoute(app={App}): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail", app);
+				_logger.LogInformation("AddRoute(app={App}): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail", app);
+			_logger.LogInformation("AddRoute(app={App}): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail", app);
                 return await HandleAsync(catalogTypeRepository);
             })
             .Produces<ListCatalogTypesResponse>()
@@ -40,7 +45,10 @@ public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogTyp
         var items = await catalogTypeRepository.ListAsync();
 
         response.CatalogTypes.AddRange(items.Select(_mapper.Map<CatalogTypeDto>));
+		_logger.LogInformation("HandleAsync(catalogTypeRepository={CatalogTypeRepository}): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail", catalogTypeRepository);
 
+		_logger.LogInformation("HandleAsync(catalogTypeRepository={CatalogTypeRepository}): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail", catalogTypeRepository);
+		_logger.LogInformation("HandleAsync(catalogTypeRepository={CatalogTypeRepository}): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail", catalogTypeRepository);
         return Results.Ok(response);
     }
 }

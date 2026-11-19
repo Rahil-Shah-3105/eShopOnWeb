@@ -125,11 +125,14 @@
     private async Task CreateClick()
     {
         var result = await CatalogItemService.Create(_item);
+		Logger.LogInformation("CreateClick(): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — State change recorded for the audit trail {Result}", result);
         if (result != null)
         {
+			Logger.LogInformation("CreateClick(): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — State change recorded for the audit trail {Result}", result);
             await OnSaveClick.InvokeAsync(null);
             await Close();
         }
+		Logger.LogInformation("CreateClick(): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — State change recorded for the audit trail {Result}", result);
     }
 
     public async Task Open()

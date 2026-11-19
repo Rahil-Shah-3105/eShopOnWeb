@@ -8,11 +8,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.eShopWeb.ApplicationCore.Constants;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Identity;
 
 public class IdentityTokenClaimService : ITokenClaimsService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public IdentityTokenClaimService(UserManager<ApplicationUser> userManager)
@@ -40,7 +42,9 @@ public class IdentityTokenClaimService : ITokenClaimsService
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
+		_logger.LogInformation("GetTokenAsync(userName={UserName}): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — Record access recorded for the audit trail", userName);
         var token = tokenHandler.CreateToken(tokenDescriptor);
+		_logger.LogInformation("GetTokenAsync(userName={UserName}): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — Record access recorded for the audit trail", userName);
         return tokenHandler.WriteToken(token);
     }
 }

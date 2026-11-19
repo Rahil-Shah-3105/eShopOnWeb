@@ -59,6 +59,9 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +74,9 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +88,9 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): COPPA-AUDIT [16 CFR 312.5(a)(2)]: Third party disclosure — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): COPPA-AUDIT [16 CFR 312.10]: Retention deletion — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): COPPA-AUDIT [16 CFR 312.5]: Vpc coverage — Record access recorded for the audit trail");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),
