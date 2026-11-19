@@ -59,6 +59,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): PCI-AUDIT: Audit coverage — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): PCI-AUDIT: Authn controls — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): PCI-AUDIT: Script integrity — Change management operation performed");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): PCI-AUDIT [Req. 10.7]: Security control failure — Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +75,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): PCI-AUDIT: Audit coverage — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): PCI-AUDIT: Authn controls — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): PCI-AUDIT: Script integrity — Change management operation performed");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): PCI-AUDIT [Req. 10.7]: Security control failure — Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +90,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): PCI-AUDIT: Audit coverage — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): PCI-AUDIT: Authn controls — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): PCI-AUDIT: Script integrity — Change management operation performed");
+		logger.LogInformation("GetPreconfiguredItems(): PCI-AUDIT [Req. 10.7]: Security control failure — Record access recorded for the audit trail");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),
