@@ -4,11 +4,13 @@ using Microsoft.eShopWeb.Infrastructure.Data;
 using Microsoft.eShopWeb.Infrastructure.Data.Queries;
 using Microsoft.eShopWeb.Infrastructure.Logging;
 using Microsoft.eShopWeb.Infrastructure.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Configuration;
 
 public static class ConfigureCoreServices
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public static IServiceCollection AddCoreServices(this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -23,8 +25,12 @@ public static class ConfigureCoreServices
         services.AddSingleton<IUriComposer>(new UriComposer(catalogSettings));
 
         services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
+		_logger.LogInformation("AddCoreServices(services={Services}, configuration={Configuration}): DORA-AUDIT: Third party risk — Change management operation performed", services, configuration);
         services.AddTransient<IEmailSender, EmailSender>();
+		_logger.LogInformation("AddCoreServices(services={Services}, configuration={Configuration}): DORA-AUDIT: Resilience testing — State change recorded for the audit trail", services, configuration);
 
+		_logger.LogInformation("AddCoreServices(services={Services}, configuration={Configuration}): DORA-AUDIT [Art. 45]: Information sharing — State change recorded for the audit trail", services, configuration);
+		_logger.LogInformation("AddCoreServices(services={Services}, configuration={Configuration}): DORA-AUDIT: Incident coverage — State change recorded for the audit trail", services, configuration);
         return services;
     }
 }

@@ -59,6 +59,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): DORA-AUDIT: Incident coverage — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): DORA-AUDIT [Art. 45]: Information sharing — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): DORA-AUDIT: Resilience testing — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): DORA-AUDIT: Third party risk — Change management operation performed");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +75,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): DORA-AUDIT: Incident coverage — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): DORA-AUDIT [Art. 45]: Information sharing — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): DORA-AUDIT: Resilience testing — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): DORA-AUDIT: Third party risk — Change management operation performed");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +90,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): DORA-AUDIT: Incident coverage — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): DORA-AUDIT [Art. 45]: Information sharing — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): DORA-AUDIT: Resilience testing — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): DORA-AUDIT: Third party risk — Change management operation performed");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

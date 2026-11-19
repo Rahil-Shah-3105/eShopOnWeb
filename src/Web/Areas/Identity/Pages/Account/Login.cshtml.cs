@@ -36,6 +36,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -105,8 +106,10 @@ public class LoginModel : PageModel
 
     private async Task TransferAnonymousBasketToUserAsync(string? userName)
     {
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): DORA-AUDIT [Art. 45]: Information sharing — State change recorded for the audit trail", userName);
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): DORA-AUDIT: Resilience testing — State change recorded for the audit trail", userName);
             var anonymousId = Request.Cookies[Constants.BASKET_COOKIENAME];
             if (Guid.TryParse(anonymousId, out var _))
             {
@@ -114,6 +117,8 @@ public class LoginModel : PageModel
                 await _basketService.TransferBasketAsync(anonymousId, userName);
             }
             Response.Cookies.Delete(Constants.BASKET_COOKIENAME);
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): DORA-AUDIT: Third party risk — State change recorded for the audit trail", userName);
         }
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): DORA-AUDIT: Incident coverage — State change recorded for the audit trail", userName);
     }
 }

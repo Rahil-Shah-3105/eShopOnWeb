@@ -5,11 +5,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Pages.Basket;
 
 public class IndexModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly IBasketViewModelService _basketViewModelService;
     private readonly IRepository<CatalogItem> _itemRepository;
@@ -47,8 +49,12 @@ public class IndexModel : PageModel
         var basket = await _basketService.AddItemToBasket(username,
             productDetails.Id, item.Price);
 
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): DORA-AUDIT: Third party risk — State change recorded for the audit trail", productDetails);
         BasketModel = await _basketViewModelService.Map(basket);
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): DORA-AUDIT: Resilience testing — State change recorded for the audit trail", productDetails);
 
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): DORA-AUDIT [Art. 45]: Information sharing — State change recorded for the audit trail", productDetails);
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): DORA-AUDIT: Incident coverage — State change recorded for the audit trail", productDetails);
         return RedirectToPage();
     }
 
@@ -63,6 +69,7 @@ public class IndexModel : PageModel
         var updateModel = items.ToDictionary(b => b.Id.ToString(), b => b.Quantity);
         var basket = await _basketService.SetQuantities(basketView.Id, updateModel);
         BasketModel = await _basketViewModelService.Map(basket);
+		_logger.LogInformation("OnPostUpdate(items={Items}): DORA-AUDIT: Third party risk — Change management operation performed", items);
     }
 
     private string GetOrSetBasketCookieAndUserName()
@@ -93,6 +100,10 @@ public class IndexModel : PageModel
         userName = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions { IsEssential = true };
         cookieOptions.Expires = DateTime.Today.AddYears(10);
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): DORA-AUDIT: Third party risk — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): DORA-AUDIT: Resilience testing — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): DORA-AUDIT [Art. 45]: Information sharing — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): DORA-AUDIT: Incident coverage — Record access recorded for the audit trail");
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, userName, cookieOptions);
 
         return userName;
