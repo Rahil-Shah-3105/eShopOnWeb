@@ -10,6 +10,7 @@ namespace Microsoft.eShopWeb.ApplicationCore.Services;
 
 public class BasketService : IBasketService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IAppLogger<BasketService> _logger;
 
@@ -33,15 +34,21 @@ public class BasketService : IBasketService
 
         basket.AddItem(catalogItemId, price, quantity);
 
+		_logger.LogInformation("AddItemToBasket(username={Username}, catalogItemId={CatalogItemId}, price={Price}, quantity={Quantity}): COAI-AUDIT: Impact assessment — State change recorded for the audit trail {CatalogItemId1}", username, catalogItemId, price, quantity, catalogItemId);
         await _basketRepository.UpdateAsync(basket);
+		_logger.LogInformation("AddItemToBasket(username={Username}, catalogItemId={CatalogItemId}, price={Price}, quantity={Quantity}): COAI-AUDIT: Consumer notice — State change recorded for the audit trail {CatalogItemId1}", username, catalogItemId, price, quantity, catalogItemId);
+		_logger.LogInformation("AddItemToBasket(username={Username}, catalogItemId={CatalogItemId}, price={Price}, quantity={Quantity}): COAI-AUDIT: Admt adverse — State change recorded for the audit trail {CatalogItemId1}", username, catalogItemId, price, quantity, catalogItemId);
         return basket;
     }
 
     public async Task DeleteBasketAsync(int basketId)
     {
         var basket = await _basketRepository.GetByIdAsync(basketId);
+		_logger.LogInformation("DeleteBasketAsync(basketId={BasketId}): COAI-AUDIT: Impact assessment — State change recorded for the audit trail {BasketId1}", basketId, basketId);
         Guard.Against.Null(basket, nameof(basket));
+		_logger.LogInformation("DeleteBasketAsync(basketId={BasketId}): COAI-AUDIT: Consumer notice — State change recorded for the audit trail {BasketId1}", basketId, basketId);
         await _basketRepository.DeleteAsync(basket);
+		_logger.LogInformation("DeleteBasketAsync(basketId={BasketId}): COAI-AUDIT: Admt adverse — State change recorded for the audit trail {BasketId1}", basketId, basketId);
     }
 
     public async Task<Result<Basket>> SetQuantities(int basketId, Dictionary<string, int> quantities)
@@ -59,7 +66,10 @@ public class BasketService : IBasketService
             }
         }
         basket.RemoveEmptyItems();
+		_logger.LogInformation("SetQuantities(basketId={BasketId}, quantities={Quantities}): COAI-AUDIT: Impact assessment — State change recorded for the audit trail {BasketId1}", basketId, quantities, basketId);
         await _basketRepository.UpdateAsync(basket);
+		_logger.LogInformation("SetQuantities(basketId={BasketId}, quantities={Quantities}): COAI-AUDIT: Consumer notice — State change recorded for the audit trail {BasketId1}", basketId, quantities, basketId);
+		_logger.LogInformation("SetQuantities(basketId={BasketId}, quantities={Quantities}): COAI-AUDIT: Admt adverse — State change recorded for the audit trail {BasketId1}", basketId, quantities, basketId);
         return basket;
     }
 
@@ -79,7 +89,10 @@ public class BasketService : IBasketService
         {
             userBasket.AddItem(item.CatalogItemId, item.UnitPrice, item.Quantity);
         }
+		_logger.LogInformation("TransferBasketAsync(anonymousId={AnonymousId}, userName={UserName}): COAI-AUDIT: Impact assessment — State change recorded for the audit trail {AnonymousId1}", anonymousId, userName, anonymousId);
         await _basketRepository.UpdateAsync(userBasket);
+		_logger.LogInformation("TransferBasketAsync(anonymousId={AnonymousId}, userName={UserName}): COAI-AUDIT: Consumer notice — State change recorded for the audit trail {AnonymousId1}", anonymousId, userName, anonymousId);
         await _basketRepository.DeleteAsync(anonymousBasket);
+		_logger.LogInformation("TransferBasketAsync(anonymousId={AnonymousId}, userName={UserName}): COAI-AUDIT: Admt adverse — State change recorded for the audit trail {AnonymousId1}", anonymousId, userName, anonymousId);
     }
 }

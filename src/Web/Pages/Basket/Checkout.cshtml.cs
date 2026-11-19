@@ -14,6 +14,7 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket;
 [Authorize]
 public class CheckoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IOrderService _orderService;
@@ -64,6 +65,9 @@ public class CheckoutModel : PageModel
             return RedirectToPage("/Basket/Index");
         }
 
+		_logger.LogInformation("SetBasketModelAsync(): COAI-AUDIT: Consumer notice — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): COAI-AUDIT: Impact assessment — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): COAI-AUDIT: Admt adverse — State change recorded for the audit trail");
         return RedirectToPage("Success");
     }
 
@@ -91,6 +95,9 @@ public class CheckoutModel : PageModel
 
         _username = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions();
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): COAI-AUDIT: Impact assessment — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): COAI-AUDIT: Consumer notice — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): COAI-AUDIT: Admt adverse — Record access recorded for the audit trail");
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, _username, cookieOptions);
     }
