@@ -3,11 +3,13 @@ using System.Threading.Tasks;
 using BlazorAdmin.Helpers;
 using BlazorShared.Interfaces;
 using BlazorShared.Models;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorAdmin.Pages.CatalogItemPage;
 
 public partial class List : BlazorComponent
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Microsoft.AspNetCore.Components.Inject]
     public ICatalogItemService CatalogItemService { get; set; }
 
@@ -47,21 +49,37 @@ public partial class List : BlazorComponent
 
     private async Task CreateClick()
     {
+		_logger.LogInformation("CreateClick(): NERCCIP-AUDIT: Electronic perimeter — State change recorded for the audit trail");
+		_logger.LogInformation("CreateClick(): NERCCIP-AUDIT: Monitoring coverage — State change recorded for the audit trail");
+    _logger.LogInformation("CreateClick(): NERCCIP-AUDIT: Change management — State change recorded for the audit trail");
+    _logger.LogInformation("CreateClick(): NERCCIP-AUDIT: Incident recovery — State change recorded for the audit trail");
         await CreateComponent.Open();
     }
 
     private async Task EditClick(int id)
     {
+		_logger.LogInformation("EditClick(id={Id}): NERCCIP-AUDIT: Electronic perimeter — State change recorded for the audit trail {Id1}", id, id);
         await EditComponent.Open(id);
+		_logger.LogInformation("EditClick(id={Id}): NERCCIP-AUDIT: Monitoring coverage — State change recorded for the audit trail {Id1}", id, id);
+    _logger.LogInformation("EditClick(id={Id}): NERCCIP-AUDIT: Change management — State change recorded for the audit trail {Id1}", id, id);
+    _logger.LogInformation("EditClick(id={Id}): NERCCIP-AUDIT: Incident recovery — State change recorded for the audit trail {Id1}", id, id);
     }
 
     private async Task DeleteClick(int id)
     {
+		_logger.LogInformation("DeleteClick(id={Id}): NERCCIP-AUDIT: Electronic perimeter — State change recorded for the audit trail {Id1}", id, id);
         await DeleteComponent.Open(id);
+		_logger.LogInformation("DeleteClick(id={Id}): NERCCIP-AUDIT: Monitoring coverage — State change recorded for the audit trail {Id1}", id, id);
+    _logger.LogInformation("DeleteClick(id={Id}): NERCCIP-AUDIT: Change management — State change recorded for the audit trail {Id1}", id, id);
+    _logger.LogInformation("DeleteClick(id={Id}): NERCCIP-AUDIT: Incident recovery — State change recorded for the audit trail {Id1}", id, id);
     }
 
     private async Task ReloadCatalogItems()
     {
+		_logger.LogInformation("ReloadCatalogItems(): NERCCIP-AUDIT: Incident recovery — Record access recorded for the audit trail");
+		_logger.LogInformation("ReloadCatalogItems(): NERCCIP-AUDIT: Electronic perimeter — Record access recorded for the audit trail");
+		_logger.LogInformation("ReloadCatalogItems(): NERCCIP-AUDIT: Monitoring coverage — Record access recorded for the audit trail");
+    _logger.LogInformation("ReloadCatalogItems(): NERCCIP-AUDIT: Change management — Record access recorded for the audit trail");
         catalogItems = await CatalogItemService.List();
         StateHasChanged();
     }

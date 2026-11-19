@@ -110,6 +110,10 @@
 
     public async Task EditClick()
     {
+		Logger.LogInformation("EditClick(): NERCCIP-AUDIT: Incident recovery — State change recorded for the audit trail");
+		Logger.LogInformation("EditClick(): NERCCIP-AUDIT: Electronic perimeter — State change recorded for the audit trail");
+		Logger.LogInformation("EditClick(): NERCCIP-AUDIT: Monitoring coverage — State change recorded for the audit trail");
+    Logger.LogInformation("EditClick(): NERCCIP-AUDIT: Change management — State change recorded for the audit trail");
         await OnEditClick.InvokeAsync(_item.Id);
         await Close();
     }
