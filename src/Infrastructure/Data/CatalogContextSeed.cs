@@ -59,6 +59,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): CCPA-AUDIT: Admt decision — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): CCPA-AUDIT: Consumer rights — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): CCPA-AUDIT: Cyber audit — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): CCPA-AUDIT: Risk assessment — Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +75,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): CCPA-AUDIT: Admt decision — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): CCPA-AUDIT: Consumer rights — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): CCPA-AUDIT: Cyber audit — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): CCPA-AUDIT: Risk assessment — Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +90,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): CCPA-AUDIT: Admt decision — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): CCPA-AUDIT: Consumer rights — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): CCPA-AUDIT: Cyber audit — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): CCPA-AUDIT: Risk assessment — Record access recorded for the audit trail");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

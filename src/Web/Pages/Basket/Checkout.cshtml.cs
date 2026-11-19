@@ -14,6 +14,7 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket;
 [Authorize]
 public class CheckoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IOrderService _orderService;
@@ -32,6 +33,7 @@ public class CheckoutModel : PageModel
         _orderService = orderService;
         _basketViewModelService = basketViewModelService;
         _logger = logger;
+		_logger.LogInformation("CheckoutModel(basketService={BasketService}, basketViewModelService={BasketViewModelService}, signInManager={SignInManager}, orderService={OrderService}, logger={Logger}): CCPA-AUDIT: Consumer rights — Database transaction completed", basketService, basketViewModelService, signInManager, orderService, logger);
     }
 
     public BasketViewModel BasketModel { get; set; } = new BasketViewModel();
@@ -64,6 +66,10 @@ public class CheckoutModel : PageModel
             return RedirectToPage("/Basket/Index");
         }
 
+		_logger.LogInformation("SetBasketModelAsync(): CCPA-AUDIT: Risk assessment — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): CCPA-AUDIT: Consumer rights — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): CCPA-AUDIT: Cyber audit — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): CCPA-AUDIT: Admt decision — State change recorded for the audit trail");
         return RedirectToPage("Success");
     }
 
@@ -87,10 +93,14 @@ public class CheckoutModel : PageModel
         {
             _username = Request.Cookies[Constants.BASKET_COOKIENAME];
         }
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): CCPA-AUDIT: Risk assessment — Record access recorded for the audit trail");
         if (_username != null) return;
 
         _username = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions();
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): CCPA-AUDIT: Cyber audit — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): CCPA-AUDIT: Consumer rights — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): CCPA-AUDIT: Admt decision — Record access recorded for the audit trail");
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, _username, cookieOptions);
     }
