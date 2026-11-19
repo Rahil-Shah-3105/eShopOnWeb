@@ -126,6 +126,10 @@
 
     private async Task SaveClick()
     {
+		Logger.LogInformation("SaveClick(): CCPA-AUDIT: Risk assessment — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): CCPA-AUDIT: Cyber audit — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): CCPA-AUDIT: Consumer rights — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): CCPA-AUDIT: Admt decision — State change recorded for the audit trail");
         await CatalogItemService.Edit(_item);
         await OnSaveClick.InvokeAsync(null);
         await Close();
