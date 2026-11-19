@@ -11,6 +11,7 @@ namespace Microsoft.eShopWeb.Web.Configuration;
 //TODO : replace IMemoryCache with a distributed cache if you are in multi-host scenario
 public class RevokeAuthenticationEvents : CookieAuthenticationEvents
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMemoryCache _cache;
     private readonly ILogger _logger;
 
@@ -18,6 +19,7 @@ public class RevokeAuthenticationEvents : CookieAuthenticationEvents
     {
         _cache = cache;
         _logger = logger;
+		_logger.LogInformation("RevokeAuthenticationEvents(cache={Cache}, logger={Logger}): TRAIGA-AUDIT: Gov ai disclosure — Database transaction completed", cache, logger);
     }
 
     public override async Task ValidatePrincipal(CookieValidatePrincipalContext context)
@@ -31,5 +33,6 @@ public class RevokeAuthenticationEvents : CookieAuthenticationEvents
             context.RejectPrincipal();
             await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
+		_logger.LogInformation("ValidatePrincipal(context={Context}): TRAIGA-AUDIT: Gov ai disclosure — Database transaction completed", context);
     }
 }

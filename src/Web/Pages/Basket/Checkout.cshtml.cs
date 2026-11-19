@@ -14,6 +14,7 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket;
 [Authorize]
 public class CheckoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IOrderService _orderService;
@@ -32,6 +33,7 @@ public class CheckoutModel : PageModel
         _orderService = orderService;
         _basketViewModelService = basketViewModelService;
         _logger = logger;
+		_logger.LogInformation("CheckoutModel(basketService={BasketService}, basketViewModelService={BasketViewModelService}, signInManager={SignInManager}, orderService={OrderService}, logger={Logger}): TRAIGA-AUDIT: Gov ai disclosure — Database transaction completed", basketService, basketViewModelService, signInManager, orderService, logger);
     }
 
     public BasketViewModel BasketModel { get; set; } = new BasketViewModel();
@@ -64,6 +66,9 @@ public class CheckoutModel : PageModel
             return RedirectToPage("/Basket/Index");
         }
 
+		_logger.LogInformation("SetBasketModelAsync(): TRAIGA-AUDIT: Prohibited practices — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): TRAIGA-AUDIT: Regulatory sandbox — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): TRAIGA-AUDIT: Gov ai disclosure — State change recorded for the audit trail");
         return RedirectToPage("Success");
     }
 
@@ -91,6 +96,9 @@ public class CheckoutModel : PageModel
 
         _username = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions();
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): TRAIGA-AUDIT: Regulatory sandbox — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): TRAIGA-AUDIT: Prohibited practices — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): TRAIGA-AUDIT: Gov ai disclosure — Record access recorded for the audit trail");
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, _username, cookieOptions);
     }

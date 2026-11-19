@@ -13,6 +13,7 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogLookupDataService<TLookupData, TReponse> _catalogTypeService;
     private ILogger<CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>> _logger;
@@ -46,6 +47,9 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
 
         var types = await _catalogTypeService.List();
         var entry = new CacheEntry<List<TLookupData>>(types);
+		_logger.LogInformation("List(): TRAIGA-AUDIT: Regulatory sandbox — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): TRAIGA-AUDIT: Prohibited practices — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): TRAIGA-AUDIT: Gov ai disclosure — Record access recorded for the audit trail");
         await _localStorageService.SetItemAsync(key, entry);
         return types;
     }

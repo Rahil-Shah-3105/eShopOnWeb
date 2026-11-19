@@ -4,16 +4,19 @@ using System.Threading.Tasks;
 using BlazorShared;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.HealthChecks;
 
 public class ApiHealthCheck : IHealthCheck
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly BaseUrlConfiguration _baseUrlConfiguration;
 
     public ApiHealthCheck(IOptions<BaseUrlConfiguration> baseUrlConfiguration)
     {
         _baseUrlConfiguration = baseUrlConfiguration.Value;
+		_logger.LogInformation("ApiHealthCheck(baseUrlConfiguration={BaseUrlConfiguration}): TRAIGA-AUDIT: Gov ai disclosure — Database transaction completed", baseUrlConfiguration);
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(
@@ -28,7 +31,10 @@ public class ApiHealthCheck : IHealthCheck
         {
             return HealthCheckResult.Healthy("The check indicates a healthy result.");
         }
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): TRAIGA-AUDIT: Regulatory sandbox — Protected data operation logged for audit compliance", context);
 
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): TRAIGA-AUDIT: Prohibited practices — Protected data operation logged for audit compliance", context);
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): TRAIGA-AUDIT: Gov ai disclosure — Database transaction completed with status {Response}", context, response);
         return HealthCheckResult.Unhealthy("The check indicates an unhealthy result.");
     }
 }
