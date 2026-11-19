@@ -112,7 +112,9 @@
         await CatalogItemService.Delete(id);
 
         await OnSaveClick.InvokeAsync(null);
+		Logger.LogInformation("DeleteClick(id={Id}): NYCLL144-AUDIT: Candidate notice — State change recorded for the audit trail {Id1}", id, id);
         await Close();
+		Logger.LogInformation("DeleteClick(id={Id}): NYCLL144-AUDIT: Aedt audit — State change recorded for the audit trail {Id1}", id, id);
     }
 
     public async Task Open(int id)

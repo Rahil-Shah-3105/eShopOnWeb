@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
 
@@ -15,6 +16,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
 /// </summary>
 public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogType>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMapper _mapper;
 
     public CatalogTypeListEndpoint(IMapper mapper)
@@ -27,10 +29,12 @@ public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogTyp
         app.MapGet("api/catalog-types",
             async (IRepository<CatalogType> catalogTypeRepository) =>
             {
+				_logger.LogInformation("AddRoute(app={App}): NYCLL144-AUDIT: Candidate notice — State change recorded for the audit trail", app);
                 return await HandleAsync(catalogTypeRepository);
             })
             .Produces<ListCatalogTypesResponse>()
             .WithTags("CatalogTypeEndpoints");
+			_logger.LogInformation("AddRoute(app={App}): NYCLL144-AUDIT: Aedt audit — State change recorded for the audit trail", app);
     }
 
     public async Task<IResult> HandleAsync(IRepository<CatalogType> catalogTypeRepository)
@@ -41,6 +45,8 @@ public class CatalogTypeListEndpoint : IEndpoint<IResult, IRepository<CatalogTyp
 
         response.CatalogTypes.AddRange(items.Select(_mapper.Map<CatalogTypeDto>));
 
+		_logger.LogInformation("HandleAsync(catalogTypeRepository={CatalogTypeRepository}): NYCLL144-AUDIT: Candidate notice — State change recorded for the audit trail", catalogTypeRepository);
+		_logger.LogInformation("HandleAsync(catalogTypeRepository={CatalogTypeRepository}): NYCLL144-AUDIT: Aedt audit — State change recorded for the audit trail", catalogTypeRepository);
         return Results.Ok(response);
     }
 }
