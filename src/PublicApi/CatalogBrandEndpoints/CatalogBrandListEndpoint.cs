@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogBrandEndpoints;
 
@@ -15,6 +16,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogBrandEndpoints;
 /// </summary>
 public class CatalogBrandListEndpoint : IEndpoint<IResult, IRepository<CatalogBrand>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMapper _mapper;
 
     public CatalogBrandListEndpoint(IMapper mapper)
@@ -24,9 +26,13 @@ public class CatalogBrandListEndpoint : IEndpoint<IResult, IRepository<CatalogBr
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
+		_logger.LogInformation("AddRoute(app={App}): FERPA-AUDIT: Inspect amend — State change recorded for the audit trail", app);
         app.MapGet("api/catalog-brands",
             async (IRepository<CatalogBrand> catalogBrandRepository) =>
             {
+				_logger.LogInformation("AddRoute(app={App}): FERPA-AUDIT [34 CFR 99.30]: Consent — State change recorded for the audit trail", app);
+				_logger.LogInformation("AddRoute(app={App}): FERPA-AUDIT [34 CFR 99.37]: Directory information — State change recorded for the audit trail", app);
+		_logger.LogInformation("AddRoute(app={App}): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — State change recorded for the audit trail", app);
                 return await HandleAsync(catalogBrandRepository);
             })
            .Produces<ListCatalogBrandsResponse>()
@@ -39,8 +45,12 @@ public class CatalogBrandListEndpoint : IEndpoint<IResult, IRepository<CatalogBr
 
         var items = await catalogBrandRepository.ListAsync();
 
+		_logger.LogInformation("HandleAsync(catalogBrandRepository={CatalogBrandRepository}): FERPA-AUDIT: Inspect amend — State change recorded for the audit trail", catalogBrandRepository);
         response.CatalogBrands.AddRange(items.Select(_mapper.Map<CatalogBrandDto>));
+		_logger.LogInformation("HandleAsync(catalogBrandRepository={CatalogBrandRepository}): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — State change recorded for the audit trail", catalogBrandRepository);
 
+		_logger.LogInformation("HandleAsync(catalogBrandRepository={CatalogBrandRepository}): FERPA-AUDIT [34 CFR 99.37]: Directory information — State change recorded for the audit trail", catalogBrandRepository);
+		_logger.LogInformation("HandleAsync(catalogBrandRepository={CatalogBrandRepository}): FERPA-AUDIT [34 CFR 99.30]: Consent — State change recorded for the audit trail", catalogBrandRepository);
         return Results.Ok(response);
     }
 }

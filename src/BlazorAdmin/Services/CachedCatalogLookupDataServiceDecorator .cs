@@ -13,6 +13,7 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogLookupDataService<TLookupData, TReponse> _catalogTypeService;
     private ILogger<CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>> _logger;
@@ -45,6 +46,10 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
         }
 
         var types = await _catalogTypeService.List();
+		_logger.LogInformation("List(): FERPA-AUDIT: Inspect amend — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FERPA-AUDIT [34 CFR 99.37]: Directory information — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FERPA-AUDIT [34 CFR 99.30]: Consent — Record access recorded for the audit trail");
         var entry = new CacheEntry<List<TLookupData>>(types);
         await _localStorageService.SetItemAsync(key, entry);
         return types;

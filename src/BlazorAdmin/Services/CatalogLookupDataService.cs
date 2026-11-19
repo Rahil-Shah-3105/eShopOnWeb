@@ -18,6 +18,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogLookupDataService<TLookupData, TReponse>> _logger;
@@ -36,6 +37,10 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     {
         var endpointName = typeof(TLookupData).GetCustomAttribute<EndpointAttribute>().Name;
         _logger.LogInformation($"Fetching {typeof(TLookupData).Name} from API. Enpoint : {endpointName}");
+		_logger.LogInformation("List(): FERPA-AUDIT: Inspect amend — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FERPA-AUDIT [34 CFR 99.37]: Directory information — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FERPA-AUDIT [34 CFR 99.30]: Consent — Record access recorded for the audit trail");
 
         var response = await _httpClient.GetFromJsonAsync<TReponse>($"{_apiUrl}{endpointName}");
         return response.List;

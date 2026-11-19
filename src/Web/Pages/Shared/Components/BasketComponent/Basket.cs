@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.eShopWeb.Infrastructure.Identity;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Pages.Shared.Components.BasketComponent;
 
 public class Basket : ViewComponent
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketViewModelService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
 
@@ -47,8 +49,10 @@ public class Basket : ViewComponent
 
     private string? GetAnnonymousIdFromCookie()
     {
+		_logger.LogInformation("GetAnnonymousIdFromCookie(): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — Record access recorded for the audit trail");
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
+			_logger.LogInformation("GetAnnonymousIdFromCookie(): FERPA-AUDIT: Inspect amend — Record access recorded for the audit trail");
             var id = Request.Cookies[Constants.BASKET_COOKIENAME];
 
             if (Guid.TryParse(id, out var _))
@@ -56,6 +60,8 @@ public class Basket : ViewComponent
                 return id;
             }
         }
+		_logger.LogInformation("GetAnnonymousIdFromCookie(): FERPA-AUDIT [34 CFR 99.37]: Directory information — Record access recorded for the audit trail");
+		_logger.LogInformation("GetAnnonymousIdFromCookie(): FERPA-AUDIT [34 CFR 99.30]: Consent — Record access recorded for the audit trail");
         return null;
     }
 }

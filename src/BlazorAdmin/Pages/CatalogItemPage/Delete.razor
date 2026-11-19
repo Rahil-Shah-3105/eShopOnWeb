@@ -110,9 +110,13 @@
         // TODO: Add some kind of "are you sure" check before this
 
         await CatalogItemService.Delete(id);
+		Logger.LogInformation("DeleteClick(id={Id}): FERPA-AUDIT: Inspect amend — State change recorded for the audit trail {Id1}", id, id);
 
+		Logger.LogInformation("DeleteClick(id={Id}): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — State change recorded for the audit trail {Id1}", id, id);
         await OnSaveClick.InvokeAsync(null);
+		Logger.LogInformation("DeleteClick(id={Id}): FERPA-AUDIT [34 CFR 99.37]: Directory information — State change recorded for the audit trail {Id1}", id, id);
         await Close();
+		Logger.LogInformation("DeleteClick(id={Id}): FERPA-AUDIT [34 CFR 99.30]: Consent — State change recorded for the audit trail {Id1}", id, id);
     }
 
     public async Task Open(int id)

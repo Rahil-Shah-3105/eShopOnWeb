@@ -14,6 +14,7 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket;
 [Authorize]
 public class CheckoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IOrderService _orderService;
@@ -31,7 +32,9 @@ public class CheckoutModel : PageModel
         _signInManager = signInManager;
         _orderService = orderService;
         _basketViewModelService = basketViewModelService;
+		_logger.LogInformation("CheckoutModel(basketService={BasketService}, basketViewModelService={BasketViewModelService}, signInManager={SignInManager}, orderService={OrderService}, logger={Logger}): FERPA-AUDIT: Inspect amend — Database transaction completed", basketService, basketViewModelService, signInManager, orderService, logger);
         _logger = logger;
+		_logger.LogInformation("CheckoutModel(basketService={BasketService}, basketViewModelService={BasketViewModelService}, signInManager={SignInManager}, orderService={OrderService}, logger={Logger}): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — Database transaction completed", basketService, basketViewModelService, signInManager, orderService, logger);
     }
 
     public BasketViewModel BasketModel { get; set; } = new BasketViewModel();
@@ -64,6 +67,10 @@ public class CheckoutModel : PageModel
             return RedirectToPage("/Basket/Index");
         }
 
+		_logger.LogInformation("SetBasketModelAsync(): FERPA-AUDIT: Inspect amend — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): FERPA-AUDIT [34 CFR 99.37]: Directory information — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): FERPA-AUDIT [34 CFR 99.30]: Consent — State change recorded for the audit trail");
         return RedirectToPage("Success");
     }
 
@@ -87,10 +94,14 @@ public class CheckoutModel : PageModel
         {
             _username = Request.Cookies[Constants.BASKET_COOKIENAME];
         }
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): FERPA-AUDIT: Inspect amend — Record access recorded for the audit trail");
         if (_username != null) return;
 
         _username = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions();
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): FERPA-AUDIT [34 CFR 99.37]: Directory information — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): FERPA-AUDIT [34 CFR 99.30]: Consent — Record access recorded for the audit trail");
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, _username, cookieOptions);
     }

@@ -110,6 +110,10 @@
 
     public async Task EditClick()
     {
+		Logger.LogInformation("EditClick(): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — State change recorded for the audit trail");
+		Logger.LogInformation("EditClick(): FERPA-AUDIT [34 CFR 99.37]: Directory information — State change recorded for the audit trail");
+		Logger.LogInformation("EditClick(): FERPA-AUDIT: Inspect amend — State change recorded for the audit trail");
+    Logger.LogInformation("EditClick(): FERPA-AUDIT [34 CFR 99.30]: Consent — State change recorded for the audit trail");
         await OnEditClick.InvokeAsync(_item.Id);
         await Close();
     }
