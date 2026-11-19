@@ -59,6 +59,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): FERPA-AUDIT [34 CFR 99.37]: Directory information — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): FERPA-AUDIT [34 CFR 99.30]: Consent — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): FERPA-AUDIT: Inspect amend — Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +75,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): FERPA-AUDIT [34 CFR 99.37]: Directory information — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): FERPA-AUDIT [34 CFR 99.30]: Consent — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): FERPA-AUDIT: Inspect amend — Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +90,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): FERPA-AUDIT [34 CFR 99.37]: Directory information — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): FERPA-AUDIT [34 CFR 99.30]: Consent — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): FERPA-AUDIT: Inspect amend — Record access recorded for the audit trail");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

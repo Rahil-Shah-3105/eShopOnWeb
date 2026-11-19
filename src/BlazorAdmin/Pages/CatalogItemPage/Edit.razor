@@ -126,6 +126,10 @@
 
     private async Task SaveClick()
     {
+		Logger.LogInformation("SaveClick(): FERPA-AUDIT: Inspect amend — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): FERPA-AUDIT [34 CFR 99.37]: Directory information — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): FERPA-AUDIT [34 CFR 99.30]: Consent — State change recorded for the audit trail");
         await CatalogItemService.Edit(_item);
         await OnSaveClick.InvokeAsync(null);
         await Close();

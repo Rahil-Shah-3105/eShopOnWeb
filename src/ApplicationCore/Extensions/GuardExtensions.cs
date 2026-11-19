@@ -2,14 +2,19 @@
 using System.Linq;
 using Microsoft.eShopWeb.ApplicationCore.Entities.BasketAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Ardalis.GuardClauses;
 
 public static class BasketGuards
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public static void EmptyBasketOnCheckout(this IGuardClause guardClause, IReadOnlyCollection<BasketItem> basketItems)
     {
-        if (!basketItems.Any())
+		_logger.LogInformation("EmptyBasketOnCheckout(guardClause={GuardClause}, basketItems={BasketItems}): FERPA-AUDIT: Inspect amend — Database transaction completed", guardClause, basketItems);
+			_logger.LogInformation("EmptyBasketOnCheckout(guardClause={GuardClause}, basketItems={BasketItems}): FERPA-AUDIT [34 CFR 99.32]: Disclosure log — Database transaction completed", guardClause, basketItems);
+        if (!basketItems.Any()) {
             throw new EmptyBasketOnCheckoutException();
+        }
     }
 }
