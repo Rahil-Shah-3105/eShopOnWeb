@@ -59,6 +59,8 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): ISO27701-AUDIT: Processor obligations — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): ISO27701-AUDIT: Controller obligations — Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +73,8 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): ISO27701-AUDIT: Processor obligations — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): ISO27701-AUDIT: Controller obligations — Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +86,8 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): ISO27701-AUDIT: Processor obligations — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): ISO27701-AUDIT: Controller obligations — Record access recorded for the audit trail");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),
