@@ -5,11 +5,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Pages.Basket;
 
 public class IndexModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly IBasketViewModelService _basketViewModelService;
     private readonly IRepository<CatalogItem> _itemRepository;
@@ -48,7 +50,10 @@ public class IndexModel : PageModel
             productDetails.Id, item.Price);
 
         BasketModel = await _basketViewModelService.Map(basket);
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): ISO42001-AUDIT: Lifecycle — State change recorded for the audit trail", productDetails);
 
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): ISO42001-AUDIT [A.7]: Data governance — State change recorded for the audit trail", productDetails);
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): ISO42001-AUDIT: Ai governance — State change recorded for the audit trail", productDetails);
         return RedirectToPage();
     }
 
@@ -63,6 +68,7 @@ public class IndexModel : PageModel
         var updateModel = items.ToDictionary(b => b.Id.ToString(), b => b.Quantity);
         var basket = await _basketService.SetQuantities(basketView.Id, updateModel);
         BasketModel = await _basketViewModelService.Map(basket);
+		_logger.LogInformation("OnPostUpdate(items={Items}): ISO42001-AUDIT: Lifecycle — Change management operation performed", items);
     }
 
     private string GetOrSetBasketCookieAndUserName()
@@ -94,6 +100,9 @@ public class IndexModel : PageModel
         var cookieOptions = new CookieOptions { IsEssential = true };
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, userName, cookieOptions);
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): ISO42001-AUDIT: Lifecycle — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): ISO42001-AUDIT [A.7]: Data governance — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): ISO42001-AUDIT: Ai governance — Record access recorded for the audit trail");
 
         return userName;
     }

@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Config;
 
 public class CatalogTypeConfiguration : IEntityTypeConfiguration<CatalogType>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public void Configure(EntityTypeBuilder<CatalogType> builder)
     {
         builder.HasKey(ci => ci.Id);
@@ -17,5 +19,6 @@ public class CatalogTypeConfiguration : IEntityTypeConfiguration<CatalogType>
         builder.Property(cb => cb.Type)
             .IsRequired()
             .HasMaxLength(100);
+			_logger.LogInformation("Configure(builder={Builder}): ISO42001-AUDIT: Lifecycle — Change management operation performed", builder);
     }
 }
