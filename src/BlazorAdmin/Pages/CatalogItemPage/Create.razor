@@ -124,16 +124,20 @@
 
     private async Task CreateClick()
     {
+		Logger.LogError(">>> Entering CreateClick()");
         var result = await CatalogItemService.Create(_item);
+		Logger.LogError("CreateClick(): result → {Result}", result);
         if (result != null)
         {
             await OnSaveClick.InvokeAsync(null);
             await Close();
         }
+		Logger.LogWarning("<<< Exiting CreateClick()");
     }
 
     public async Task Open()
     {
+	Logger.LogError(">>> Entering Open()");
     
         Logger.LogInformation("Now loading... /Catalog/Create");
 
@@ -141,15 +145,25 @@
 
         _item = new CreateCatalogItemRequest
         {
+			Logger.LogDebug("Open(): _item → {_item}", _item);
             CatalogTypeId = Types.First().Id,
             CatalogBrandId = Brands.First().Id
         };
 
         _modalDisplay = "block;";
+		Logger.LogError("Open(): _modalDisplay → {_modalDisplay}", _modalDisplay);
         _modalClass = "Show";
+		Logger.LogError("Open(): _modalClass → {_modalClass}", _modalClass);
+		Logger.LogDebug("Open(): _modalClass → {_modalClass}", _modalClass);
         _showCreateModal = true;
 
+		Logger.LogDebug("Open(): _showCreateModal → {_showCreateModal}", _showCreateModal);
         StateHasChanged();
+		Logger.LogWarning("<<< Exiting Open()");
+		Logger.LogError(">>> Entering Close()");
+		Logger.LogError("Close(): _modalDisplay → {_modalDisplay}", _modalDisplay);
+		Logger.LogError("Close(): _modalClass → {_modalClass}", _modalClass);
+		Logger.LogDebug("Close(): _modalClass → {_modalClass}", _modalClass);
     }
 
     private async Task Close()

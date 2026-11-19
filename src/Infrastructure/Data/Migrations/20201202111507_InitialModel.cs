@@ -1,12 +1,15 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations;
 
 public partial class InitialModel : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
+		_logger.LogError(">>> Entering Up(migrationBuilder={MigrationBuilder})", migrationBuilder);
         migrationBuilder.CreateSequence(
             name: "catalog_brand_hilo",
             incrementBy: 10);
@@ -88,6 +91,7 @@ public partial class InitialModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): BasketId → {BasketId}", migrationBuilder, BasketId);
                 table.PrimaryKey("PK_BasketItems", x => x.Id);
                 table.ForeignKey(
                     name: "FK_BasketItems_Baskets_BasketId",
@@ -111,6 +115,7 @@ public partial class InitialModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): CatalogBrandId → {CatalogBrandId}", migrationBuilder, CatalogBrandId);
                 table.PrimaryKey("PK_Catalog", x => x.Id);
                 table.ForeignKey(
                     name: "FK_Catalog_CatalogBrands_CatalogBrandId",
@@ -141,6 +146,7 @@ public partial class InitialModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): OrderId → {OrderId}", migrationBuilder, OrderId);
                 table.PrimaryKey("PK_OrderItems", x => x.Id);
                 table.ForeignKey(
                     name: "FK_OrderItems_Orders_OrderId",
@@ -169,10 +175,12 @@ public partial class InitialModel : Migration
             name: "IX_OrderItems_OrderId",
             table: "OrderItems",
             column: "OrderId");
+			_logger.LogWarning("<<< Exiting Up(migrationBuilder={MigrationBuilder})", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
+		_logger.LogError(">>> Entering Down(migrationBuilder={MigrationBuilder})", migrationBuilder);
         migrationBuilder.DropTable(
             name: "BasketItems");
 
@@ -202,5 +210,6 @@ public partial class InitialModel : Migration
 
         migrationBuilder.DropSequence(
             name: "catalog_type_hilo");
+			_logger.LogWarning("<<< Exiting Down(migrationBuilder={MigrationBuilder})", migrationBuilder);
     }
 }

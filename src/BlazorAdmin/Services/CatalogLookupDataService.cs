@@ -18,6 +18,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogLookupDataService<TLookupData, TReponse>> _logger;
@@ -28,16 +29,25 @@ public class CatalogLookupDataService<TLookupData, TReponse>
         ILogger<CatalogLookupDataService<TLookupData, TReponse>> logger)
     {
         _httpClient = httpClient;
+		_logger.LogDebug("CatalogLookupDataService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},logger={Logger}): _httpClient → {_httpClient}", httpClient, baseUrlConfiguration, logger, _httpClient);
         _logger = logger;
+		_logger.LogError(">>> Entering CatalogLookupDataService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},logger={Logger})", httpClient, baseUrlConfiguration, logger);
+		_logger.LogDebug("CatalogLookupDataService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},logger={Logger}): _logger → {_logger}", httpClient, baseUrlConfiguration, logger, _logger);
+    _logger.LogWarning("<<< Exiting CatalogLookupDataService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},logger={Logger})", httpClient, baseUrlConfiguration, logger);
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
     }
 
     public async Task<List<TLookupData>> List()
     {
+		_logger.LogError(">>> Entering List()");
+        var __logStart = System.Diagnostics.Stopwatch.StartNew();
         var endpointName = typeof(TLookupData).GetCustomAttribute<EndpointAttribute>().Name;
         _logger.LogInformation($"Fetching {typeof(TLookupData).Name} from API. Enpoint : {endpointName}");
 
         var response = await _httpClient.GetFromJsonAsync<TReponse>($"{_apiUrl}{endpointName}");
+		_logger.LogError("List(): response → {Response}", response);
+		_logger.LogError("List(): external service call {EndpointName} took {Arg1} ms", endpointName, __logStart.ElapsedMilliseconds);
+		_logger.LogWarning("<<< Exiting List()");
         return response.List;
     }
 }

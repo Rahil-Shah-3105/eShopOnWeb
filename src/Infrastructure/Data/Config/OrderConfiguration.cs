@@ -1,15 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Config;
 
 public class OrderConfiguration : IEntityTypeConfiguration<Order>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public void Configure(EntityTypeBuilder<Order> builder)
     {
+		_logger.LogError(">>> Entering Configure(builder={Builder})", builder);
         var navigation = builder.Metadata.FindNavigation(nameof(Order.OrderItems));
 
+		_logger.LogError("Configure(builder={Builder}): navigation → {Navigation}", builder, navigation);
         navigation?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
         builder.Property(b => b.BuyerId)
@@ -41,5 +45,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         });
 
         builder.Navigation(x => x.ShipToAddress).IsRequired();
+		_logger.LogWarning("<<< Exiting Configure(builder={Builder})", builder);
     }
 }
