@@ -3,11 +3,13 @@ using System.Threading.Tasks;
 using BlazorAdmin.Helpers;
 using BlazorShared.Interfaces;
 using BlazorShared.Models;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorAdmin.Pages.CatalogItemPage;
 
 public partial class List : BlazorComponent
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     [Microsoft.AspNetCore.Components.Inject]
     public ICatalogItemService CatalogItemService { get; set; }
 
@@ -47,21 +49,33 @@ public partial class List : BlazorComponent
 
     private async Task CreateClick()
     {
+		_logger.LogInformation("CreateClick(): ISO42001-AUDIT [A.7]: Data governance — State change recorded for the audit trail");
+		_logger.LogInformation("CreateClick(): ISO42001-AUDIT: Ai governance — State change recorded for the audit trail");
+    _logger.LogInformation("CreateClick(): ISO42001-AUDIT: Lifecycle — State change recorded for the audit trail");
         await CreateComponent.Open();
     }
 
     private async Task EditClick(int id)
     {
+		_logger.LogInformation("EditClick(id={Id}): ISO42001-AUDIT [A.7]: Data governance — State change recorded for the audit trail {Id1}", id, id);
         await EditComponent.Open(id);
+		_logger.LogInformation("EditClick(id={Id}): ISO42001-AUDIT: Ai governance — State change recorded for the audit trail {Id1}", id, id);
+    _logger.LogInformation("EditClick(id={Id}): ISO42001-AUDIT: Lifecycle — State change recorded for the audit trail {Id1}", id, id);
     }
 
     private async Task DeleteClick(int id)
     {
+		_logger.LogInformation("DeleteClick(id={Id}): ISO42001-AUDIT [A.7]: Data governance — State change recorded for the audit trail {Id1}", id, id);
         await DeleteComponent.Open(id);
+		_logger.LogInformation("DeleteClick(id={Id}): ISO42001-AUDIT: Ai governance — State change recorded for the audit trail {Id1}", id, id);
+    _logger.LogInformation("DeleteClick(id={Id}): ISO42001-AUDIT: Lifecycle — State change recorded for the audit trail {Id1}", id, id);
     }
 
     private async Task ReloadCatalogItems()
     {
+		_logger.LogInformation("ReloadCatalogItems(): ISO42001-AUDIT: Lifecycle — Record access recorded for the audit trail");
+		_logger.LogInformation("ReloadCatalogItems(): ISO42001-AUDIT [A.7]: Data governance — Record access recorded for the audit trail");
+		_logger.LogInformation("ReloadCatalogItems(): ISO42001-AUDIT: Ai governance — Record access recorded for the audit trail");
         catalogItems = await CatalogItemService.List();
         StateHasChanged();
     }

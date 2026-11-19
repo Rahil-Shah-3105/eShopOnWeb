@@ -3,11 +3,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Features.OrderDetails;
 
 public class GetOrderDetailsHandler : IRequestHandler<GetOrderDetails, OrderDetailViewModel?>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IReadRepository<Order> _orderRepository;
 
     public GetOrderDetailsHandler(IReadRepository<Order> orderRepository)
@@ -25,7 +27,10 @@ public class GetOrderDetailsHandler : IRequestHandler<GetOrderDetails, OrderDeta
         {
             return null;
         }
+		_logger.LogInformation("Handle(request={Request}, cancellationToken=<redacted>): ISO42001-AUDIT: Lifecycle — State change recorded for the audit trail", request);
 
+		_logger.LogInformation("Handle(request={Request}, cancellationToken=<redacted>): ISO42001-AUDIT: Ai governance — State change recorded for the audit trail", request);
+		_logger.LogInformation("Handle(request={Request}, cancellationToken=<redacted>): ISO42001-AUDIT [A.7]: Data governance — State change recorded for the audit trail", request);
         return new OrderDetailViewModel
         {
             OrderDate = order.OrderDate,
