@@ -59,6 +59,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): GLBA-AUDIT: Encryption disposal — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): GLBA-AUDIT: Security program — Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +75,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): GLBA-AUDIT: Encryption disposal — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): GLBA-AUDIT: Security program — Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +90,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): GLBA-AUDIT: Encryption disposal — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): GLBA-AUDIT: Security program — Record access recorded for the audit trail");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

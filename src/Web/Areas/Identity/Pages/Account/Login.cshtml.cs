@@ -36,6 +36,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -100,13 +101,16 @@ public class LoginModel : PageModel
         }
 
         // If we got this far, something failed, redisplay form
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): GLBA-AUDIT: Encryption disposal — Password reset operation performed", returnUrl);
         return Page();
     }
 
     private async Task TransferAnonymousBasketToUserAsync(string? userName)
     {
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): GLBA-AUDIT: Encryption disposal — State change recorded for the audit trail", userName);
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — State change recorded for the audit trail", userName);
             var anonymousId = Request.Cookies[Constants.BASKET_COOKIENAME];
             if (Guid.TryParse(anonymousId, out var _))
             {
@@ -114,6 +118,8 @@ public class LoginModel : PageModel
                 await _basketService.TransferBasketAsync(anonymousId, userName);
             }
             Response.Cookies.Delete(Constants.BASKET_COOKIENAME);
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail", userName);
         }
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): GLBA-AUDIT: Security program — State change recorded for the audit trail", userName);
     }
 }

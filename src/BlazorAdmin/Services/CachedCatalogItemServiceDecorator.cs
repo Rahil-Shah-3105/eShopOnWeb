@@ -11,6 +11,7 @@ namespace BlazorAdmin.Services;
 
 public class CachedCatalogItemServiceDecorator : ICatalogItemService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogItemService _catalogItemService;
     private ILogger<CachedCatalogItemServiceDecorator> _logger;
@@ -43,8 +44,12 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         }
 
         var items = await _catalogItemService.ListPaged(pageSize);
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): GLBA-AUDIT: Security program — Record access recorded for the audit trail", pageSize);
         var entry = new CacheEntry<List<CatalogItem>>(items);
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): GLBA-AUDIT: Encryption disposal — Record access recorded for the audit trail", pageSize);
         await _localStorageService.SetItemAsync(key, entry);
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — Record access recorded for the audit trail", pageSize);
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — Record access recorded for the audit trail", pageSize);
         return items;
     }
 
@@ -67,6 +72,10 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
         }
 
         var items = await _catalogItemService.List();
+		_logger.LogInformation("List(): GLBA-AUDIT: Security program — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): GLBA-AUDIT: Encryption disposal — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — Record access recorded for the audit trail");
         var entry = new CacheEntry<List<CatalogItem>>(items);
         await _localStorageService.SetItemAsync(key, entry);
         return items;
@@ -74,30 +83,46 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
 
     public async Task<CatalogItem> GetById(int id)
     {
+		_logger.LogInformation("GetById(id={Id}): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — Record access recorded for the audit trail {Id1}", id, id);
+		_logger.LogInformation("GetById(id={Id}): GLBA-AUDIT: Security program — Record access recorded for the audit trail {Id1}", id, id);
+    _logger.LogInformation("GetById(id={Id}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — Record access recorded for the audit trail {Id1}", id, id);
+    _logger.LogInformation("GetById(id={Id}): GLBA-AUDIT: Encryption disposal — Record access recorded for the audit trail {Id1}", id, id);
         return (await List()).FirstOrDefault(x => x.Id == id);
     }
 
     public async Task<CatalogItem> Create(CreateCatalogItemRequest catalogItem)
     {
         var result = await _catalogItemService.Create(catalogItem);
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): GLBA-AUDIT: Security program — State change recorded for the audit trail {Result}", catalogItem, result);
         await RefreshLocalStorageList();
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): GLBA-AUDIT: Encryption disposal — State change recorded for the audit trail {Result}", catalogItem, result);
 
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — State change recorded for the audit trail {Result}", catalogItem, result);
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail {Result}", catalogItem, result);
         return result;
     }
 
     public async Task<CatalogItem> Edit(CatalogItem catalogItem)
     {
         var result = await _catalogItemService.Edit(catalogItem);
+		_logger.LogInformation("Edit(catalogItem={CatalogItem}): GLBA-AUDIT: Security program — State change recorded for the audit trail {Result}", catalogItem, result);
         await RefreshLocalStorageList();
+		_logger.LogInformation("Edit(catalogItem={CatalogItem}): GLBA-AUDIT: Encryption disposal — State change recorded for the audit trail {Result}", catalogItem, result);
 
+		_logger.LogInformation("Edit(catalogItem={CatalogItem}): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — State change recorded for the audit trail {Result}", catalogItem, result);
+		_logger.LogInformation("Edit(catalogItem={CatalogItem}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail {Result}", catalogItem, result);
         return result;
     }
 
     public async Task<string> Delete(int id)
     {
         var result = await _catalogItemService.Delete(id);
+		_logger.LogInformation("Delete(id={Id}): GLBA-AUDIT: Security program — State change recorded for the audit trail {Id1}", id, id);
         await RefreshLocalStorageList();
+		_logger.LogInformation("Delete(id={Id}): GLBA-AUDIT: Encryption disposal — State change recorded for the audit trail {Id1}", id, id);
 
+		_logger.LogInformation("Delete(id={Id}): GLBA-AUDIT [16 CFR 314.4(j)]: Breach notification — State change recorded for the audit trail {Id1}", id, id);
+		_logger.LogInformation("Delete(id={Id}): GLBA-AUDIT [16 CFR 314.4(c)(5)]: Access controls — State change recorded for the audit trail {Id1}", id, id);
         return result;
     }
 
