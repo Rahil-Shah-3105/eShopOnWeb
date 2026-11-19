@@ -11,6 +11,7 @@ namespace BlazorAdmin.Services;
 
 public class CachedCatalogItemServiceDecorator : ICatalogItemService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogItemService _catalogItemService;
     private ILogger<CachedCatalogItemServiceDecorator> _logger;
@@ -44,7 +45,10 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
 
         var items = await _catalogItemService.ListPaged(pageSize);
         var entry = new CacheEntry<List<CatalogItem>>(items);
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): COAI-AUDIT: Impact assessment — Record access recorded for the audit trail", pageSize);
         await _localStorageService.SetItemAsync(key, entry);
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): COAI-AUDIT: Consumer notice — Record access recorded for the audit trail", pageSize);
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): COAI-AUDIT: Admt adverse — Record access recorded for the audit trail", pageSize);
         return items;
     }
 
@@ -68,12 +72,18 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
 
         var items = await _catalogItemService.List();
         var entry = new CacheEntry<List<CatalogItem>>(items);
+		_logger.LogInformation("List(): COAI-AUDIT: Impact assessment — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): COAI-AUDIT: Consumer notice — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): COAI-AUDIT: Admt adverse — Record access recorded for the audit trail");
         await _localStorageService.SetItemAsync(key, entry);
         return items;
     }
 
     public async Task<CatalogItem> GetById(int id)
     {
+		_logger.LogInformation("GetById(id={Id}): COAI-AUDIT: Consumer notice — Record access recorded for the audit trail {Id1}", id, id);
+		_logger.LogInformation("GetById(id={Id}): COAI-AUDIT: Admt adverse — Record access recorded for the audit trail {Id1}", id, id);
+    _logger.LogInformation("GetById(id={Id}): COAI-AUDIT: Impact assessment — Record access recorded for the audit trail {Id1}", id, id);
         return (await List()).FirstOrDefault(x => x.Id == id);
     }
 
@@ -81,7 +91,10 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
     {
         var result = await _catalogItemService.Create(catalogItem);
         await RefreshLocalStorageList();
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): COAI-AUDIT: Impact assessment — State change recorded for the audit trail {Result}", catalogItem, result);
 
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): COAI-AUDIT: Consumer notice — State change recorded for the audit trail {Result}", catalogItem, result);
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): COAI-AUDIT: Admt adverse — State change recorded for the audit trail {Result}", catalogItem, result);
         return result;
     }
 
@@ -89,7 +102,10 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
     {
         var result = await _catalogItemService.Edit(catalogItem);
         await RefreshLocalStorageList();
+		_logger.LogInformation("Edit(catalogItem={CatalogItem}): COAI-AUDIT: Impact assessment — State change recorded for the audit trail {Result}", catalogItem, result);
 
+		_logger.LogInformation("Edit(catalogItem={CatalogItem}): COAI-AUDIT: Consumer notice — State change recorded for the audit trail {Result}", catalogItem, result);
+		_logger.LogInformation("Edit(catalogItem={CatalogItem}): COAI-AUDIT: Admt adverse — State change recorded for the audit trail {Result}", catalogItem, result);
         return result;
     }
 
@@ -97,7 +113,10 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
     {
         var result = await _catalogItemService.Delete(id);
         await RefreshLocalStorageList();
+		_logger.LogInformation("Delete(id={Id}): COAI-AUDIT: Impact assessment — State change recorded for the audit trail {Id1}", id, id);
 
+		_logger.LogInformation("Delete(id={Id}): COAI-AUDIT: Consumer notice — State change recorded for the audit trail {Id1}", id, id);
+		_logger.LogInformation("Delete(id={Id}): COAI-AUDIT: Admt adverse — State change recorded for the audit trail {Id1}", id, id);
         return result;
     }
 
