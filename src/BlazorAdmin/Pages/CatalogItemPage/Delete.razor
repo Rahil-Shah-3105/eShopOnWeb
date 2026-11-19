@@ -111,8 +111,11 @@
 
         await CatalogItemService.Delete(id);
 
+		Logger.LogInformation("DeleteClick(id={Id}): USSTATE-AUDIT: Opt-in consent for sensitive data — State change recorded for the audit trail {Id1}", id, id);
         await OnSaveClick.InvokeAsync(null);
+		Logger.LogInformation("DeleteClick(id={Id}): USSTATE-AUDIT: Data protection assessments — State change recorded for the audit trail {Id1}", id, id);
         await Close();
+		Logger.LogInformation("DeleteClick(id={Id}): USSTATE-AUDIT: Consumer rights (VCDPA 59.1-577 et al.) — State change recorded for the audit trail {Id1}", id, id);
     }
 
     public async Task Open(int id)

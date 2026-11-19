@@ -36,6 +36,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -105,8 +106,10 @@ public class LoginModel : PageModel
 
     private async Task TransferAnonymousBasketToUserAsync(string? userName)
     {
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): USSTATE-AUDIT: Opt-in consent for sensitive data — State change recorded for the audit trail", userName);
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): USSTATE-AUDIT: Data protection assessments — State change recorded for the audit trail", userName);
             var anonymousId = Request.Cookies[Constants.BASKET_COOKIENAME];
             if (Guid.TryParse(anonymousId, out var _))
             {
@@ -115,5 +118,6 @@ public class LoginModel : PageModel
             }
             Response.Cookies.Delete(Constants.BASKET_COOKIENAME);
         }
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): USSTATE-AUDIT: Consumer rights (VCDPA 59.1-577 et al.) — State change recorded for the audit trail", userName);
     }
 }

@@ -110,6 +110,9 @@
 
     public async Task EditClick()
     {
+		Logger.LogInformation("EditClick(): USSTATE-AUDIT: Opt-in consent for sensitive data — State change recorded for the audit trail");
+		Logger.LogInformation("EditClick(): USSTATE-AUDIT: Data protection assessments — State change recorded for the audit trail");
+		Logger.LogInformation("EditClick(): USSTATE-AUDIT: Consumer rights (VCDPA 59.1-577 et al.) — State change recorded for the audit trail");
         await OnEditClick.InvokeAsync(_item.Id);
         await Close();
     }
