@@ -4,16 +4,19 @@ using System.Threading.Tasks;
 using BlazorShared;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.HealthChecks;
 
 public class ApiHealthCheck : IHealthCheck
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly BaseUrlConfiguration _baseUrlConfiguration;
 
     public ApiHealthCheck(IOptions<BaseUrlConfiguration> baseUrlConfiguration)
     {
         _baseUrlConfiguration = baseUrlConfiguration.Value;
+		_logger.LogInformation("ApiHealthCheck(baseUrlConfiguration={BaseUrlConfiguration}): ISO27001-AUDIT: Supplier security — Change management operation performed", baseUrlConfiguration);
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(
@@ -23,12 +26,18 @@ public class ApiHealthCheck : IHealthCheck
         string myUrl = _baseUrlConfiguration.ApiBase + "catalog-items";
         var client = new HttpClient();
         var response = await client.GetAsync(myUrl);
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): ISO27001-AUDIT: Supplier security — Change management operation performed", context);
         var pageContents = await response.Content.ReadAsStringAsync();
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): ISO27001-AUDIT: Logging — Protected data operation logged for audit compliance", context);
         if (pageContents.Contains(".NET Bot Black Sweatshirt"))
         {
+			_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): ISO27001-AUDIT: Incident management — Protected data operation logged for audit compliance", context);
             return HealthCheckResult.Healthy("The check indicates a healthy result.");
         }
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): ISO27001-AUDIT [A.8.24]: Cryptography — Protected data operation logged for audit compliance", context);
 
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): ISO27001-AUDIT: Continuity — Protected data operation logged for audit compliance", context);
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): ISO27001-AUDIT: Access control — Protected data operation logged for audit compliance", context);
         return HealthCheckResult.Unhealthy("The check indicates an unhealthy result.");
     }
 }

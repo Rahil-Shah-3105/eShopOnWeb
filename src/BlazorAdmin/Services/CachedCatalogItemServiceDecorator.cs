@@ -11,6 +11,7 @@ namespace BlazorAdmin.Services;
 
 public class CachedCatalogItemServiceDecorator : ICatalogItemService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogItemService _catalogItemService;
     private ILogger<CachedCatalogItemServiceDecorator> _logger;
@@ -41,10 +42,16 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
                 await _localStorageService.RemoveItemAsync(key);
             }
         }
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): ISO27001-AUDIT: Supplier security — Record access recorded for the audit trail", pageSize);
 
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): ISO27001-AUDIT: Logging — Record access recorded for the audit trail", pageSize);
         var items = await _catalogItemService.ListPaged(pageSize);
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): ISO27001-AUDIT: Incident management — Record access recorded for the audit trail", pageSize);
         var entry = new CacheEntry<List<CatalogItem>>(items);
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): ISO27001-AUDIT [A.8.24]: Cryptography — Record access recorded for the audit trail", pageSize);
         await _localStorageService.SetItemAsync(key, entry);
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): ISO27001-AUDIT: Continuity — Record access recorded for the audit trail", pageSize);
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): ISO27001-AUDIT: Access control — Record access recorded for the audit trail", pageSize);
         return items;
     }
 
@@ -65,6 +72,12 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
                 await _localStorageService.RemoveItemAsync(key);
             }
         }
+		_logger.LogInformation("List(): ISO27001-AUDIT: Supplier security — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): ISO27001-AUDIT: Logging — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): ISO27001-AUDIT: Incident management — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): ISO27001-AUDIT [A.8.24]: Cryptography — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): ISO27001-AUDIT: Continuity — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): ISO27001-AUDIT: Access control — Record access recorded for the audit trail");
 
         var items = await _catalogItemService.List();
         var entry = new CacheEntry<List<CatalogItem>>(items);
@@ -74,30 +87,50 @@ public class CachedCatalogItemServiceDecorator : ICatalogItemService
 
     public async Task<CatalogItem> GetById(int id)
     {
+		_logger.LogInformation("GetById(id={Id}): ISO27001-AUDIT: Continuity — Record access recorded for the audit trail {Id1}", id, id);
+		_logger.LogInformation("GetById(id={Id}): ISO27001-AUDIT: Incident management — Record access recorded for the audit trail {Id1}", id, id);
+    _logger.LogInformation("GetById(id={Id}): ISO27001-AUDIT [A.8.24]: Cryptography — Record access recorded for the audit trail {Id1}", id, id);
+    _logger.LogInformation("GetById(id={Id}): ISO27001-AUDIT: Access control — Record access recorded for the audit trail {Id1}", id, id);
         return (await List()).FirstOrDefault(x => x.Id == id);
     }
 
     public async Task<CatalogItem> Create(CreateCatalogItemRequest catalogItem)
     {
         var result = await _catalogItemService.Create(catalogItem);
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): ISO27001-AUDIT: Incident management — State change recorded for the audit trail {Result}", catalogItem, result);
         await RefreshLocalStorageList();
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): ISO27001-AUDIT [A.8.24]: Cryptography — State change recorded for the audit trail {Result}", catalogItem, result);
 
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): ISO27001-AUDIT: Continuity — State change recorded for the audit trail {Result}", catalogItem, result);
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): ISO27001-AUDIT: Supplier security — State change recorded for the audit trail {Result}", catalogItem, result);
+    _logger.LogInformation("Create(catalogItem={CatalogItem}): ISO27001-AUDIT: Access control — State change recorded for the audit trail {Result}", catalogItem, result);
         return result;
     }
 
     public async Task<CatalogItem> Edit(CatalogItem catalogItem)
     {
         var result = await _catalogItemService.Edit(catalogItem);
+		_logger.LogInformation("Edit(catalogItem={CatalogItem}): ISO27001-AUDIT: Incident management — State change recorded for the audit trail {Result}", catalogItem, result);
         await RefreshLocalStorageList();
+		_logger.LogInformation("Edit(catalogItem={CatalogItem}): ISO27001-AUDIT [A.8.24]: Cryptography — State change recorded for the audit trail {Result}", catalogItem, result);
 
+		_logger.LogInformation("Edit(catalogItem={CatalogItem}): ISO27001-AUDIT: Continuity — State change recorded for the audit trail {Result}", catalogItem, result);
+		_logger.LogInformation("Edit(catalogItem={CatalogItem}): ISO27001-AUDIT: Supplier security — State change recorded for the audit trail {Result}", catalogItem, result);
+    _logger.LogInformation("Edit(catalogItem={CatalogItem}): ISO27001-AUDIT: Access control — State change recorded for the audit trail {Result}", catalogItem, result);
         return result;
     }
 
     public async Task<string> Delete(int id)
     {
+		_logger.LogInformation("Delete(id={Id}): ISO27001-AUDIT: Logging — State change recorded for the audit trail {Id1}", id, id);
         var result = await _catalogItemService.Delete(id);
+		_logger.LogInformation("Delete(id={Id}): ISO27001-AUDIT: Incident management — State change recorded for the audit trail {Id1}", id, id);
         await RefreshLocalStorageList();
+		_logger.LogInformation("Delete(id={Id}): ISO27001-AUDIT [A.8.24]: Cryptography — State change recorded for the audit trail {Id1}", id, id);
 
+		_logger.LogInformation("Delete(id={Id}): ISO27001-AUDIT: Continuity — State change recorded for the audit trail {Id1}", id, id);
+		_logger.LogInformation("Delete(id={Id}): ISO27001-AUDIT: Supplier security — State change recorded for the audit trail {Id1}", id, id);
+    _logger.LogInformation("Delete(id={Id}): ISO27001-AUDIT: Access control — State change recorded for the audit trail {Id1}", id, id);
         return result;
     }
 

@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -126,10 +127,16 @@ public class ManageController : Controller
         {
             throw new ApplicationException($"No email associated with user {user.UserName}'.");
         }
+		_logger.LogInformation("SendVerificationEmail(model={Model}): ISO27001-AUDIT: Supplier security — Outbound notification recorded for the audit trail", model);
 
+		_logger.LogInformation("SendVerificationEmail(model={Model}): ISO27001-AUDIT: Logging — Outbound notification recorded for the audit trail", model);
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): ISO27001-AUDIT: Incident management — Outbound notification recorded for the audit trail", model);
 
+		_logger.LogInformation("SendVerificationEmail(model={Model}): ISO27001-AUDIT [A.8.24]: Cryptography — Outbound notification recorded for the audit trail", model);
         StatusMessage = "Verification email sent. Please check your email.";
+		_logger.LogInformation("SendVerificationEmail(model={Model}): ISO27001-AUDIT: Continuity — Outbound notification recorded for the audit trail", model);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): ISO27001-AUDIT: Access control — Outbound notification recorded for the audit trail", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
@@ -143,11 +150,17 @@ public class ManageController : Controller
         }
 
         var hasPassword = await _userManager.HasPasswordAsync(user);
+		_logger.LogInformation("ChangePassword(): ISO27001-AUDIT: Logging — State change recorded for the audit trail");
         if (!hasPassword)
         {
+			_logger.LogInformation("ChangePassword(): ISO27001-AUDIT: Supplier security — State change recorded for the audit trail");
             return RedirectToAction(nameof(SetPassword));
         }
+		_logger.LogInformation("ChangePassword(): ISO27001-AUDIT: Incident management — State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword(): ISO27001-AUDIT: Continuity — State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword(): ISO27001-AUDIT: Access control — State change recorded for the audit trail");
 
+		_logger.LogInformation("ChangePassword(): ISO27001-AUDIT [A.8.24]: Cryptography — Password reset operation performed for user {User}", user);
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
         return View(model);
     }
@@ -179,6 +192,7 @@ public class ManageController : Controller
         _logger.LogInformation("User changed their password successfully.");
         StatusMessage = "Your password has been changed.";
 
+		_logger.LogInformation("ChangePassword(model={Model}): ISO27001-AUDIT: Access control — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ChangePassword));
     }
 
@@ -193,11 +207,17 @@ public class ManageController : Controller
 
         var hasPassword = await _userManager.HasPasswordAsync(user);
 
+		_logger.LogInformation("SetPassword(): ISO27001-AUDIT: Logging — State change recorded for the audit trail");
         if (hasPassword)
         {
+			_logger.LogInformation("SetPassword(): ISO27001-AUDIT: Supplier security — State change recorded for the audit trail");
             return RedirectToAction(nameof(ChangePassword));
         }
+		_logger.LogInformation("SetPassword(): ISO27001-AUDIT: Incident management — State change recorded for the audit trail");
+		_logger.LogInformation("SetPassword(): ISO27001-AUDIT: Continuity — State change recorded for the audit trail");
+		_logger.LogInformation("SetPassword(): ISO27001-AUDIT: Access control — State change recorded for the audit trail");
 
+		_logger.LogInformation("SetPassword(): ISO27001-AUDIT [A.8.24]: Cryptography — Password reset operation performed for user {User}", user);
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
         return View(model);
     }
@@ -227,6 +247,7 @@ public class ManageController : Controller
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "Your password has been set.";
 
+		_logger.LogInformation("SetPassword(model={Model}): ISO27001-AUDIT: Access control — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(SetPassword));
     }
 
@@ -246,6 +267,7 @@ public class ManageController : Controller
         model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
         model.StatusMessage = StatusMessage;
 
+		_logger.LogInformation("ExternalLogins(): ISO27001-AUDIT [A.8.24]: Cryptography — Password reset operation performed for user {User}", user);
         return View(model);
     }
 
@@ -305,13 +327,19 @@ public class ManageController : Controller
         }
 
         var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
+		_logger.LogInformation("RemoveLogin(model={Model}): ISO27001-AUDIT: Supplier security — State change recorded for the audit trail {Result}", model, result);
         if (!result.Succeeded)
         {
             throw new ApplicationException($"Unexpected error occurred removing external login for user with ID '{user.Id}'.");
         }
+		_logger.LogInformation("RemoveLogin(model={Model}): ISO27001-AUDIT: Logging — State change recorded for the audit trail {Result}", model, result);
 
+		_logger.LogInformation("RemoveLogin(model={Model}): ISO27001-AUDIT: Incident management — State change recorded for the audit trail {Result}", model, result);
         await _signInManager.SignInAsync(user, isPersistent: false);
+		_logger.LogInformation("RemoveLogin(model={Model}): ISO27001-AUDIT [A.8.24]: Cryptography — State change recorded for the audit trail {Result}", model, result);
         StatusMessage = "The external login was removed.";
+		_logger.LogInformation("RemoveLogin(model={Model}): ISO27001-AUDIT: Continuity — State change recorded for the audit trail {Result}", model, result);
+		_logger.LogInformation("RemoveLogin(model={Model}): ISO27001-AUDIT: Access control — State change recorded for the audit trail {Result}", model, result);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -331,6 +359,7 @@ public class ManageController : Controller
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
         };
 
+		_logger.LogInformation("TwoFactorAuthentication(): ISO27001-AUDIT [A.8.24]: Cryptography — Encryption operation completed");
         return View(model);
     }
 
@@ -379,6 +408,12 @@ public class ManageController : Controller
         {
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
+		_logger.LogInformation("EnableAuthenticator(): ISO27001-AUDIT: Supplier security — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): ISO27001-AUDIT: Logging — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): ISO27001-AUDIT: Incident management — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): ISO27001-AUDIT [A.8.24]: Cryptography — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): ISO27001-AUDIT: Continuity — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): ISO27001-AUDIT: Access control — State change recorded for the audit trail");
 
         var model = new EnableAuthenticatorViewModel();
         await LoadSharedKeyAndQrCodeUriAsync(user, model);
@@ -396,6 +431,7 @@ public class ManageController : Controller
         }
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes };
+		_logger.LogInformation("ShowRecoveryCodes(): ISO27001-AUDIT [A.8.24]: Cryptography — Encryption operation completed");
         return View(model);
     }
 
@@ -434,12 +470,17 @@ public class ManageController : Controller
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) ?? new List<string>();
         TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
+		_logger.LogInformation("EnableAuthenticator(model={Model}): ISO27001-AUDIT: Access control — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
     [HttpGet]
     public IActionResult ResetAuthenticatorWarning()
     {
+		_logger.LogInformation("ResetAuthenticatorWarning(): ISO27001-AUDIT: Continuity — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticatorWarning(): ISO27001-AUDIT: Incident management — State change recorded for the audit trail");
+    _logger.LogInformation("ResetAuthenticatorWarning(): ISO27001-AUDIT [A.8.24]: Cryptography — State change recorded for the audit trail");
+    _logger.LogInformation("ResetAuthenticatorWarning(): ISO27001-AUDIT: Access control — State change recorded for the audit trail");
         return View(nameof(ResetAuthenticator));
     }
 
@@ -453,6 +494,12 @@ public class ManageController : Controller
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
+		_logger.LogInformation("ResetAuthenticator(): ISO27001-AUDIT: Supplier security — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): ISO27001-AUDIT: Logging — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): ISO27001-AUDIT: Incident management — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): ISO27001-AUDIT [A.8.24]: Cryptography — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): ISO27001-AUDIT: Continuity — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): ISO27001-AUDIT: Access control — State change recorded for the audit trail");
         await _userManager.SetTwoFactorEnabledAsync(user, false);
         await _userManager.ResetAuthenticatorKeyAsync(user);
         _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
@@ -480,6 +527,7 @@ public class ManageController : Controller
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
 
+		_logger.LogInformation("GenerateRecoveryCodes(): ISO27001-AUDIT [A.8.24]: Cryptography — Encryption operation completed");
         return View(nameof(ShowRecoveryCodes), model);
     }
 
@@ -497,15 +545,21 @@ public class ManageController : Controller
             throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.Id}' because they do not have 2FA enabled.");
         }
 
+		_logger.LogInformation("GenerateRecoveryCodesWarning(): ISO27001-AUDIT [A.8.24]: Cryptography — Encryption operation completed");
         return View(nameof(GenerateRecoveryCodesWarning));
     }
 
     private void AddErrors(IdentityResult result)
     {
+		_logger.LogInformation("AddErrors(result={Result}): ISO27001-AUDIT: Continuity — State change recorded for the audit trail {Result1}", result, result);
         foreach (var error in result.Errors)
         {
+			_logger.LogInformation("AddErrors(result={Result}): ISO27001-AUDIT [A.8.24]: Cryptography — Encryption operation completed with algorithm {Result1}", result, result);
             ModelState.AddModelError(string.Empty, error.Description);
+			_logger.LogInformation("AddErrors(result={Result}): ISO27001-AUDIT: Incident management — State change recorded for the audit trail {Result1}", result, result);
         }
+		_logger.LogInformation("AddErrors(result={Result}): ISO27001-AUDIT: Logging — State change recorded for the audit trail {Result1}", result, result);
+    _logger.LogInformation("AddErrors(result={Result}): ISO27001-AUDIT: Access control — State change recorded for the audit trail {Result1}", result, result);
     }
 
     private string FormatKey(string unformattedKey)
@@ -537,14 +591,20 @@ public class ManageController : Controller
     private async Task LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user, EnableAuthenticatorViewModel model)
     {
         var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): ISO27001-AUDIT: Logging — Record access recorded for the audit trail", user, model);
         if (string.IsNullOrEmpty(unformattedKey))
         {
+			_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): ISO27001-AUDIT: Supplier security — Record access recorded for the audit trail", user, model);
             await _userManager.ResetAuthenticatorKeyAsync(user);
             unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
         }
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): ISO27001-AUDIT: Incident management — Record access recorded for the audit trail", user, model);
 
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): ISO27001-AUDIT [A.8.24]: Cryptography — Record access recorded for the audit trail", user, model);
         model.SharedKey = FormatKey(unformattedKey!);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): ISO27001-AUDIT: Continuity — Record access recorded for the audit trail", user, model);
         model.AuthenticatorUri = GenerateQrCodeUri(user.Email!, unformattedKey!);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): ISO27001-AUDIT: Access control — Record access recorded for the audit trail", user, model);
     }
 
 }

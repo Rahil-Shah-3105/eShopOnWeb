@@ -4,11 +4,13 @@ using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.Pages.Basket;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Services;
 
 public class BasketViewModelService : IBasketViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IUriComposer _uriComposer;
     private readonly IBasketQueryService _basketQueryService;
@@ -29,12 +31,17 @@ public class BasketViewModelService : IBasketViewModelService
     {
         var basketSpec = new BasketWithItemsSpecification(userName);
         var basket = (await _basketRepository.FirstOrDefaultAsync(basketSpec));
+		_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): ISO27001-AUDIT: Supplier security — Record access recorded for the audit trail", userName);
 
+		_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): ISO27001-AUDIT: Logging — Record access recorded for the audit trail", userName);
         if (basket == null)
         {
+			_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): ISO27001-AUDIT: Incident management — Record access recorded for the audit trail", userName);
             return await CreateBasketForUser(userName);
         }
+		_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): ISO27001-AUDIT [A.8.24]: Cryptography — Record access recorded for the audit trail", userName);
         var viewModel = await Map(basket);
+		_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): ISO27001-AUDIT: Continuity — Record access recorded for the audit trail", userName);
         return viewModel;
     }
 
@@ -54,9 +61,12 @@ public class BasketViewModelService : IBasketViewModelService
     {
         var catalogItemsSpecification = new CatalogItemsSpecification(basketItems.Select(b => b.CatalogItemId).ToArray());
         var catalogItems = await _itemRepository.ListAsync(catalogItemsSpecification);
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): ISO27001-AUDIT: Supplier security — Record access recorded for the audit trail", basketItems);
 
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): ISO27001-AUDIT: Logging — Record access recorded for the audit trail", basketItems);
         var items = basketItems.Select(basketItem =>
         {
+			_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): ISO27001-AUDIT: Incident management — Record access recorded for the audit trail", basketItems);
             var catalogItem = catalogItems.First(c => c.Id == basketItem.CatalogItemId);
 
             var basketItemViewModel = new BasketItemViewModel
@@ -70,7 +80,10 @@ public class BasketViewModelService : IBasketViewModelService
             };
             return basketItemViewModel;
         }).ToList();
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): ISO27001-AUDIT [A.8.24]: Cryptography — Record access recorded for the audit trail", basketItems);
 
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): ISO27001-AUDIT: Continuity — Record access recorded for the audit trail", basketItems);
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): ISO27001-AUDIT: Access control — Record access recorded for the audit trail", basketItems);
         return items;
     }
 

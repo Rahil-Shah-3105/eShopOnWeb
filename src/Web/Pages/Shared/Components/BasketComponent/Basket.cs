@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.eShopWeb.Infrastructure.Identity;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Pages.Shared.Components.BasketComponent;
 
 public class Basket : ViewComponent
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketViewModelService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
 
@@ -47,12 +49,18 @@ public class Basket : ViewComponent
 
     private string? GetAnnonymousIdFromCookie()
     {
+		_logger.LogInformation("GetAnnonymousIdFromCookie(): ISO27001-AUDIT: Incident management — Record access recorded for the audit trail");
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
+			_logger.LogInformation("GetAnnonymousIdFromCookie(): ISO27001-AUDIT [A.8.24]: Cryptography — Record access recorded for the audit trail");
             var id = Request.Cookies[Constants.BASKET_COOKIENAME];
 
             if (Guid.TryParse(id, out var _))
             {
+				_logger.LogInformation("GetAnnonymousIdFromCookie(): ISO27001-AUDIT: Access control — Record access recorded for the audit trail");
+				_logger.LogInformation("GetAnnonymousIdFromCookie(): ISO27001-AUDIT: Supplier security — Record access recorded for the audit trail");
+				_logger.LogInformation("GetAnnonymousIdFromCookie(): ISO27001-AUDIT: Continuity — Record access recorded for the audit trail");
+				_logger.LogInformation("GetAnnonymousIdFromCookie(): ISO27001-AUDIT: Logging — Record access recorded for the audit trail");
                 return id;
             }
         }

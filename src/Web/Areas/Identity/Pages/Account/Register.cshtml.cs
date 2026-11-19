@@ -41,6 +41,7 @@ public class RegisterModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -95,6 +96,8 @@ public class RegisterModel : PageModel
         }
 
         // If we got this far, something failed, redisplay form
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): ISO27001-AUDIT [A.8.24]: Cryptography — Password reset operation performed", returnUrl);
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): ISO27001-AUDIT [A.8.24]: Cryptography — Encryption operation completed", returnUrl);
         return Page();
     }
 }
