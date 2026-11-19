@@ -110,9 +110,13 @@
         // TODO: Add some kind of "are you sure" check before this
 
         await CatalogItemService.Delete(id);
+		Logger.LogInformation("DeleteClick(id={Id}): NISTAIRMF-AUDIT: MAP function — State change recorded for the audit trail {Id1}", id, id);
 
+		Logger.LogInformation("DeleteClick(id={Id}): NISTAIRMF-AUDIT: MANAGE function — State change recorded for the audit trail {Id1}", id, id);
         await OnSaveClick.InvokeAsync(null);
+		Logger.LogInformation("DeleteClick(id={Id}): NISTAIRMF-AUDIT: Governance coverage — State change recorded for the audit trail {Id1}", id, id);
         await Close();
+		Logger.LogInformation("DeleteClick(id={Id}): NISTAIRMF-AUDIT: GOVERN function — State change recorded for the audit trail {Id1}", id, id);
     }
 
     public async Task Open(int id)

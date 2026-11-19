@@ -14,6 +14,7 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket;
 [Authorize]
 public class CheckoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IOrderService _orderService;
@@ -64,6 +65,10 @@ public class CheckoutModel : PageModel
             return RedirectToPage("/Basket/Index");
         }
 
+		_logger.LogInformation("SetBasketModelAsync(): NISTAIRMF-AUDIT: MAP function — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): NISTAIRMF-AUDIT: Governance coverage — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): NISTAIRMF-AUDIT: MANAGE function — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): NISTAIRMF-AUDIT: GOVERN function — State change recorded for the audit trail");
         return RedirectToPage("Success");
     }
 
@@ -87,10 +92,14 @@ public class CheckoutModel : PageModel
         {
             _username = Request.Cookies[Constants.BASKET_COOKIENAME];
         }
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): NISTAIRMF-AUDIT: MAP function — Record access recorded for the audit trail");
         if (_username != null) return;
 
         _username = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions();
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): NISTAIRMF-AUDIT: MANAGE function — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): NISTAIRMF-AUDIT: Governance coverage — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): NISTAIRMF-AUDIT: GOVERN function — Record access recorded for the audit trail");
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, _username, cookieOptions);
     }

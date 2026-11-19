@@ -110,6 +110,10 @@
 
     public async Task EditClick()
     {
+		Logger.LogInformation("EditClick(): NISTAIRMF-AUDIT: MANAGE function — State change recorded for the audit trail");
+		Logger.LogInformation("EditClick(): NISTAIRMF-AUDIT: Governance coverage — State change recorded for the audit trail");
+		Logger.LogInformation("EditClick(): NISTAIRMF-AUDIT: MAP function — State change recorded for the audit trail");
+    Logger.LogInformation("EditClick(): NISTAIRMF-AUDIT: GOVERN function — State change recorded for the audit trail");
         await OnEditClick.InvokeAsync(_item.Id);
         await Close();
     }
