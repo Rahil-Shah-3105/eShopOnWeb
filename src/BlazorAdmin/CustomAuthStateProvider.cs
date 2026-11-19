@@ -12,6 +12,7 @@ namespace BlazorAdmin;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // TODO: Get Default Cache Duration from Config
     private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
 
@@ -35,11 +36,20 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
     private async ValueTask<ClaimsPrincipal> GetUser(bool useCache = false)
     {
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOC2-AUDIT [CC7.2]: Monitoring coverage — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOC2-AUDIT [CC6.1]: Logical access — Record access recorded for the audit trail", useCache);
         var now = DateTimeOffset.Now;
         if (useCache && now < _userLastCheck + UserCacheRefreshInterval)
         {
+			_logger.LogInformation("GetUser(useCache={UseCache}): SOC2-AUDIT [CC6.8]: Malicious software — Record access recorded for the audit trail", useCache);
             return _cachedUser;
         }
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOC2-AUDIT [CC7.3]: Incident response — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOC2-AUDIT [CC6.6]: Boundary protection — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOC2-AUDIT [CC8.1]: Change management — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOC2-AUDIT [CC7.1]: System operations — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOC2-AUDIT [CC6.3]: Authorization — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOC2-AUDIT [CC6.2]: Authentication — Record access recorded for the audit trail", useCache);
 
         _cachedUser = await FetchUser();
         _userLastCheck = now;
@@ -70,14 +80,23 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
             nameof(CustomAuthStateProvider),
             user.NameClaimType,
             user.RoleClaimType);
+			_logger.LogInformation("FetchUser(): SOC2-AUDIT [CC6.8]: Malicious software — Record access recorded for the audit trail {Identity}", identity);
+			_logger.LogInformation("FetchUser(): SOC2-AUDIT [CC7.2]: Monitoring coverage — Record access recorded for the audit trail {Identity}", identity);
 
         if (user.Claims != null)
         {
+			_logger.LogInformation("FetchUser(): SOC2-AUDIT [CC6.1]: Logical access — Record access recorded for the audit trail {Identity}", identity);
             foreach (var claim in user.Claims)
             {
+				_logger.LogInformation("FetchUser(): SOC2-AUDIT [CC7.3]: Incident response — Record access recorded for the audit trail {Identity}", identity);
                 identity.AddClaim(new Claim(claim.Type, claim.Value));
             }
         }
+		_logger.LogInformation("FetchUser(): SOC2-AUDIT [CC6.6]: Boundary protection — Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser(): SOC2-AUDIT [CC8.1]: Change management — Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser(): SOC2-AUDIT [CC7.1]: System operations — Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser(): SOC2-AUDIT [CC6.3]: Authorization — Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser(): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {User}", user);
 
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
 

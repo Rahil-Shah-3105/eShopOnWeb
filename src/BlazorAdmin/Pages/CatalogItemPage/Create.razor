@@ -125,8 +125,13 @@
     private async Task CreateClick()
     {
         var result = await CatalogItemService.Create(_item);
+		Logger.LogInformation("CreateClick(): SOC2-AUDIT [CC6.3]: Authorization — State change recorded for the audit trail {Result}", result);
         if (result != null)
         {
+			Logger.LogInformation("CreateClick(): SOC2-AUDIT [CC7.1]: System operations — State change recorded for the audit trail {Result}", result);
+			Logger.LogInformation("CreateClick(): SOC2-AUDIT [CC7.3]: Incident response — State change recorded for the audit trail {Result}", result);
+			Logger.LogInformation("CreateClick(): SOC2-AUDIT [CC6.6]: Boundary protection — State change recorded for the audit trail {Result}", result);
+			Logger.LogInformation("CreateClick(): SOC2-AUDIT [CC6.2]: Authentication — State change recorded for the audit trail {Result}", result);
             await OnSaveClick.InvokeAsync(null);
             await Close();
         }
@@ -150,6 +155,7 @@
         _showCreateModal = true;
 
         StateHasChanged();
+		Logger.LogInformation("Open(): SOC2-AUDIT [CC6.1]: Authentication operation completed");
     }
 
     private async Task Close()

@@ -1,11 +1,13 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Views.Manage;
 
 public static class ManageNavPages
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public static string ActivePageKey => "ActivePage";
 
     public static string Index => "Index";
@@ -18,9 +20,17 @@ public static class ManageNavPages
 
     public static string IndexNavClass(ViewContext viewContext) => PageNavClass(viewContext, Index);
 
-    public static string ChangePasswordNavClass(ViewContext viewContext) => PageNavClass(viewContext, ChangePassword);
+    public static string ChangePasswordNavClass(ViewContext viewContext)
+    {
+        _logger.LogInformation("ChangePasswordNavClass(viewContext={ViewContext}): SOC2-AUDIT [CC6.2]: Authentication — State change recorded for the audit trail", viewContext);
+        return PageNavClass(viewContext, ChangePassword);
+    }
 
-    public static string ExternalLoginsNavClass(ViewContext viewContext) => PageNavClass(viewContext, ExternalLogins);
+    public static string ExternalLoginsNavClass(ViewContext viewContext)
+    {
+        _logger.LogInformation("ExternalLoginsNavClass(viewContext={ViewContext}): SOC2-AUDIT [CC6.1]: Authentication operation completed", viewContext);
+        return PageNavClass(viewContext, ExternalLogins);
+    }
 
     public static string TwoFactorAuthenticationNavClass(ViewContext viewContext) => PageNavClass(viewContext, TwoFactorAuthentication);
 

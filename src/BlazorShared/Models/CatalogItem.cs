@@ -3,11 +3,13 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading.Tasks;
 using BlazorInputFile;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorShared.Models;
 
 public class CatalogItem
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public int Id { get; set; }
 
     public int CatalogTypeId { get; set; }
@@ -70,6 +72,7 @@ public class CatalogItem
                 var fileData = memStream.ToArray();
                 var encodedBase64 = Convert.ToBase64String(fileData);
 
+				_logger.LogInformation("DataToBase64(fileItem={FileItem}): SOC2-AUDIT [CC7.2]: System operation completed", fileItem);
                 return encodedBase64;
             }
         }

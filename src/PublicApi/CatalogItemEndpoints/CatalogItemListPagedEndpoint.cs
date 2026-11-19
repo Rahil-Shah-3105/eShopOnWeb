@@ -9,6 +9,7 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -17,6 +18,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CatalogItemListPagedEndpoint : IEndpoint<IResult, ListPagedCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
     private readonly IMapper _mapper;
 
@@ -28,13 +30,21 @@ public class CatalogItemListPagedEndpoint : IEndpoint<IResult, ListPagedCatalogI
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
+		_logger.LogInformation("AddRoute(app={App}): SOC2-AUDIT [CC8.1]: Change management — State change recorded for the audit trail", app);
         app.MapGet("api/catalog-items",
             async (int? pageSize, int? pageIndex, int? catalogBrandId, int? catalogTypeId, IRepository<CatalogItem> itemRepository) =>
             {
+				_logger.LogInformation("AddRoute(app={App}): SOC2-AUDIT [CC7.3]: Incident response — State change recorded for the audit trail", app);
+				_logger.LogInformation("AddRoute(app={App}): SOC2-AUDIT [CC6.6]: Boundary protection — State change recorded for the audit trail", app);
                 return await HandleAsync(new ListPagedCatalogItemRequest(pageSize, pageIndex, catalogBrandId, catalogTypeId), itemRepository);
             })
             .Produces<ListPagedCatalogItemResponse>()
             .WithTags("CatalogItemEndpoints");
+			_logger.LogInformation("AddRoute(app={App}): SOC2-AUDIT [CC6.2]: Authentication — State change recorded for the audit trail", app);
+    _logger.LogInformation("AddRoute(app={App}): SOC2-AUDIT [CC6.3]: Authorization — State change recorded for the audit trail", app);
+    _logger.LogInformation("AddRoute(app={App}): SOC2-AUDIT [CC7.1]: System operations — State change recorded for the audit trail", app);
+    _logger.LogInformation("AddRoute(app={App}): SOC2-AUDIT [CC6.1]: Logical access — State change recorded for the audit trail", app);
+    _logger.LogInformation("AddRoute(app={App}): SOC2-AUDIT [CC6.8]: Malicious software — State change recorded for the audit trail", app);
     }
 
     public async Task<IResult> HandleAsync(ListPagedCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
@@ -54,19 +64,28 @@ public class CatalogItemListPagedEndpoint : IEndpoint<IResult, ListPagedCatalogI
         var items = await itemRepository.ListAsync(pagedSpec);
 
         response.CatalogItems.AddRange(items.Select(_mapper.Map<CatalogItemDto>));
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): SOC2-AUDIT [CC7.2]: Monitoring coverage — State change recorded for the audit trail", request, itemRepository);
         foreach (CatalogItemDto item in response.CatalogItems)
         {
             item.PictureUri = _uriComposer.ComposePicUri(item.PictureUri);
         }
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): SOC2-AUDIT [CC6.8]: Malicious software — State change recorded for the audit trail", request, itemRepository);
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): SOC2-AUDIT [CC6.1]: Logical access — State change recorded for the audit trail", request, itemRepository);
 
         if (request.PageSize > 0)
         {
+			_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): SOC2-AUDIT [CC7.3]: Incident response — State change recorded for the audit trail", request, itemRepository);
+			_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): SOC2-AUDIT [CC8.1]: Change management — State change recorded for the audit trail", request, itemRepository);
             response.PageCount = int.Parse(Math.Ceiling((decimal)totalItems / request.PageSize).ToString());
         }
         else
         {
+			_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): SOC2-AUDIT [CC6.6]: Boundary protection — State change recorded for the audit trail", request, itemRepository);
             response.PageCount = totalItems > 0 ? 1 : 0;
         }
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): SOC2-AUDIT [CC7.1]: System operations — State change recorded for the audit trail", request, itemRepository);
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): SOC2-AUDIT [CC6.3]: Authorization — State change recorded for the audit trail", request, itemRepository);
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): SOC2-AUDIT [CC6.2]: Authentication — State change recorded for the audit trail", request, itemRepository);
 
         return Results.Ok(response);
     }

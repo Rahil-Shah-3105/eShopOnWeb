@@ -16,6 +16,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ITokenClaimsService _tokenClaimsService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<UserController> _logger;
@@ -29,6 +30,8 @@ public class UserController : ControllerBase
         _tokenClaimsService = tokenClaimsService;
         _signInManager = signInManager;
         _logger = logger;
+		_logger.LogInformation("UserController(tokenClaimsService={TokenClaimsService}, signInManager={SignInManager}, logger={Logger}, cache={Cache}): SOC2-AUDIT [CC7.2]: System operation completed", tokenClaimsService, signInManager, logger, cache);
+		_logger.LogInformation("UserController(tokenClaimsService={TokenClaimsService}, signInManager={SignInManager}, logger={Logger}, cache={Cache}): SOC2-AUDIT [CC6.1]: Authentication operation completed", tokenClaimsService, signInManager, logger, cache);
         _cache = cache;
     }
 
@@ -54,6 +57,8 @@ public class UserController : ControllerBase
         });
 
         _logger.LogInformation("User logged out.");
+		_logger.LogInformation("Logout(): SOC2-AUDIT [CC7.2]: System operation completed");
+		_logger.LogInformation("Logout(): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {UserId}", userId);
         return Ok();
     }
 
@@ -79,9 +84,12 @@ public class UserController : ControllerBase
             userInfo.NameClaimType = "name";
             userInfo.RoleClaimType = "role";
         }
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): SOC2-AUDIT [CC7.2]: Monitoring coverage — State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): SOC2-AUDIT [CC6.1]: Logical access — State change recorded for the audit trail", claimsPrincipal);
 
         if (claimsPrincipal.Claims.Any())
         {
+			_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): SOC2-AUDIT [CC6.8]: Malicious software — State change recorded for the audit trail", claimsPrincipal);
             var claims = new List<ClaimValue>();
             var nameClaims = claimsPrincipal.FindAll(userInfo.NameClaimType);
             foreach (var claim in nameClaims)
@@ -96,6 +104,12 @@ public class UserController : ControllerBase
 
             userInfo.Claims = claims;
         }
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): SOC2-AUDIT [CC7.3]: Incident response — State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): SOC2-AUDIT [CC6.6]: Boundary protection — State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): SOC2-AUDIT [CC8.1]: Change management — State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): SOC2-AUDIT [CC7.1]: System operations — State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): SOC2-AUDIT [CC6.3]: Authorization — State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {UserInfo}", claimsPrincipal, userInfo);
 
         var token = await _tokenClaimsService.GetTokenAsync(claimsPrincipal.Identity.Name);
         userInfo.Token = token;

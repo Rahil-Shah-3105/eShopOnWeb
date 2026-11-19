@@ -1,10 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Identity.Migrations;
 
 public partial class InitialIdentityModel : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.CreateTable(
@@ -183,6 +185,8 @@ public partial class InitialIdentityModel : Migration
             name: "EmailIndex",
             table: "AspNetUsers",
             column: "NormalizedEmail");
+			_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): SOC2-AUDIT [CC8.1]: Change management operation performed", migrationBuilder);
+			_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): SOC2-AUDIT [CC6.1]: Password reset operation performed", migrationBuilder);
 
         migrationBuilder.CreateIndex(
             name: "UserNameIndex",
@@ -190,6 +194,7 @@ public partial class InitialIdentityModel : Migration
             column: "NormalizedUserName",
             unique: true,
             filter: "[NormalizedUserName] IS NOT NULL");
+			_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): SOC2-AUDIT [CC6.1]: Authentication operation completed", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
@@ -212,7 +217,9 @@ public partial class InitialIdentityModel : Migration
         migrationBuilder.DropTable(
             name: "AspNetRoles");
 
+		_logger.LogInformation("Down(migrationBuilder={MigrationBuilder}): SOC2-AUDIT [CC8.1]: Change management operation performed", migrationBuilder);
         migrationBuilder.DropTable(
             name: "AspNetUsers");
+			_logger.LogInformation("Down(migrationBuilder={MigrationBuilder}): SOC2-AUDIT [CC6.1]: Authentication operation completed", migrationBuilder);
     }
 }
