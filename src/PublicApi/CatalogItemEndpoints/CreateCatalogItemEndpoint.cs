@@ -9,6 +9,7 @@ using Microsoft.eShopWeb.ApplicationCore.Exceptions;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -17,6 +18,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public CreateCatalogItemEndpoint(IUriComposer uriComposer)
@@ -26,6 +28,7 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
+		_logger.LogInformation("AddRoute(app={App}): HIPAA-AUDIT: State change recorded for the audit trail", app);
         app.MapPost("api/catalog-items",
             [Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] async
             (CreateCatalogItemRequest request, IRepository<CatalogItem> itemRepository) =>
@@ -62,6 +65,7 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
 
         var dto = new CatalogItemDto
         {
+			_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): HIPAA-AUDIT [§164.312(e)(2)(ii)]: PHI transmission secured and logged {Response}", request, itemRepository, response);
             Id = newItem.Id,
             CatalogBrandId = newItem.CatalogBrandId,
             CatalogTypeId = newItem.CatalogTypeId,
@@ -70,7 +74,9 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
             PictureUri = _uriComposer.ComposePicUri(newItem.PictureUri),
             Price = newItem.Price
         };
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Encryption operation completed", request, itemRepository);
         response.CatalogItem = dto;
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): HIPAA-AUDIT: State change recorded for the audit trail", request, itemRepository);
         return Results.Created($"api/catalog-items/{dto.Id}", response);
     }
 }

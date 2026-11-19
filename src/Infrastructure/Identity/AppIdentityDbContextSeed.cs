@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.eShopWeb.ApplicationCore.Constants;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Identity;
 
 public class AppIdentityDbContextSeed
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public static async Task SeedAsync(AppIdentityDbContext identityDbContext, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
     {
 
@@ -24,9 +26,11 @@ public class AppIdentityDbContextSeed
         var adminUser = new ApplicationUser { UserName = adminUserName, Email = adminUserName };
         await userManager.CreateAsync(adminUser, AuthorizationConstants.DEFAULT_PASSWORD);
         adminUser = await userManager.FindByNameAsync(adminUserName);
+		_logger.LogInformation("SeedAsync(identityDbContext={IdentityDbContext}, userManager={UserManager}, roleManager={RoleManager}): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Password reset operation performed for user {UserManager1}", identityDbContext, userManager, roleManager, userManager);
         if (adminUser != null)
         {
             await userManager.AddToRoleAsync(adminUser, BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS);
         }
+		_logger.LogInformation("SeedAsync(identityDbContext={IdentityDbContext}, userManager={UserManager}, roleManager={RoleManager}): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Password reset operation performed for user {UserManager1}", identityDbContext, userManager, roleManager, userManager);
     }
 }

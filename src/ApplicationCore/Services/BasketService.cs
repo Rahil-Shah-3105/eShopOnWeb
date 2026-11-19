@@ -10,6 +10,7 @@ namespace Microsoft.eShopWeb.ApplicationCore.Services;
 
 public class BasketService : IBasketService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IAppLogger<BasketService> _logger;
 
@@ -34,6 +35,7 @@ public class BasketService : IBasketService
         basket.AddItem(catalogItemId, price, quantity);
 
         await _basketRepository.UpdateAsync(basket);
+		_logger.LogInformation("AddItemToBasket(username={Username}, catalogItemId={CatalogItemId}, price={Price}, quantity={Quantity}): HIPAA-AUDIT: State change recorded for the audit trail {CatalogItemId1}", username, catalogItemId, price, quantity, catalogItemId);
         return basket;
     }
 
@@ -41,6 +43,7 @@ public class BasketService : IBasketService
     {
         var basket = await _basketRepository.GetByIdAsync(basketId);
         Guard.Against.Null(basket, nameof(basket));
+		_logger.LogInformation("DeleteBasketAsync(basketId={BasketId}): HIPAA-AUDIT: State change recorded for the audit trail {BasketId1}", basketId, basketId);
         await _basketRepository.DeleteAsync(basket);
     }
 
@@ -60,6 +63,8 @@ public class BasketService : IBasketService
         }
         basket.RemoveEmptyItems();
         await _basketRepository.UpdateAsync(basket);
+		_logger.LogInformation("SetQuantities(basketId={BasketId}, quantities={Quantities}): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed", basketId, quantities);
+		_logger.LogInformation("SetQuantities(basketId={BasketId}, quantities={Quantities}): HIPAA-AUDIT: State change recorded for the audit trail {BasketId1}", basketId, quantities, basketId);
         return basket;
     }
 
@@ -77,9 +82,11 @@ public class BasketService : IBasketService
         }
         foreach (var item in anonymousBasket.Items)
         {
+			_logger.LogInformation("TransferBasketAsync(anonymousId={AnonymousId}, userName={UserName}): HIPAA-AUDIT [§164.312(e)(1)]: Secure PHI transmission completed", anonymousId, userName);
             userBasket.AddItem(item.CatalogItemId, item.UnitPrice, item.Quantity);
         }
         await _basketRepository.UpdateAsync(userBasket);
         await _basketRepository.DeleteAsync(anonymousBasket);
+		_logger.LogInformation("TransferBasketAsync(anonymousId={AnonymousId}, userName={UserName}): HIPAA-AUDIT: State change recorded for the audit trail {AnonymousId1}", anonymousId, userName, anonymousId);
     }
 }

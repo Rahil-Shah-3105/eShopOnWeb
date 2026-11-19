@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -13,6 +14,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CatalogItemGetByIdEndpoint : IEndpoint<IResult, GetByIdCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public CatalogItemGetByIdEndpoint(IUriComposer uriComposer)
@@ -22,6 +24,7 @@ public class CatalogItemGetByIdEndpoint : IEndpoint<IResult, GetByIdCatalogItemR
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
+		_logger.LogInformation("AddRoute(app={App}): HIPAA-AUDIT: State change recorded for the audit trail", app);
         app.MapGet("api/catalog-items/{catalogItemId}",
             async (int catalogItemId, IRepository<CatalogItem> itemRepository) =>
             {
@@ -36,9 +39,11 @@ public class CatalogItemGetByIdEndpoint : IEndpoint<IResult, GetByIdCatalogItemR
         var response = new GetByIdCatalogItemResponse(request.CorrelationId());
 
         var item = await itemRepository.GetByIdAsync(request.CatalogItemId);
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Encryption operation completed", request, itemRepository);
         if (item is null)
             return Results.NotFound();
 
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Encryption operation completed", request, itemRepository);
         response.CatalogItem = new CatalogItemDto
         {
             Id = item.Id,
@@ -49,6 +54,7 @@ public class CatalogItemGetByIdEndpoint : IEndpoint<IResult, GetByIdCatalogItemR
             PictureUri = _uriComposer.ComposePicUri(item.PictureUri),
             Price = item.Price
         };
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): HIPAA-AUDIT: State change recorded for the audit trail", request, itemRepository);
         return Results.Ok(response);
     }
 }

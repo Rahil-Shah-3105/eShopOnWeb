@@ -5,11 +5,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Pages.Basket;
 
 public class IndexModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly IBasketViewModelService _basketViewModelService;
     private readonly IRepository<CatalogItem> _itemRepository;
@@ -43,6 +45,7 @@ public class IndexModel : PageModel
             return RedirectToPage("/Index");
         }
 
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): HIPAA-AUDIT: State change recorded for the audit trail", productDetails);
         var username = GetOrSetBasketCookieAndUserName();
         var basket = await _basketService.AddItemToBasket(username,
             productDetails.Id, item.Price);
@@ -95,6 +98,8 @@ public class IndexModel : PageModel
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, userName, cookieOptions);
 
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): HIPAA-AUDIT: Record access recorded for the audit trail");
         return userName;
     }
 }

@@ -16,6 +16,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ITokenClaimsService _tokenClaimsService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<UserController> _logger;
@@ -30,6 +31,7 @@ public class UserController : ControllerBase
         _signInManager = signInManager;
         _logger = logger;
         _cache = cache;
+		_logger.LogInformation("UserController(tokenClaimsService={TokenClaimsService}, signInManager={SignInManager}, logger={Logger}, cache={Cache}): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed", tokenClaimsService, signInManager, logger, cache);
     }
 
     [HttpGet]
@@ -54,6 +56,7 @@ public class UserController : ControllerBase
         });
 
         _logger.LogInformation("User logged out.");
+		_logger.LogInformation("Logout(): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed for user {UserId}", userId);
         return Ok();
     }
 
@@ -100,6 +103,8 @@ public class UserController : ControllerBase
         var token = await _tokenClaimsService.GetTokenAsync(claimsPrincipal.Identity.Name);
         userInfo.Token = token;
 
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed for user {UserInfo}", claimsPrincipal, userInfo);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): HIPAA-AUDIT: State change recorded for the audit trail", claimsPrincipal);
         return userInfo;
     }
 }

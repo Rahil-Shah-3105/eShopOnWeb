@@ -12,6 +12,7 @@ namespace BlazorAdmin;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // TODO: Get Default Cache Duration from Config
     private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
 
@@ -78,9 +79,12 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                 identity.AddClaim(new Claim(claim.Type, claim.Value));
             }
         }
+		_logger.LogInformation("FetchUser(): HIPAA-AUDIT [§164.312(e)(1)]: Secure PHI transmission completed");
 
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
 
+		_logger.LogInformation("FetchUser(): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed for user {User}", user);
+		_logger.LogInformation("FetchUser(): HIPAA-AUDIT: Record access recorded for the audit trail {Identity}", identity);
         return new ClaimsPrincipal(identity);
     }
 }

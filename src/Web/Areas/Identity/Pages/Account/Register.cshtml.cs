@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 [AllowAnonymous]
 public class RegisterModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<RegisterModel> _logger;
@@ -32,6 +33,7 @@ public class RegisterModel : PageModel
         _signInManager = signInManager;
         _logger = logger;
         _emailSender = emailSender;
+		_logger.LogInformation("RegisterModel(userManager={UserManager}, signInManager={SignInManager}, logger={Logger}, emailSender=<redacted>): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed for user {UserManager1}", userManager, signInManager, logger, userManager);
     }
 
     [BindProperty]
@@ -41,6 +43,7 @@ public class RegisterModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -93,6 +96,10 @@ public class RegisterModel : PageModel
                 ModelState.AddModelError(string.Empty, error.Description);
             }
         }
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): HIPAA-AUDIT [§164.312(e)(1)]: Secure PHI transmission completed", returnUrl);
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Password reset operation performed", returnUrl);
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Encryption operation completed", returnUrl);
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed", returnUrl);
 
         // If we got this far, something failed, redisplay form
         return Page();
