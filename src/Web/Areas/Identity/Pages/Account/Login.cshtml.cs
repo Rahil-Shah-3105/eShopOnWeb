@@ -36,6 +36,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -105,6 +106,7 @@ public class LoginModel : PageModel
 
     private async Task TransferAnonymousBasketToUserAsync(string? userName)
     {
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): NYCLL144-AUDIT: Candidate notice — State change recorded for the audit trail", userName);
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
             var anonymousId = Request.Cookies[Constants.BASKET_COOKIENAME];
@@ -115,5 +117,6 @@ public class LoginModel : PageModel
             }
             Response.Cookies.Delete(Constants.BASKET_COOKIENAME);
         }
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): NYCLL144-AUDIT: Aedt audit — State change recorded for the audit trail", userName);
     }
 }
