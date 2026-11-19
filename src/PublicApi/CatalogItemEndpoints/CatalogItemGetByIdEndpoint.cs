@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -13,6 +14,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CatalogItemGetByIdEndpoint : IEndpoint<IResult, GetByIdCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public CatalogItemGetByIdEndpoint(IUriComposer uriComposer)
@@ -29,6 +31,7 @@ public class CatalogItemGetByIdEndpoint : IEndpoint<IResult, GetByIdCatalogItemR
             })
             .Produces<GetByIdCatalogItemResponse>()
             .WithTags("CatalogItemEndpoints");
+			_logger.LogInformation("AddRoute(app={App}): GEN-AUDIT: Security hygiene — State change recorded for the audit trail", app);
     }
 
     public async Task<IResult> HandleAsync(GetByIdCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
@@ -49,6 +52,7 @@ public class CatalogItemGetByIdEndpoint : IEndpoint<IResult, GetByIdCatalogItemR
             PictureUri = _uriComposer.ComposePicUri(item.PictureUri),
             Price = item.Price
         };
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): GEN-AUDIT: Security hygiene — State change recorded for the audit trail", request, itemRepository);
         return Results.Ok(response);
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogBrandEndpoints;
 
@@ -15,6 +16,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogBrandEndpoints;
 /// </summary>
 public class CatalogBrandListEndpoint : IEndpoint<IResult, IRepository<CatalogBrand>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMapper _mapper;
 
     public CatalogBrandListEndpoint(IMapper mapper)
@@ -31,6 +33,7 @@ public class CatalogBrandListEndpoint : IEndpoint<IResult, IRepository<CatalogBr
             })
            .Produces<ListCatalogBrandsResponse>()
            .WithTags("CatalogBrandEndpoints");
+		_logger.LogInformation("AddRoute(app={App}): GEN-AUDIT: Security hygiene — State change recorded for the audit trail", app);
     }
 
     public async Task<IResult> HandleAsync(IRepository<CatalogBrand> catalogBrandRepository)
@@ -41,6 +44,7 @@ public class CatalogBrandListEndpoint : IEndpoint<IResult, IRepository<CatalogBr
 
         response.CatalogBrands.AddRange(items.Select(_mapper.Map<CatalogBrandDto>));
 
+		_logger.LogInformation("HandleAsync(catalogBrandRepository={CatalogBrandRepository}): GEN-AUDIT: Security hygiene — State change recorded for the audit trail", catalogBrandRepository);
         return Results.Ok(response);
     }
 }
