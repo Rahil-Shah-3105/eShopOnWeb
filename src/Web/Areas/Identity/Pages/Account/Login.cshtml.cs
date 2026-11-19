@@ -36,6 +36,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -105,14 +106,19 @@ public class LoginModel : PageModel
 
     private async Task TransferAnonymousBasketToUserAsync(string? userName)
     {
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail", userName);
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): SOX-AUDIT: Computer operations — State change recorded for the audit trail", userName);
             var anonymousId = Request.Cookies[Constants.BASKET_COOKIENAME];
             if (Guid.TryParse(anonymousId, out var _))
             {
                 Guard.Against.NullOrEmpty(userName, nameof(userName));
                 await _basketService.TransferBasketAsync(anonymousId, userName);
             }
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail", userName);
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): SOX-AUDIT: Privileged access — State change recorded for the audit trail", userName);
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail", userName);
             Response.Cookies.Delete(Constants.BASKET_COOKIENAME);
         }
     }

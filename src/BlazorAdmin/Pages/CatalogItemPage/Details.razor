@@ -110,6 +110,11 @@
 
     public async Task EditClick()
     {
+		Logger.LogInformation("EditClick(): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail");
+		Logger.LogInformation("EditClick(): SOX-AUDIT: Computer operations — State change recorded for the audit trail");
+		Logger.LogInformation("EditClick(): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail");
+    Logger.LogInformation("EditClick(): SOX-AUDIT: Privileged access — State change recorded for the audit trail");
+    Logger.LogInformation("EditClick(): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail");
         await OnEditClick.InvokeAsync(_item.Id);
         await Close();
     }

@@ -59,6 +59,12 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): SOX-AUDIT: Audit log tamper — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): SOX-AUDIT: Computer operations — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): SOX-AUDIT: Change management (PCAOB AS 2201) — Change management operation performed");
+            logger.LogInformation("GetPreconfiguredCatalogBrands(): SOX-AUDIT: Segregation of duties — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogBrands(): SOX-AUDIT: Access to programs and data — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): SOX-AUDIT: Privileged access — Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +77,12 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): SOX-AUDIT: Audit log tamper — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): SOX-AUDIT: Computer operations — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): SOX-AUDIT: Change management (PCAOB AS 2201) — Change management operation performed");
+            logger.LogInformation("GetPreconfiguredCatalogTypes(): SOX-AUDIT: Segregation of duties — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogTypes(): SOX-AUDIT: Access to programs and data — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): SOX-AUDIT: Privileged access — Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +94,12 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): SOX-AUDIT: Audit log tamper — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): SOX-AUDIT: Computer operations — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): SOX-AUDIT: Change management (PCAOB AS 2201) — Change management operation performed");
+            logger.LogInformation("GetPreconfiguredItems(): SOX-AUDIT: Segregation of duties — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredItems(): SOX-AUDIT: Access to programs and data — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): SOX-AUDIT: Privileged access — Record access recorded for the audit trail");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

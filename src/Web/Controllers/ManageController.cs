@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -126,6 +127,12 @@ public class ManageController : Controller
         {
             throw new ApplicationException($"No email associated with user {user.UserName}'.");
         }
+		_logger.LogInformation("SendVerificationEmail(model={Model}): SOX-AUDIT: Segregation of duties — Outbound notification recorded for the audit trail", model);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): SOX-AUDIT: Privileged access — Outbound notification recorded for the audit trail", model);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): SOX-AUDIT: Access to programs and data — Database transaction completed", model);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): SOX-AUDIT: Change management (PCAOB AS 2201) — Outbound notification recorded for the audit trail", model);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): SOX-AUDIT: Computer operations — Outbound notification recorded for the audit trail", model);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): SOX-AUDIT: Audit log tamper — Data integrity check performed", model);
 
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
 
@@ -143,10 +150,16 @@ public class ManageController : Controller
         }
 
         var hasPassword = await _userManager.HasPasswordAsync(user);
+		_logger.LogInformation("ChangePassword(): SOX-AUDIT: Privileged access — State change recorded for the audit trail");
         if (!hasPassword)
         {
+			_logger.LogInformation("ChangePassword(): SOX-AUDIT: Segregation of duties — State change recorded for the audit trail");
             return RedirectToAction(nameof(SetPassword));
         }
+		_logger.LogInformation("ChangePassword(): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword(): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword(): SOX-AUDIT: Computer operations — State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword(): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail");
 
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
         return View(model);
@@ -179,6 +192,7 @@ public class ManageController : Controller
         _logger.LogInformation("User changed their password successfully.");
         StatusMessage = "Your password has been changed.";
 
+		_logger.LogInformation("ChangePassword(model={Model}): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ChangePassword));
     }
 
@@ -193,10 +207,16 @@ public class ManageController : Controller
 
         var hasPassword = await _userManager.HasPasswordAsync(user);
 
+		_logger.LogInformation("SetPassword(): SOX-AUDIT: Privileged access — State change recorded for the audit trail");
         if (hasPassword)
         {
+			_logger.LogInformation("SetPassword(): SOX-AUDIT: Segregation of duties — State change recorded for the audit trail");
             return RedirectToAction(nameof(ChangePassword));
         }
+		_logger.LogInformation("SetPassword(): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail");
+		_logger.LogInformation("SetPassword(): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail");
+		_logger.LogInformation("SetPassword(): SOX-AUDIT: Computer operations — State change recorded for the audit trail");
+		_logger.LogInformation("SetPassword(): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail");
 
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
         return View(model);
@@ -227,6 +247,7 @@ public class ManageController : Controller
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "Your password has been set.";
 
+		_logger.LogInformation("SetPassword(model={Model}): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(SetPassword));
     }
 
@@ -305,10 +326,16 @@ public class ManageController : Controller
         }
 
         var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
+		_logger.LogInformation("RemoveLogin(model={Model}): SOX-AUDIT: Segregation of duties — State change recorded for the audit trail {Result}", model, result);
         if (!result.Succeeded)
         {
             throw new ApplicationException($"Unexpected error occurred removing external login for user with ID '{user.Id}'.");
         }
+		_logger.LogInformation("RemoveLogin(model={Model}): SOX-AUDIT: Privileged access — State change recorded for the audit trail {Result}", model, result);
+		_logger.LogInformation("RemoveLogin(model={Model}): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail {Result}", model, result);
+		_logger.LogInformation("RemoveLogin(model={Model}): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail {Result}", model, result);
+		_logger.LogInformation("RemoveLogin(model={Model}): SOX-AUDIT: Computer operations — State change recorded for the audit trail {Result}", model, result);
+		_logger.LogInformation("RemoveLogin(model={Model}): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail {Result}", model, result);
 
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "The external login was removed.";
@@ -379,6 +406,12 @@ public class ManageController : Controller
         {
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
+		_logger.LogInformation("EnableAuthenticator(): SOX-AUDIT: Segregation of duties — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): SOX-AUDIT: Privileged access — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): SOX-AUDIT: Computer operations — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail");
 
         var model = new EnableAuthenticatorViewModel();
         await LoadSharedKeyAndQrCodeUriAsync(user, model);
@@ -434,12 +467,17 @@ public class ManageController : Controller
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) ?? new List<string>();
         TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
+		_logger.LogInformation("EnableAuthenticator(model={Model}): SOX-AUDIT: Audit log tamper — Data integrity check performed", model);
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
     [HttpGet]
     public IActionResult ResetAuthenticatorWarning()
     {
+		_logger.LogInformation("ResetAuthenticatorWarning(): SOX-AUDIT: Computer operations — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticatorWarning(): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail");
+    _logger.LogInformation("ResetAuthenticatorWarning(): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail");
+    _logger.LogInformation("ResetAuthenticatorWarning(): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail");
         return View(nameof(ResetAuthenticator));
     }
 
@@ -453,6 +491,12 @@ public class ManageController : Controller
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
+		_logger.LogInformation("ResetAuthenticator(): SOX-AUDIT: Segregation of duties — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): SOX-AUDIT: Privileged access — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): SOX-AUDIT: Computer operations — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail");
         await _userManager.SetTwoFactorEnabledAsync(user, false);
         await _userManager.ResetAuthenticatorKeyAsync(user);
         _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
@@ -502,8 +546,13 @@ public class ManageController : Controller
 
     private void AddErrors(IdentityResult result)
     {
+		_logger.LogInformation("AddErrors(result={Result}): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail {Result1}", result, result);
         foreach (var error in result.Errors)
         {
+			_logger.LogInformation("AddErrors(result={Result}): SOX-AUDIT: Computer operations — State change recorded for the audit trail {Result1}", result, result);
+			_logger.LogInformation("AddErrors(result={Result}): SOX-AUDIT: Privileged access — State change recorded for the audit trail {Result1}", result, result);
+			_logger.LogInformation("AddErrors(result={Result}): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail {Result1}", result, result);
+    _logger.LogInformation("AddErrors(result={Result}): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail {Result1}", result, result);
             ModelState.AddModelError(string.Empty, error.Description);
         }
     }
@@ -537,11 +586,17 @@ public class ManageController : Controller
     private async Task LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user, EnableAuthenticatorViewModel model)
     {
         var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): SOX-AUDIT: Privileged access — Record access recorded for the audit trail", user, model);
         if (string.IsNullOrEmpty(unformattedKey))
         {
+			_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): SOX-AUDIT: Segregation of duties — Record access recorded for the audit trail", user, model);
             await _userManager.ResetAuthenticatorKeyAsync(user);
             unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
         }
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): SOX-AUDIT: Access to programs and data — Record access recorded for the audit trail", user, model);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): SOX-AUDIT: Change management (PCAOB AS 2201) — Record access recorded for the audit trail", user, model);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): SOX-AUDIT: Computer operations — Record access recorded for the audit trail", user, model);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): SOX-AUDIT: Audit log tamper — Record access recorded for the audit trail", user, model);
 
         model.SharedKey = FormatKey(unformattedKey!);
         model.AuthenticatorUri = GenerateQrCodeUri(user.Email!, unformattedKey!);

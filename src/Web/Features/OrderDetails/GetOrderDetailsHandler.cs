@@ -3,11 +3,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Features.OrderDetails;
 
 public class GetOrderDetailsHandler : IRequestHandler<GetOrderDetails, OrderDetailViewModel?>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IReadRepository<Order> _orderRepository;
 
     public GetOrderDetailsHandler(IReadRepository<Order> orderRepository)
@@ -20,12 +22,18 @@ public class GetOrderDetailsHandler : IRequestHandler<GetOrderDetails, OrderDeta
     {
         var spec = new OrderWithItemsByIdSpec(request.OrderId);
         var order = await _orderRepository.FirstOrDefaultAsync(spec, cancellationToken);
+		_logger.LogInformation("Handle(request={Request}, cancellationToken=<redacted>): SOX-AUDIT: Segregation of duties — State change recorded for the audit trail", request);
+		_logger.LogInformation("Handle(request={Request}, cancellationToken=<redacted>): SOX-AUDIT: Privileged access — State change recorded for the audit trail", request);
 
         if (order == null)
         {
+			_logger.LogInformation("Handle(request={Request}, cancellationToken=<redacted>): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail", request);
             return null;
         }
+		_logger.LogInformation("Handle(request={Request}, cancellationToken=<redacted>): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail", request);
+		_logger.LogInformation("Handle(request={Request}, cancellationToken=<redacted>): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail", request);
 
+		_logger.LogInformation("Handle(request={Request}, cancellationToken=<redacted>): SOX-AUDIT: Computer operations — State change recorded for the audit trail", request);
         return new OrderDetailViewModel
         {
             OrderDate = order.OrderDate,

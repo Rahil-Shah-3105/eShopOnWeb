@@ -125,8 +125,13 @@
     private async Task CreateClick()
     {
         var result = await CatalogItemService.Create(_item);
+		Logger.LogInformation("CreateClick(): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail {Result}", result);
         if (result != null)
         {
+			Logger.LogInformation("CreateClick(): SOX-AUDIT: Computer operations — State change recorded for the audit trail {Result}", result);
+			Logger.LogInformation("CreateClick(): SOX-AUDIT: Segregation of duties — State change recorded for the audit trail {Result}", result);
+			Logger.LogInformation("CreateClick(): SOX-AUDIT: Privileged access — State change recorded for the audit trail {Result}", result);
+			Logger.LogInformation("CreateClick(): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail {Result}", result);
             await OnSaveClick.InvokeAsync(null);
             await Close();
         }

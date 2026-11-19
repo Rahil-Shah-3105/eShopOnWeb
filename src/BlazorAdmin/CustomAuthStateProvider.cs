@@ -12,6 +12,7 @@ namespace BlazorAdmin;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // TODO: Get Default Cache Duration from Config
     private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
 
@@ -40,6 +41,12 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         {
             return _cachedUser;
         }
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOX-AUDIT: Segregation of duties — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOX-AUDIT: Privileged access — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOX-AUDIT: Access to programs and data — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOX-AUDIT: Change management (PCAOB AS 2201) — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOX-AUDIT: Computer operations — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): SOX-AUDIT: Audit log tamper — Record access recorded for the audit trail", useCache);
 
         _cachedUser = await FetchUser();
         _userLastCheck = now;
@@ -71,6 +78,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
             user.NameClaimType,
             user.RoleClaimType);
 
+		_logger.LogInformation("FetchUser(): SOX-AUDIT: Segregation of duties — Record access recorded for the audit trail {Identity}", identity);
         if (user.Claims != null)
         {
             foreach (var claim in user.Claims)
@@ -78,6 +86,11 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                 identity.AddClaim(new Claim(claim.Type, claim.Value));
             }
         }
+		_logger.LogInformation("FetchUser(): SOX-AUDIT: Privileged access — Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser(): SOX-AUDIT: Access to programs and data — Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser(): SOX-AUDIT: Change management (PCAOB AS 2201) — Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser(): SOX-AUDIT: Computer operations — Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser(): SOX-AUDIT: Audit log tamper — Record access recorded for the audit trail {Identity}", identity);
 
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
 

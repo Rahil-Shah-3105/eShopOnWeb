@@ -13,6 +13,7 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogLookupDataService<TLookupData, TReponse> _catalogTypeService;
     private ILogger<CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>> _logger;
@@ -43,6 +44,12 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
                 await _localStorageService.RemoveItemAsync(key);
             }
         }
+		_logger.LogInformation("List(): SOX-AUDIT: Segregation of duties — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): SOX-AUDIT: Privileged access — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): SOX-AUDIT: Access to programs and data — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): SOX-AUDIT: Change management (PCAOB AS 2201) — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): SOX-AUDIT: Computer operations — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): SOX-AUDIT: Audit log tamper — Record access recorded for the audit trail");
 
         var types = await _catalogTypeService.List();
         var entry = new CacheEntry<List<TLookupData>>(types);

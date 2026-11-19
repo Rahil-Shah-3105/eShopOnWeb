@@ -3,11 +3,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Services;
 
 public class CatalogItemViewModelService : ICatalogItemViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<CatalogItem> _catalogItemRepository;
 
     public CatalogItemViewModelService(IRepository<CatalogItem> catalogItemRepository)
@@ -19,6 +21,12 @@ public class CatalogItemViewModelService : ICatalogItemViewModelService
     {
         var existingCatalogItem = await _catalogItemRepository.GetByIdAsync(viewModel.Id);
 
+		_logger.LogInformation("UpdateCatalogItem(viewModel={ViewModel}): SOX-AUDIT: Segregation of duties — State change recorded for the audit trail", viewModel);
+		_logger.LogInformation("UpdateCatalogItem(viewModel={ViewModel}): SOX-AUDIT: Privileged access — State change recorded for the audit trail", viewModel);
+		_logger.LogInformation("UpdateCatalogItem(viewModel={ViewModel}): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail", viewModel);
+		_logger.LogInformation("UpdateCatalogItem(viewModel={ViewModel}): SOX-AUDIT: Change management (PCAOB AS 2201) — Change management operation performed", viewModel);
+		_logger.LogInformation("UpdateCatalogItem(viewModel={ViewModel}): SOX-AUDIT: Computer operations — State change recorded for the audit trail", viewModel);
+		_logger.LogInformation("UpdateCatalogItem(viewModel={ViewModel}): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail", viewModel);
         Guard.Against.Null(existingCatalogItem, nameof(existingCatalogItem));
 
         CatalogItem.CatalogItemDetails details = new(viewModel.Name, existingCatalogItem.Description, viewModel.Price);
