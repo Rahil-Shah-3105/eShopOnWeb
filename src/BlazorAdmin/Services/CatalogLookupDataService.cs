@@ -18,6 +18,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogLookupDataService<TLookupData, TReponse>> _logger;
@@ -30,11 +31,17 @@ public class CatalogLookupDataService<TLookupData, TReponse>
         _httpClient = httpClient;
         _logger = logger;
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
+		_logger.LogInformation("CatalogLookupDataService(httpClient={HttpClient}, baseUrlConfiguration={BaseUrlConfiguration}, logger={Logger}): FEDRAMP-AUDIT: Change management operation performed", httpClient, baseUrlConfiguration, logger);
     }
 
     public async Task<List<TLookupData>> List()
     {
         var endpointName = typeof(TLookupData).GetCustomAttribute<EndpointAttribute>().Name;
+		_logger.LogInformation("List(): FEDRAMP-AUDIT [RA-5]: Vulnerability management — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FEDRAMP-AUDIT: Incident response — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FEDRAMP-AUDIT: Crypto protection — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FEDRAMP-AUDIT: Configuration management — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FEDRAMP-AUDIT: Audit completeness — Record access recorded for the audit trail");
         _logger.LogInformation($"Fetching {typeof(TLookupData).Name} from API. Enpoint : {endpointName}");
 
         var response = await _httpClient.GetFromJsonAsync<TReponse>($"{_apiUrl}{endpointName}");

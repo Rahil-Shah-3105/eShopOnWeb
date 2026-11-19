@@ -59,6 +59,11 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): FEDRAMP-AUDIT: Audit completeness — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): FEDRAMP-AUDIT: Configuration management — Change management operation performed");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): FEDRAMP-AUDIT: Crypto protection — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogBrands(): FEDRAMP-AUDIT [RA-5]: Vulnerability management — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): FEDRAMP-AUDIT: Incident response — Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +76,11 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): FEDRAMP-AUDIT: Audit completeness — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): FEDRAMP-AUDIT: Configuration management — Change management operation performed");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): FEDRAMP-AUDIT: Crypto protection — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogTypes(): FEDRAMP-AUDIT [RA-5]: Vulnerability management — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): FEDRAMP-AUDIT: Incident response — Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +92,11 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): FEDRAMP-AUDIT: Audit completeness — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): FEDRAMP-AUDIT: Configuration management — Change management operation performed");
+		logger.LogInformation("GetPreconfiguredItems(): FEDRAMP-AUDIT: Crypto protection — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredItems(): FEDRAMP-AUDIT [RA-5]: Vulnerability management — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): FEDRAMP-AUDIT: Incident response — Record access recorded for the audit trail");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

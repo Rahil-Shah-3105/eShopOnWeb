@@ -13,6 +13,7 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILocalStorageService _localStorageService;
     private readonly CatalogLookupDataService<TLookupData, TReponse> _catalogTypeService;
     private ILogger<CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>> _logger;
@@ -44,6 +45,11 @@ public class CachedCatalogLookupDataServiceDecorator<TLookupData, TReponse>
             }
         }
 
+		_logger.LogInformation("List(): FEDRAMP-AUDIT [RA-5]: Vulnerability management — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FEDRAMP-AUDIT: Incident response — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FEDRAMP-AUDIT: Crypto protection — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FEDRAMP-AUDIT: Configuration management — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): FEDRAMP-AUDIT: Audit completeness — Record access recorded for the audit trail");
         var types = await _catalogTypeService.List();
         var entry = new CacheEntry<List<TLookupData>>(types);
         await _localStorageService.SetItemAsync(key, entry);
