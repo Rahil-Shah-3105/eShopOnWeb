@@ -59,6 +59,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): NIS2-AUDIT [Art. 20]: Governance — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): NIS2-AUDIT [Art. 21(2)(c)]: Business continuity — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): NIS2-AUDIT: Security events — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): NIS2-AUDIT [Art. 21(2)(d)]: Supply chain — Change management operation performed");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +75,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): NIS2-AUDIT [Art. 20]: Governance — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): NIS2-AUDIT [Art. 21(2)(c)]: Business continuity — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): NIS2-AUDIT: Security events — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): NIS2-AUDIT [Art. 21(2)(d)]: Supply chain — Change management operation performed");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +90,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): NIS2-AUDIT [Art. 20]: Governance — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): NIS2-AUDIT [Art. 21(2)(c)]: Business continuity — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): NIS2-AUDIT: Security events — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): NIS2-AUDIT [Art. 21(2)(d)]: Supply chain — Change management operation performed");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

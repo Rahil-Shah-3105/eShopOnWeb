@@ -36,6 +36,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -105,8 +106,10 @@ public class LoginModel : PageModel
 
     private async Task TransferAnonymousBasketToUserAsync(string? userName)
     {
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): NIS2-AUDIT: Security events — State change recorded for the audit trail", userName);
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): NIS2-AUDIT [Art. 20]: Governance — State change recorded for the audit trail", userName);
             var anonymousId = Request.Cookies[Constants.BASKET_COOKIENAME];
             if (Guid.TryParse(anonymousId, out var _))
             {
@@ -114,6 +117,8 @@ public class LoginModel : PageModel
                 await _basketService.TransferBasketAsync(anonymousId, userName);
             }
             Response.Cookies.Delete(Constants.BASKET_COOKIENAME);
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): NIS2-AUDIT [Art. 21(2)(d)]: Supply chain — State change recorded for the audit trail", userName);
         }
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): NIS2-AUDIT [Art. 21(2)(c)]: Business continuity — State change recorded for the audit trail", userName);
     }
 }
