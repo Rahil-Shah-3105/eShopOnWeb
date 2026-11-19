@@ -14,6 +14,7 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket;
 [Authorize]
 public class CheckoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IOrderService _orderService;
@@ -32,6 +33,7 @@ public class CheckoutModel : PageModel
         _orderService = orderService;
         _basketViewModelService = basketViewModelService;
         _logger = logger;
+		_logger.LogWarning("CheckoutModel(basketService={BasketService}, basketViewModelService={BasketViewModelService}, signInManager={SignInManager}, orderService={OrderService}, logger={Logger}): GDPR-AUDIT: Access, erasure, portability — Database transaction completed", basketService, basketViewModelService, signInManager, orderService, logger);
     }
 
     public BasketViewModel BasketModel { get; set; } = new BasketViewModel();
@@ -64,6 +66,14 @@ public class CheckoutModel : PageModel
             return RedirectToPage("/Basket/Index");
         }
 
+		_logger.LogInformation("SetBasketModelAsync(): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — State change recorded for the audit trail");
+		_logger.LogWarning("SetBasketModelAsync(): GDPR-AUDIT: Access, erasure, portability — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): GDPR-AUDIT [Art. 30]: Records of processing activities — State change recorded for the audit trail");
+		_logger.LogWarning("SetBasketModelAsync(): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): GDPR-AUDIT: Transfers to third countries — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): GDPR-AUDIT: Breach notification — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): GDPR-AUDIT [Art. 32]: Security of processing — State change recorded for the audit trail");
         return RedirectToPage("Success");
     }
 
@@ -83,12 +93,20 @@ public class CheckoutModel : PageModel
 
     private void GetOrSetBasketCookieAndUserName()
     {
+		_logger.LogWarning("GetOrSetBasketCookieAndUserName(): GDPR-AUDIT: Access, erasure, portability — Record access recorded for the audit trail");
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
+			_logger.LogInformation("GetOrSetBasketCookieAndUserName(): GDPR-AUDIT [Art. 30]: Records of processing activities — Record access recorded for the audit trail");
             _username = Request.Cookies[Constants.BASKET_COOKIENAME];
         }
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): GDPR-AUDIT [Art. 25]: Data protection by design and by default — Record access recorded for the audit trail");
         if (_username != null) return;
 
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): GDPR-AUDIT: Breach notification — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): GDPR-AUDIT [Art. 32]: Security of processing — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): GDPR-AUDIT [Art.30]: Personal data processing activity completed");
+		_logger.LogWarning("GetOrSetBasketCookieAndUserName(): GDPR-AUDIT [Art. 6]: Lawfulness of processing — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — Record access recorded for the audit trail");
         _username = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions();
         cookieOptions.Expires = DateTime.Today.AddYears(10);

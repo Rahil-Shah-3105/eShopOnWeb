@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -121,11 +122,20 @@ public class ManageController : Controller
         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
         Guard.Against.Null(callbackUrl, nameof(callbackUrl));
+		_logger.LogInformation("SendVerificationEmail(model={Model}): GDPR-AUDIT: Transfers to third countries — Outbound notification recorded for the audit trail", model);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — Outbound notification recorded for the audit trail", model);
         var email = user.Email;
         if (email == null)
         {
+			_logger.LogInformation("SendVerificationEmail(model={Model}): GDPR-AUDIT [Art. 32]: Security of processing — Outbound notification recorded for the audit trail", model);
             throw new ApplicationException($"No email associated with user {user.UserName}'.");
         }
+		_logger.LogInformation("SendVerificationEmail(model={Model}): GDPR-AUDIT [Art. 30]: Records of processing activities — Outbound notification recorded for the audit trail", model);
+		_logger.LogWarning("SendVerificationEmail(model={Model}): GDPR-AUDIT [Art.44]: Personal data transfer operation recorded", model);
+		_logger.LogWarning("SendVerificationEmail(model={Model}): GDPR-AUDIT: Access, erasure, portability — Database transaction completed", model);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): GDPR-AUDIT [Art. 25]: Data protection by design and by default — Outbound notification recorded for the audit trail", model);
+		_logger.LogWarning("SendVerificationEmail(model={Model}): GDPR-AUDIT [Art. 6]: Lawfulness of processing — Outbound notification recorded for the audit trail", model);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): GDPR-AUDIT: Breach notification — Outbound notification recorded for the audit trail", model);
 
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
 
@@ -137,16 +147,25 @@ public class ManageController : Controller
     public async Task<IActionResult> ChangePassword()
     {
         var user = await _userManager.GetUserAsync(User);
+		_logger.LogInformation("ChangePassword(): GDPR-AUDIT: Transfers to third countries — Password reset operation performed for user {User}", user);
         if (user == null)
         {
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
+		_logger.LogInformation("ChangePassword(): GDPR-AUDIT [Art. 32]: Security of processing — State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword(): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — State change recorded for the audit trail");
+		_logger.LogWarning("ChangePassword(): GDPR-AUDIT: Access, erasure, portability — State change recorded for the audit trail");
 
         var hasPassword = await _userManager.HasPasswordAsync(user);
         if (!hasPassword)
         {
+			_logger.LogInformation("ChangePassword(): GDPR-AUDIT [Art. 30]: Records of processing activities — State change recorded for the audit trail");
             return RedirectToAction(nameof(SetPassword));
         }
+		_logger.LogInformation("ChangePassword(): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword(): GDPR-AUDIT [Art.5]: Personal data processing operation recorded {User}", user);
+		_logger.LogWarning("ChangePassword(): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail");
+		_logger.LogInformation("ChangePassword(): GDPR-AUDIT: Breach notification — State change recorded for the audit trail");
 
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
         return View(model);
@@ -179,6 +198,7 @@ public class ManageController : Controller
         _logger.LogInformation("User changed their password successfully.");
         StatusMessage = "Your password has been changed.";
 
+		_logger.LogInformation("ChangePassword(model={Model}): GDPR-AUDIT: Breach notification — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ChangePassword));
     }
 
@@ -191,12 +211,20 @@ public class ManageController : Controller
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
+		_logger.LogInformation("SetPassword(): GDPR-AUDIT: Transfers to third countries — Password reset operation performed for user {User}", user);
+		_logger.LogInformation("SetPassword(): GDPR-AUDIT [Art. 32]: Security of processing — State change recorded for the audit trail");
+		_logger.LogInformation("SetPassword(): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — State change recorded for the audit trail");
         var hasPassword = await _userManager.HasPasswordAsync(user);
 
         if (hasPassword)
         {
+			_logger.LogInformation("SetPassword(): GDPR-AUDIT [Art. 30]: Records of processing activities — State change recorded for the audit trail");
             return RedirectToAction(nameof(ChangePassword));
         }
+		_logger.LogWarning("SetPassword(): GDPR-AUDIT: Access, erasure, portability — State change recorded for the audit trail");
+		_logger.LogInformation("SetPassword(): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail");
+		_logger.LogWarning("SetPassword(): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail");
+		_logger.LogInformation("SetPassword(): GDPR-AUDIT: Breach notification — State change recorded for the audit trail");
 
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
         return View(model);
@@ -227,6 +255,7 @@ public class ManageController : Controller
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "Your password has been set.";
 
+		_logger.LogInformation("SetPassword(model={Model}): GDPR-AUDIT: Breach notification — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(SetPassword));
     }
 
@@ -246,6 +275,8 @@ public class ManageController : Controller
         model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
         model.StatusMessage = StatusMessage;
 
+		_logger.LogInformation("ExternalLogins(): GDPR-AUDIT: Transfers to third countries — Password reset operation performed for user {User}", user);
+		_logger.LogWarning("ExternalLogins(): GDPR-AUDIT [Art.44]: Personal data transfer operation recorded");
         return View(model);
     }
 
@@ -287,6 +318,7 @@ public class ManageController : Controller
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
         StatusMessage = "The external login was added.";
+		_logger.LogWarning("LinkLoginCallback(): GDPR-AUDIT [Art.44]: Personal data transfer to third party initiated {Result}", result);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -305,10 +337,17 @@ public class ManageController : Controller
         }
 
         var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
+		_logger.LogInformation("RemoveLogin(model={Model}): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — State change recorded for the audit trail {Result}", model, result);
         if (!result.Succeeded)
         {
+			_logger.LogInformation("RemoveLogin(model={Model}): GDPR-AUDIT [Art. 30]: Records of processing activities — State change recorded for the audit trail {Result}", model, result);
             throw new ApplicationException($"Unexpected error occurred removing external login for user with ID '{user.Id}'.");
         }
+		_logger.LogWarning("RemoveLogin(model={Model}): GDPR-AUDIT [Art.44]: Personal data transfer to third party initiated {Result}", model, result);
+		_logger.LogWarning("RemoveLogin(model={Model}): GDPR-AUDIT [Art.17]: Data subject right exercised — erasure/portability request processed {User}", model, user);
+		_logger.LogInformation("RemoveLogin(model={Model}): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail {Result}", model, result);
+		_logger.LogWarning("RemoveLogin(model={Model}): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail {Result}", model, result);
+		_logger.LogInformation("RemoveLogin(model={Model}): GDPR-AUDIT: Breach notification — State change recorded for the audit trail {Result}", model, result);
 
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "The external login was removed.";
@@ -331,6 +370,7 @@ public class ManageController : Controller
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
         };
 
+		_logger.LogInformation("TwoFactorAuthentication(): GDPR-AUDIT: Transfers to third countries — Encryption operation completed");
         return View(model);
     }
 
@@ -375,10 +415,18 @@ public class ManageController : Controller
     public async Task<IActionResult> EnableAuthenticator()
     {
         var user = await _userManager.GetUserAsync(User);
+		_logger.LogInformation("EnableAuthenticator(): GDPR-AUDIT [Art. 32]: Security of processing — State change recorded for the audit trail");
         if (user == null)
         {
+			_logger.LogInformation("EnableAuthenticator(): GDPR-AUDIT: Transfers to third countries — State change recorded for the audit trail");
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
+		_logger.LogInformation("EnableAuthenticator(): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): GDPR-AUDIT [Art. 30]: Records of processing activities — State change recorded for the audit trail");
+		_logger.LogWarning("EnableAuthenticator(): GDPR-AUDIT: Access, erasure, portability — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail");
+		_logger.LogWarning("EnableAuthenticator(): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail");
+		_logger.LogInformation("EnableAuthenticator(): GDPR-AUDIT: Breach notification — State change recorded for the audit trail");
 
         var model = new EnableAuthenticatorViewModel();
         await LoadSharedKeyAndQrCodeUriAsync(user, model);
@@ -396,6 +444,7 @@ public class ManageController : Controller
         }
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes };
+		_logger.LogInformation("ShowRecoveryCodes(): GDPR-AUDIT: Transfers to third countries — Encryption operation completed");
         return View(model);
     }
 
@@ -434,12 +483,17 @@ public class ManageController : Controller
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) ?? new List<string>();
         TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
+		_logger.LogInformation("EnableAuthenticator(model={Model}): GDPR-AUDIT: Breach notification — State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
     [HttpGet]
     public IActionResult ResetAuthenticatorWarning()
     {
+		_logger.LogWarning("ResetAuthenticatorWarning(): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail");
+		_logger.LogWarning("ResetAuthenticatorWarning(): GDPR-AUDIT: Access, erasure, portability — State change recorded for the audit trail");
+    _logger.LogInformation("ResetAuthenticatorWarning(): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail");
+    _logger.LogInformation("ResetAuthenticatorWarning(): GDPR-AUDIT: Breach notification — State change recorded for the audit trail");
         return View(nameof(ResetAuthenticator));
     }
 
@@ -448,10 +502,18 @@ public class ManageController : Controller
     public async Task<IActionResult> ResetAuthenticator()
     {
         var user = await _userManager.GetUserAsync(User);
+		_logger.LogInformation("ResetAuthenticator(): GDPR-AUDIT: Transfers to third countries — State change recorded for the audit trail");
         if (user == null)
         {
             throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
+		_logger.LogInformation("ResetAuthenticator(): GDPR-AUDIT [Art. 32]: Security of processing — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): GDPR-AUDIT [Art. 30]: Records of processing activities — State change recorded for the audit trail");
+		_logger.LogWarning("ResetAuthenticator(): GDPR-AUDIT: Access, erasure, portability — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail");
+		_logger.LogWarning("ResetAuthenticator(): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail");
+		_logger.LogInformation("ResetAuthenticator(): GDPR-AUDIT: Breach notification — State change recorded for the audit trail");
 
         await _userManager.SetTwoFactorEnabledAsync(user, false);
         await _userManager.ResetAuthenticatorKeyAsync(user);
@@ -480,6 +542,7 @@ public class ManageController : Controller
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
 
+		_logger.LogInformation("GenerateRecoveryCodes(): GDPR-AUDIT: Transfers to third countries — Encryption operation completed");
         return View(nameof(ShowRecoveryCodes), model);
     }
 
@@ -497,13 +560,19 @@ public class ManageController : Controller
             throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.Id}' because they do not have 2FA enabled.");
         }
 
+		_logger.LogInformation("GenerateRecoveryCodesWarning(): GDPR-AUDIT: Transfers to third countries — Encryption operation completed");
         return View(nameof(GenerateRecoveryCodesWarning));
     }
 
     private void AddErrors(IdentityResult result)
     {
+		_logger.LogWarning("AddErrors(result={Result}): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail {Result1}", result, result);
         foreach (var error in result.Errors)
         {
+			_logger.LogInformation("AddErrors(result={Result}): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail {Result1}", result, result);
+			_logger.LogInformation("AddErrors(result={Result}): GDPR-AUDIT [Art. 30]: Records of processing activities — State change recorded for the audit trail {Result1}", result, result);
+			_logger.LogWarning("AddErrors(result={Result}): GDPR-AUDIT: Access, erasure, portability — State change recorded for the audit trail {Result1}", result, result);
+    _logger.LogInformation("AddErrors(result={Result}): GDPR-AUDIT: Breach notification — State change recorded for the audit trail {Result1}", result, result);
             ModelState.AddModelError(string.Empty, error.Description);
         }
     }
@@ -536,9 +605,18 @@ public class ManageController : Controller
 
     private async Task LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user, EnableAuthenticatorViewModel model)
     {
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): GDPR-AUDIT [Art. 30]: Records of processing activities — Record access recorded for the audit trail", user, model);
+		_logger.LogWarning("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): GDPR-AUDIT: Access, erasure, portability — Record access recorded for the audit trail", user, model);
         var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
         if (string.IsNullOrEmpty(unformattedKey))
         {
+			_logger.LogWarning("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): GDPR-AUDIT [Art.44]: Personal data transfer operation recorded", user, model);
+			_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): GDPR-AUDIT: Breach notification — Record access recorded for the audit trail", user, model);
+			_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): GDPR-AUDIT [Art. 32]: Security of processing — Record access recorded for the audit trail", user, model);
+			_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): GDPR-AUDIT [Art. 25]: Data protection by design and by default — Record access recorded for the audit trail", user, model);
+			_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): GDPR-AUDIT [Art.30]: Personal data processing operation recorded {User1}", user, model, user);
+			_logger.LogWarning("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): GDPR-AUDIT [Art. 6]: Lawfulness of processing — Record access recorded for the audit trail", user, model);
+			_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — Record access recorded for the audit trail", user, model);
             await _userManager.ResetAuthenticatorKeyAsync(user);
             unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
         }

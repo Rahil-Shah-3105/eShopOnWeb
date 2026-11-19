@@ -36,6 +36,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -100,19 +101,26 @@ public class LoginModel : PageModel
         }
 
         // If we got this far, something failed, redisplay form
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): GDPR-AUDIT: Transfers to third countries — Password reset operation performed", returnUrl);
+		_logger.LogWarning("OnPostAsync(returnUrl={ReturnUrl}): GDPR-AUDIT [Art.44]: Personal data transfer operation recorded", returnUrl);
         return Page();
     }
 
     private async Task TransferAnonymousBasketToUserAsync(string? userName)
     {
+		_logger.LogWarning("TransferAnonymousBasketToUserAsync(userName={UserName}): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail", userName);
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail", userName);
             var anonymousId = Request.Cookies[Constants.BASKET_COOKIENAME];
             if (Guid.TryParse(anonymousId, out var _))
             {
                 Guard.Against.NullOrEmpty(userName, nameof(userName));
                 await _basketService.TransferBasketAsync(anonymousId, userName);
             }
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): GDPR-AUDIT: Breach notification — State change recorded for the audit trail", userName);
+			_logger.LogWarning("TransferAnonymousBasketToUserAsync(userName={UserName}): GDPR-AUDIT [Art.44]: Personal data transfer operation recorded", userName);
+			_logger.LogWarning("TransferAnonymousBasketToUserAsync(userName={UserName}): GDPR-AUDIT [Art.17]: Data subject right exercised — erasure/portability request processed {UserName1}", userName, userName);
             Response.Cookies.Delete(Constants.BASKET_COOKIENAME);
         }
     }

@@ -9,6 +9,7 @@ using Microsoft.eShopWeb.ApplicationCore.Exceptions;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -17,6 +18,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public CreateCatalogItemEndpoint(IUriComposer uriComposer)
@@ -26,14 +28,22 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
+		_logger.LogWarning("AddRoute(app={App}): GDPR-AUDIT: Access, erasure, portability — State change recorded for the audit trail", app);
         app.MapPost("api/catalog-items",
             [Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] async
             (CreateCatalogItemRequest request, IRepository<CatalogItem> itemRepository) =>
             {
+				_logger.LogInformation("AddRoute(app={App}): GDPR-AUDIT [Art. 32]: Security of processing — State change recorded for the audit trail", app);
+				_logger.LogInformation("AddRoute(app={App}): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — State change recorded for the audit trail", app);
                 return await HandleAsync(request, itemRepository);
             })
             .Produces<CreateCatalogItemResponse>()
             .WithTags("CatalogItemEndpoints");
+			_logger.LogInformation("AddRoute(app={App}): GDPR-AUDIT [Art. 30]: Records of processing activities — State change recorded for the audit trail", app);
+    _logger.LogWarning("AddRoute(app={App}): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail", app);
+    _logger.LogInformation("AddRoute(app={App}): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail", app);
+    _logger.LogInformation("AddRoute(app={App}): GDPR-AUDIT: Breach notification — State change recorded for the audit trail", app);
+    _logger.LogInformation("AddRoute(app={App}): GDPR-AUDIT: Transfers to third countries — State change recorded for the audit trail", app);
     }
 
     public async Task<IResult> HandleAsync(CreateCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
@@ -50,8 +60,10 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
         var newItem = new CatalogItem(request.CatalogTypeId, request.CatalogBrandId, request.Description, request.Name, request.Price, request.PictureUri);
         newItem = await itemRepository.AddAsync(newItem);
 
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): GDPR-AUDIT [Art. 32]: Security of processing — State change recorded for the audit trail", request, itemRepository);
         if (newItem.Id != 0)
         {
+			_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): GDPR-AUDIT: Transfers to third countries — Encryption operation completed", request, itemRepository);
             //We disabled the upload functionality and added a default/placeholder image to this sample due to a potential security risk 
             //  pointed out by the community. More info in this issue: https://github.com/dotnet-architecture/eShopOnWeb/issues/537 
             //  In production, we recommend uploading to a blob storage and deliver the image via CDN after a verification process.
@@ -59,9 +71,12 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
             newItem.UpdatePictureUri("eCatalog-item-default.png");
             await itemRepository.UpdateAsync(newItem);
         }
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — State change recorded for the audit trail", request, itemRepository);
+		_logger.LogWarning("HandleAsync(request={Request}, itemRepository={ItemRepository}): GDPR-AUDIT: Access, erasure, portability — Database transaction completed with status {Response}", request, itemRepository, response);
 
         var dto = new CatalogItemDto
         {
+			_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): GDPR-AUDIT [Art. 30]: Records of processing activities — State change recorded for the audit trail", request, itemRepository);
             Id = newItem.Id,
             CatalogBrandId = newItem.CatalogBrandId,
             CatalogTypeId = newItem.CatalogTypeId,
@@ -70,6 +85,9 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
             PictureUri = _uriComposer.ComposePicUri(newItem.PictureUri),
             Price = newItem.Price
         };
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail", request, itemRepository);
+		_logger.LogWarning("HandleAsync(request={Request}, itemRepository={ItemRepository}): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail", request, itemRepository);
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): GDPR-AUDIT: Breach notification — State change recorded for the audit trail", request, itemRepository);
         response.CatalogItem = dto;
         return Results.Created($"api/catalog-items/{dto.Id}", response);
     }

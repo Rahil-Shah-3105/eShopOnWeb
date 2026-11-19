@@ -59,6 +59,14 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogWarning("GetPreconfiguredCatalogBrands(): GDPR-AUDIT [Art. 6]: Lawfulness of processing — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): GDPR-AUDIT: Breach notification — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): GDPR-AUDIT [Art. 25]: Data protection by design and by default — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogBrands(): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogBrands(): GDPR-AUDIT [Art. 30]: Records of processing activities — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogBrands(): GDPR-AUDIT [Art. 32]: Security of processing — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogBrands(): GDPR-AUDIT: Transfers to third countries — Record access recorded for the audit trail");
+		logger.LogWarning("GetPreconfiguredCatalogBrands(): GDPR-AUDIT: Access, erasure, portability — Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +79,14 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogWarning("GetPreconfiguredCatalogTypes(): GDPR-AUDIT [Art. 6]: Lawfulness of processing — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): GDPR-AUDIT: Breach notification — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): GDPR-AUDIT [Art. 25]: Data protection by design and by default — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogTypes(): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogTypes(): GDPR-AUDIT [Art. 30]: Records of processing activities — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogTypes(): GDPR-AUDIT [Art. 32]: Security of processing — Record access recorded for the audit trail");
+		logger.LogWarning("GetPreconfiguredCatalogTypes(): GDPR-AUDIT: Access, erasure, portability — Record access recorded for the audit trail");
+    logger.LogInformation("GetPreconfiguredCatalogTypes(): GDPR-AUDIT: Transfers to third countries — Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +98,14 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogWarning("GetPreconfiguredItems(): GDPR-AUDIT [Art. 6]: Lawfulness of processing — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): GDPR-AUDIT: Breach notification — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): GDPR-AUDIT [Art. 25]: Data protection by design and by default — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredItems(): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredItems(): GDPR-AUDIT [Art. 30]: Records of processing activities — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredItems(): GDPR-AUDIT [Art. 32]: Security of processing — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredItems(): GDPR-AUDIT: Transfers to third countries — Record access recorded for the audit trail");
+		logger.LogWarning("GetPreconfiguredItems(): GDPR-AUDIT: Access, erasure, portability — Record access recorded for the audit trail");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

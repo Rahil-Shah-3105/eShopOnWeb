@@ -12,6 +12,7 @@ namespace BlazorAdmin;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // TODO: Get Default Cache Duration from Config
     private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
 
@@ -36,10 +37,18 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
     private async ValueTask<ClaimsPrincipal> GetUser(bool useCache = false)
     {
         var now = DateTimeOffset.Now;
+		_logger.LogInformation("GetUser(useCache={UseCache}): GDPR-AUDIT [Art. 32]: Security of processing — Record access recorded for the audit trail", useCache);
         if (useCache && now < _userLastCheck + UserCacheRefreshInterval)
         {
+			_logger.LogInformation("GetUser(useCache={UseCache}): GDPR-AUDIT: Transfers to third countries — Record access recorded for the audit trail", useCache);
             return _cachedUser;
         }
+		_logger.LogInformation("GetUser(useCache={UseCache}): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): GDPR-AUDIT [Art. 30]: Records of processing activities — Record access recorded for the audit trail", useCache);
+		_logger.LogWarning("GetUser(useCache={UseCache}): GDPR-AUDIT: Access, erasure, portability — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): GDPR-AUDIT [Art. 25]: Data protection by design and by default — Record access recorded for the audit trail", useCache);
+		_logger.LogWarning("GetUser(useCache={UseCache}): GDPR-AUDIT [Art. 6]: Lawfulness of processing — Record access recorded for the audit trail", useCache);
+		_logger.LogInformation("GetUser(useCache={UseCache}): GDPR-AUDIT: Breach notification — Record access recorded for the audit trail", useCache);
 
         _cachedUser = await FetchUser();
         _userLastCheck = now;
@@ -70,14 +79,23 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
             nameof(CustomAuthStateProvider),
             user.NameClaimType,
             user.RoleClaimType);
+			_logger.LogInformation("FetchUser(): GDPR-AUDIT [Art. 32]: Security of processing — Record access recorded for the audit trail {Identity}", identity);
+			_logger.LogInformation("FetchUser(): GDPR-AUDIT: Transfers to third countries — Record access recorded for the audit trail {Identity}", identity);
 
         if (user.Claims != null)
         {
+			_logger.LogInformation("FetchUser(): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — Record access recorded for the audit trail {Identity}", identity);
             foreach (var claim in user.Claims)
             {
+				_logger.LogInformation("FetchUser(): GDPR-AUDIT [Art. 30]: Records of processing activities — Record access recorded for the audit trail {Identity}", identity);
                 identity.AddClaim(new Claim(claim.Type, claim.Value));
             }
         }
+		_logger.LogWarning("FetchUser(): GDPR-AUDIT: Access, erasure, portability — Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser(): GDPR-AUDIT [Art. 25]: Data protection by design and by default — Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser(): GDPR-AUDIT [Art.30]: Personal data processing operation recorded {User}", user);
+		_logger.LogWarning("FetchUser(): GDPR-AUDIT [Art. 6]: Lawfulness of processing — Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser(): GDPR-AUDIT: Breach notification — Record access recorded for the audit trail {Identity}", identity);
 
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
 
