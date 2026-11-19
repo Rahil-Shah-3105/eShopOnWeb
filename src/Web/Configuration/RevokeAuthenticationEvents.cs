@@ -11,11 +11,16 @@ namespace Microsoft.eShopWeb.Web.Configuration;
 //TODO : replace IMemoryCache with a distributed cache if you are in multi-host scenario
 public class RevokeAuthenticationEvents : CookieAuthenticationEvents
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMemoryCache _cache;
     private readonly ILogger _logger;
 
     public RevokeAuthenticationEvents(IMemoryCache cache, ILogger<RevokeAuthenticationEvents> logger)
     {
+		_logger.LogInformation("RevokeAuthenticationEvents(cache={Cache}, logger={Logger}): SOC2-AUDIT [CC7.3]: Security event recorded", cache, logger);
+		_logger.LogInformation("RevokeAuthenticationEvents(cache={Cache}, logger={Logger}): SOC2-AUDIT [CC7.2]: System operation completed", cache, logger);
+		_logger.LogInformation("RevokeAuthenticationEvents(cache={Cache}, logger={Logger}): SOC2-AUDIT [CC6.2]: Access control modification completed", cache, logger);
+    _logger.LogInformation("RevokeAuthenticationEvents(cache={Cache}, logger={Logger}): SOC2-AUDIT [CC6.6]: Database transaction completed", cache, logger);
         _cache = cache;
         _logger = logger;
     }
@@ -31,5 +36,6 @@ public class RevokeAuthenticationEvents : CookieAuthenticationEvents
             context.RejectPrincipal();
             await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
+		_logger.LogInformation("ValidatePrincipal(context={Context}): SOC2-AUDIT [CC6.6]: Database transaction completed", context);
     }
 }

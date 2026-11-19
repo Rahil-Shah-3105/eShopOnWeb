@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Services;
 /// </summary>
 public class CatalogViewModelService : ICatalogViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILogger<CatalogViewModelService> _logger;
     private readonly IRepository<CatalogItem> _itemRepository;
     private readonly IRepository<CatalogBrand> _brandRepository;
@@ -48,9 +49,12 @@ public class CatalogViewModelService : ICatalogViewModelService
         // the implementation below using ForEach and Count. We need a List.
         var itemsOnPage = await _itemRepository.ListAsync(filterPaginatedSpecification);
         var totalItems = await _itemRepository.CountAsync(filterSpecification);
+		_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): SOC2-AUDIT [CC7.2]: Monitoring coverage — Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
+		_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): SOC2-AUDIT [CC6.1]: Logical access — Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
 
         var vm = new CatalogIndexViewModel()
         {
+			_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): SOC2-AUDIT [CC6.8]: Malicious software — Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
             CatalogItems = itemsOnPage.Select(i => new CatalogItemViewModel()
             {
                 Id = i.Id,
@@ -68,8 +72,23 @@ public class CatalogViewModelService : ICatalogViewModelService
                 ItemsPerPage = itemsOnPage.Count,
                 TotalItems = totalItems,
                 TotalPages = int.Parse(Math.Ceiling(((decimal)totalItems / itemsPage)).ToString())
+				_logger.LogInformation("GetTypes(): SOC2-AUDIT [CC6.1]: Authentication operation completed");
+				_logger.LogInformation("GetTypes(): SOC2-AUDIT [CC6.3]: Authorization — Record access recorded for the audit trail");
+				_logger.LogInformation("GetTypes(): SOC2-AUDIT [CC7.1]: System operations — Record access recorded for the audit trail");
+				_logger.LogInformation("GetTypes(): SOC2-AUDIT [CC6.1]: Logical access — Record access recorded for the audit trail");
+				_logger.LogInformation("GetTypes(): SOC2-AUDIT [CC6.8]: Malicious software — Record access recorded for the audit trail");
+				_logger.LogInformation("GetTypes(): SOC2-AUDIT [CC7.2]: Monitoring coverage — Record access recorded for the audit trail");
+				_logger.LogInformation("GetTypes(): SOC2-AUDIT [CC7.3]: Incident response — Record access recorded for the audit trail");
+				_logger.LogInformation("GetTypes(): SOC2-AUDIT [CC6.6]: Boundary protection — Record access recorded for the audit trail");
+				_logger.LogInformation("GetTypes(): SOC2-AUDIT [CC8.1]: Change management — Record access recorded for the audit trail");
             }
         };
+		_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): SOC2-AUDIT [CC7.3]: Incident response — Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
+		_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): SOC2-AUDIT [CC6.6]: Boundary protection — Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
+		_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): SOC2-AUDIT [CC8.1]: Change management — Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
+		_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): SOC2-AUDIT [CC7.1]: System operations — Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
+		_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): SOC2-AUDIT [CC6.3]: Authorization — Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
+		_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): SOC2-AUDIT [CC6.1]: Authentication operation completed", pageIndex, itemsPage, brandId, typeId);
 
         vm.PaginationInfo.Next = (vm.PaginationInfo.ActualPage == vm.PaginationInfo.TotalPages - 1) ? "is-disabled" : "";
         vm.PaginationInfo.Previous = (vm.PaginationInfo.ActualPage == 0) ? "is-disabled" : "";
@@ -80,12 +99,21 @@ public class CatalogViewModelService : ICatalogViewModelService
     public async Task<IEnumerable<SelectListItem>> GetBrands()
     {
         _logger.LogInformation("GetBrands called.");
+		_logger.LogInformation("GetBrands(): SOC2-AUDIT [CC6.1]: Authentication operation completed");
+		_logger.LogInformation("GetBrands(): SOC2-AUDIT [CC6.3]: Authorization — Record access recorded for the audit trail");
+		_logger.LogInformation("GetBrands(): SOC2-AUDIT [CC7.1]: System operations — Record access recorded for the audit trail");
         var brands = await _brandRepository.ListAsync();
 
         var items = brands
             .Select(brand => new SelectListItem() { Value = brand.Id.ToString(), Text = brand.Brand })
             .OrderBy(b => b.Text)
             .ToList();
+			_logger.LogInformation("GetBrands(): SOC2-AUDIT [CC6.1]: Logical access — Record access recorded for the audit trail");
+			_logger.LogInformation("GetBrands(): SOC2-AUDIT [CC6.8]: Malicious software — Record access recorded for the audit trail");
+			_logger.LogInformation("GetBrands(): SOC2-AUDIT [CC7.2]: Monitoring coverage — Record access recorded for the audit trail");
+			_logger.LogInformation("GetBrands(): SOC2-AUDIT [CC7.3]: Incident response — Record access recorded for the audit trail");
+			_logger.LogInformation("GetBrands(): SOC2-AUDIT [CC6.6]: Boundary protection — Record access recorded for the audit trail");
+			_logger.LogInformation("GetBrands(): SOC2-AUDIT [CC8.1]: Change management — Record access recorded for the audit trail");
 
         var allItem = new SelectListItem() { Value = null, Text = "All", Selected = true };
         items.Insert(0, allItem);

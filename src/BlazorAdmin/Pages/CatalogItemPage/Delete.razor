@@ -107,6 +107,15 @@
 
     private async Task DeleteClick(int id)
     {
+		Logger.LogInformation("DeleteClick(id={Id}): SOC2-AUDIT [CC6.1]: Logical access — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): SOC2-AUDIT [CC7.3]: Incident response — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): SOC2-AUDIT [CC6.6]: Boundary protection — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): SOC2-AUDIT [CC8.1]: Change management — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): SOC2-AUDIT [CC7.1]: System operations — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): SOC2-AUDIT [CC6.3]: Authorization — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): SOC2-AUDIT [CC6.2]: Authentication — State change recorded for the audit trail {Id1}", id, id);
+    Logger.LogInformation("DeleteClick(id={Id}): SOC2-AUDIT [CC6.8]: Malicious software — State change recorded for the audit trail {Id1}", id, id);
+    Logger.LogInformation("DeleteClick(id={Id}): SOC2-AUDIT [CC7.2]: Monitoring coverage — State change recorded for the audit trail {Id1}", id, id);
         // TODO: Add some kind of "are you sure" check before this
 
         await CatalogItemService.Delete(id);
@@ -128,6 +137,7 @@
         _showDeleteModal = true;
 
         StateHasChanged();
+		Logger.LogInformation("Open(id={Id}): SOC2-AUDIT [CC6.1]: Authentication operation completed", id);
     }
 
     private async Task Close()

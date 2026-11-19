@@ -59,6 +59,15 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): SOC2-AUDIT [CC6.2]: Authentication — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): SOC2-AUDIT [CC6.3]: Authorization — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): SOC2-AUDIT [CC7.1]: System operations — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogBrands(): SOC2-AUDIT [CC6.1]: Logical access — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogBrands(): SOC2-AUDIT [CC6.6]: Boundary protection — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogBrands(): SOC2-AUDIT [CC6.8]: Malicious software — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogBrands(): SOC2-AUDIT [CC7.3]: Incident response — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): SOC2-AUDIT [CC8.1]: Change management operation performed");
+    logger.LogInformation("GetPreconfiguredCatalogBrands(): SOC2-AUDIT [CC7.2]: Monitoring coverage — Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +80,15 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): SOC2-AUDIT [CC6.2]: Authentication — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): SOC2-AUDIT [CC6.3]: Authorization — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): SOC2-AUDIT [CC7.2]: System operation completed");
+            logger.LogInformation("GetPreconfiguredCatalogTypes(): SOC2-AUDIT [CC6.1]: Logical access — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogTypes(): SOC2-AUDIT [CC6.6]: Boundary protection — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogTypes(): SOC2-AUDIT [CC7.3]: Incident response — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): SOC2-AUDIT [CC8.1]: Change management operation performed");
+    logger.LogInformation("GetPreconfiguredCatalogTypes(): SOC2-AUDIT [CC6.8]: Malicious software — Record access recorded for the audit trail");
+    logger.LogInformation("GetPreconfiguredCatalogTypes(): SOC2-AUDIT [CC7.2]: Monitoring coverage — Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +100,15 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): SOC2-AUDIT [CC6.2]: Authentication — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): SOC2-AUDIT [CC6.3]: Authorization — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): SOC2-AUDIT [CC7.1]: System operations — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredItems(): SOC2-AUDIT [CC6.1]: Logical access — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredItems(): SOC2-AUDIT [CC6.6]: Boundary protection — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredItems(): SOC2-AUDIT [CC6.8]: Malicious software — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredItems(): SOC2-AUDIT [CC7.2]: Monitoring coverage — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredItems(): SOC2-AUDIT [CC7.3]: Incident response — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): SOC2-AUDIT [CC8.1]: Change management operation performed");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

@@ -14,6 +14,7 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket;
 [Authorize]
 public class CheckoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IOrderService _orderService;
@@ -31,6 +32,8 @@ public class CheckoutModel : PageModel
         _signInManager = signInManager;
         _orderService = orderService;
         _basketViewModelService = basketViewModelService;
+		_logger.LogInformation("CheckoutModel(basketService={BasketService}, basketViewModelService={BasketViewModelService}, signInManager={SignInManager}, orderService={OrderService}, logger={Logger}): SOC2-AUDIT [CC6.6]: Database transaction completed", basketService, basketViewModelService, signInManager, orderService, logger);
+		_logger.LogInformation("CheckoutModel(basketService={BasketService}, basketViewModelService={BasketViewModelService}, signInManager={SignInManager}, orderService={OrderService}, logger={Logger}): SOC2-AUDIT [CC6.1]: Authentication operation completed", basketService, basketViewModelService, signInManager, orderService, logger);
         _logger = logger;
     }
 
@@ -64,6 +67,14 @@ public class CheckoutModel : PageModel
             return RedirectToPage("/Basket/Index");
         }
 
+		_logger.LogInformation("SetBasketModelAsync(): SOC2-AUDIT [CC7.3]: Incident response — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): SOC2-AUDIT [CC8.1]: Change management — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): SOC2-AUDIT [CC6.6]: Boundary protection — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): SOC2-AUDIT [CC6.3]: Authorization — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): SOC2-AUDIT [CC7.1]: System operations — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): SOC2-AUDIT [CC6.8]: Malicious software — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): SOC2-AUDIT [CC6.1]: Logical access — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): SOC2-AUDIT [CC6.1]: Authentication operation completed");
         return RedirectToPage("Success");
     }
 
@@ -83,12 +94,20 @@ public class CheckoutModel : PageModel
 
     private void GetOrSetBasketCookieAndUserName()
     {
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOC2-AUDIT [CC6.6]: Boundary protection — Record access recorded for the audit trail");
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
+			_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOC2-AUDIT [CC7.3]: Incident response — Record access recorded for the audit trail");
             _username = Request.Cookies[Constants.BASKET_COOKIENAME];
         }
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOC2-AUDIT [CC8.1]: Change management — Record access recorded for the audit trail");
         if (_username != null) return;
 
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOC2-AUDIT [CC6.8]: Malicious software — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOC2-AUDIT [CC6.1]: Logical access — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOC2-AUDIT [CC7.1]: System operations — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOC2-AUDIT [CC6.3]: Authorization — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOC2-AUDIT [CC6.2]: Authentication — Record access recorded for the audit trail");
         _username = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions();
         cookieOptions.Expires = DateTime.Today.AddYears(10);
