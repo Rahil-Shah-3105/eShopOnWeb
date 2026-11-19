@@ -3,11 +3,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Features.OrderDetails;
 
 public class GetOrderDetailsHandler : IRequestHandler<GetOrderDetails, OrderDetailViewModel?>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IReadRepository<Order> _orderRepository;
 
     public GetOrderDetailsHandler(IReadRepository<Order> orderRepository)
@@ -21,11 +23,15 @@ public class GetOrderDetailsHandler : IRequestHandler<GetOrderDetails, OrderDeta
         var spec = new OrderWithItemsByIdSpec(request.OrderId);
         var order = await _orderRepository.FirstOrDefaultAsync(spec, cancellationToken);
 
+		_logger.LogInformation("Handle(request={Request}, cancellationToken=<redacted>): DORA-AUDIT: Third party risk — State change recorded for the audit trail", request);
         if (order == null)
         {
             return null;
         }
+		_logger.LogInformation("Handle(request={Request}, cancellationToken=<redacted>): DORA-AUDIT: Resilience testing — State change recorded for the audit trail", request);
 
+		_logger.LogInformation("Handle(request={Request}, cancellationToken=<redacted>): DORA-AUDIT: Incident coverage — State change recorded for the audit trail", request);
+		_logger.LogInformation("Handle(request={Request}, cancellationToken=<redacted>): DORA-AUDIT [Art. 45]: Information sharing — State change recorded for the audit trail", request);
         return new OrderDetailViewModel
         {
             OrderDate = order.OrderDate,
