@@ -97,6 +97,7 @@ public class ToastComponent : ComponentBase, IDisposable
         }
 		_logger.LogWarning("<<< Exiting BuildToastSettings(level={Level},message={Message})", level, message);
         Message = message;
+		_logger.LogDebug("BuildToastSettings(level={Level},message={Message}): Message → {Message1}", level, message, Message);
     }
     public void Dispose()
     {

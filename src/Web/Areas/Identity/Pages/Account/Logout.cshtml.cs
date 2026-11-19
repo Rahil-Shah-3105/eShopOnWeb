@@ -26,6 +26,7 @@ public class LogoutModel : PageModel
 		_logger.LogError(">>> Entering LogoutModel(signInManager={SignInManager},logger={Logger},cache={Cache})", signInManager, logger, cache);
         _cache = cache;
 		_logger.LogDebug("LogoutModel(signInManager={SignInManager},logger={Logger},cache={Cache}): _cache → {_cache}", signInManager, logger, cache, _cache);
+		_logger.LogWarning("<<< Exiting LogoutModel(signInManager={SignInManager},logger={Logger},cache={Cache})", signInManager, logger, cache);
     }
 
     public void OnGet()

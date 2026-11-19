@@ -21,10 +21,12 @@ public class HttpService
     {
 		_logger.LogError(">>> Entering HttpService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},toastService={ToastService})", httpClient, baseUrlConfiguration, toastService);
         _httpClient = httpClient;
+		_logger.LogDebug("HttpService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},toastService={ToastService}): _httpClient → {_httpClient}", httpClient, baseUrlConfiguration, toastService, _httpClient);
         _toastService = toastService;
 		_logger.LogDebug("HttpService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},toastService={ToastService}): _toastService → {_toastService}", httpClient, baseUrlConfiguration, toastService, _toastService);
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
 		_logger.LogDebug("HttpService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},toastService={ToastService}): _apiUrl → {_apiUrl}", httpClient, baseUrlConfiguration, toastService, _apiUrl);
+		_logger.LogWarning("<<< Exiting HttpService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},toastService={ToastService})", httpClient, baseUrlConfiguration, toastService);
     }
 
     public async Task<T> HttpGet<T>(string uri)
@@ -118,6 +120,7 @@ public class HttpService
     private async Task<T> FromHttpResponseMessage<T>(HttpResponseMessage result)
     {
 		_logger.LogError(">>> Entering FromHttpResponseMessage(result={Result})", result);
+		_logger.LogWarning("<<< Exiting FromHttpResponseMessage(result={Result})", result);
         return JsonSerializer.Deserialize<T>(await result.Content.ReadAsStringAsync(), new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true

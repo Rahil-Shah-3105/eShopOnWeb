@@ -25,6 +25,8 @@ public class GetMyOrdersHandler : IRequestHandler<GetMyOrders, IEnumerable<Order
     {
 		_logger.LogError(">>> Entering Handle(request={Request},cancellationToken=<redacted>)", request);
         var specification = new CustomerOrdersSpecification(request.UserName);
+		var __logStart = System.Diagnostics.Stopwatch.StartNew();
+		_logger.LogError("Handle(request,cancellationToken)={Request},<redacted>: database query executed in {Arg2} ms", request, __logStart.ElapsedMilliseconds);
         var orders = await _orderRepository.ListAsync(specification, cancellationToken);
 
 		_logger.LogError("Handle(request={Request},cancellationToken=<redacted>): specification → {Specification}", request, specification);

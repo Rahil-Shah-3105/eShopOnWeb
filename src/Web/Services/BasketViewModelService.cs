@@ -30,6 +30,7 @@ public class BasketViewModelService : IBasketViewModelService
         _basketQueryService = basketQueryService;
 		_logger.LogDebug("BasketViewModelService(basketRepository={BasketRepository},itemRepository={ItemRepository},uriComposer={UriComposer},basketQueryService={BasketQueryService}): _basketQueryService → {_basketQueryService}", basketRepository, itemRepository, uriComposer, basketQueryService, _basketQueryService);
         _itemRepository = itemRepository;
+		_logger.LogDebug("BasketViewModelService(basketRepository={BasketRepository},itemRepository={ItemRepository},uriComposer={UriComposer},basketQueryService={BasketQueryService}): _itemRepository → {_itemRepository}", basketRepository, itemRepository, uriComposer, basketQueryService, _itemRepository);
     }
 
     public async Task<BasketViewModel> GetOrCreateBasketForUser(string userName)

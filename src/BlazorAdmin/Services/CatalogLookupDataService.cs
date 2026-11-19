@@ -35,6 +35,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
 		_logger.LogDebug("CatalogLookupDataService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},logger={Logger}): _logger → {_logger}", httpClient, baseUrlConfiguration, logger, _logger);
     _logger.LogWarning("<<< Exiting CatalogLookupDataService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},logger={Logger})", httpClient, baseUrlConfiguration, logger);
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
+		_logger.LogDebug("CatalogLookupDataService(httpClient={HttpClient},baseUrlConfiguration={BaseUrlConfiguration},logger={Logger}): _apiUrl → {_apiUrl}", httpClient, baseUrlConfiguration, logger, _apiUrl);
     }
 
     public async Task<List<TLookupData>> List()

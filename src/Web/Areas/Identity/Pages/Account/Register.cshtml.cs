@@ -38,6 +38,7 @@ public class RegisterModel : PageModel
 		_logger.LogDebug("RegisterModel(userManager={UserManager},signInManager={SignInManager},logger={Logger},emailSender=<redacted>): _logger → {_logger}", userManager, signInManager, logger, _logger);
     _logger.LogWarning("<<< Exiting RegisterModel(userManager={UserManager},signInManager={SignInManager},logger={Logger},emailSender=<redacted>)", userManager, signInManager, logger);
         _emailSender = emailSender;
+		_logger.LogDebug("RegisterModel(userManager={UserManager},signInManager={SignInManager},logger={Logger},emailSender=<redacted>): _emailSender → <redacted>", userManager, signInManager, logger);
     }
 
     [BindProperty]

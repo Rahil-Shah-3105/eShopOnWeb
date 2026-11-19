@@ -27,6 +27,7 @@ public class CatalogItemListPagedEndpoint : IEndpoint<IResult, ListPagedCatalogI
 		_logger.LogError(">>> Entering CatalogItemListPagedEndpoint(uriComposer={UriComposer},mapper={Mapper})", uriComposer, mapper);
         _uriComposer = uriComposer;
         _mapper = mapper;
+		_logger.LogDebug("CatalogItemListPagedEndpoint(uriComposer={UriComposer},mapper={Mapper}): _mapper → {_mapper}", uriComposer, mapper, _mapper);
 		_logger.LogDebug("CatalogItemListPagedEndpoint(uriComposer={UriComposer},mapper={Mapper}): _uriComposer → {_uriComposer}", uriComposer, mapper, _uriComposer);
     _logger.LogWarning("<<< Exiting CatalogItemListPagedEndpoint(uriComposer={UriComposer},mapper={Mapper})", uriComposer, mapper);
     }

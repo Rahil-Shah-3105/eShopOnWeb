@@ -36,6 +36,7 @@ public class CatalogItem : BaseEntity, IAggregateRoot
         Price = price;
         PictureUri = pictureUri;
 		_logger.LogDebug("CatalogItem(catalogTypeId={CatalogTypeId},catalogBrandId={CatalogBrandId},description={Description},name={Name},price={Price},pictureUri={PictureUri}): PictureUri → {PictureUri1}", catalogTypeId, catalogBrandId, description, name, price, pictureUri, PictureUri);
+		_logger.LogWarning("<<< Exiting CatalogItem(catalogTypeId={CatalogTypeId},catalogBrandId={CatalogBrandId},description={Description},name={Name},price={Price},pictureUri={PictureUri})", catalogTypeId, catalogBrandId, description, name, price, pictureUri);
     }
 
     public void UpdateDetails(CatalogItemDetails details)
@@ -50,6 +51,7 @@ public class CatalogItem : BaseEntity, IAggregateRoot
 		_logger.LogError("UpdateDetails(details={Details}): Name → {Name}", details, Name);
 		_logger.LogDebug("UpdateDetails(details={Details}): Name → {Name}", details, Name);
         Description = details.Description;
+		_logger.LogDebug("UpdateDetails(details={Details}): Description → {Description}", details, Description);
         Price = details.Price;
 		_logger.LogDebug("UpdateDetails(details={Details}): Price → {Price}", details, Price);
     }
@@ -102,6 +104,7 @@ public class CatalogItem : BaseEntity, IAggregateRoot
 			_logger.LogDebug("CatalogItemDetails(name={Name},description={Description},price={Price}): Description → {Description1}", name, description, price, Description);
         _logger.LogWarning("<<< Exiting CatalogItemDetails(name={Name},description={Description},price={Price})", name, description, price);
             Price = price;
+			_logger.LogDebug("CatalogItemDetails(name={Name},description={Description},price={Price}): Price → {Price1}", name, description, price, Price);
         }
     }
 }
