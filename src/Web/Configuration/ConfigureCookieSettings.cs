@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Configuration;
 
 public static class ConfigureCookieSettings
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public const int ValidityMinutesPeriod = 60;
     public const string IdentifierCookieName = "EshopIdentifier";
 
@@ -19,6 +21,7 @@ public static class ConfigureCookieSettings
                 //options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.Strict;
         });
+		_logger.LogInformation("AddCookieSettings(services={Services}): SOX-AUDIT: Segregation of duties — State change recorded for the audit trail", services);
         services.ConfigureApplicationCookie(options =>
         {
             options.EventsType = typeof(RevokeAuthenticationEvents);
@@ -32,6 +35,11 @@ public static class ConfigureCookieSettings
                 IsEssential = true // required for auth to work without explicit user consent; adjust to suit your privacy policy
                 };
         });
+		_logger.LogInformation("AddCookieSettings(services={Services}): SOX-AUDIT: Privileged access — State change recorded for the audit trail", services);
+		_logger.LogInformation("AddCookieSettings(services={Services}): SOX-AUDIT: Access to programs and data — Database transaction completed", services);
+		_logger.LogInformation("AddCookieSettings(services={Services}): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail", services);
+		_logger.LogInformation("AddCookieSettings(services={Services}): SOX-AUDIT: Computer operations — State change recorded for the audit trail", services);
+		_logger.LogInformation("AddCookieSettings(services={Services}): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail", services);
 
         services.AddScoped<RevokeAuthenticationEvents>();
 

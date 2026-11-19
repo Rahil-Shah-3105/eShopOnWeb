@@ -108,6 +108,12 @@
     private async Task DeleteClick(int id)
     {
         // TODO: Add some kind of "are you sure" check before this
+		Logger.LogInformation("DeleteClick(id={Id}): SOX-AUDIT: Segregation of duties — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): SOX-AUDIT: Privileged access — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): SOX-AUDIT: Computer operations — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail {Id1}", id, id);
 
         await CatalogItemService.Delete(id);
 

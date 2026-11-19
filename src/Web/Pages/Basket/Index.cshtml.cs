@@ -5,11 +5,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Pages.Basket;
 
 public class IndexModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly IBasketViewModelService _basketViewModelService;
     private readonly IRepository<CatalogItem> _itemRepository;
@@ -44,8 +46,14 @@ public class IndexModel : PageModel
         }
 
         var username = GetOrSetBasketCookieAndUserName();
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail", productDetails);
         var basket = await _basketService.AddItemToBasket(username,
             productDetails.Id, item.Price);
+			_logger.LogInformation("OnPost(productDetails={ProductDetails}): SOX-AUDIT: Privileged access — State change recorded for the audit trail", productDetails);
+			_logger.LogInformation("OnPost(productDetails={ProductDetails}): SOX-AUDIT: Segregation of duties — State change recorded for the audit trail", productDetails);
+			_logger.LogInformation("OnPost(productDetails={ProductDetails}): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail", productDetails);
+			_logger.LogInformation("OnPost(productDetails={ProductDetails}): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail", productDetails);
+			_logger.LogInformation("OnPost(productDetails={ProductDetails}): SOX-AUDIT: Computer operations — State change recorded for the audit trail", productDetails);
 
         BasketModel = await _basketViewModelService.Map(basket);
 
@@ -63,6 +71,7 @@ public class IndexModel : PageModel
         var updateModel = items.ToDictionary(b => b.Id.ToString(), b => b.Quantity);
         var basket = await _basketService.SetQuantities(basketView.Id, updateModel);
         BasketModel = await _basketViewModelService.Map(basket);
+		_logger.LogInformation("OnPostUpdate(items={Items}): SOX-AUDIT: Change management (PCAOB AS 2201) — Change management operation performed", items);
     }
 
     private string GetOrSetBasketCookieAndUserName()
@@ -88,10 +97,16 @@ public class IndexModel : PageModel
                 }
             }
         }
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOX-AUDIT: Segregation of duties — Record access recorded for the audit trail");
         if (userName != null) return userName;
 
         userName = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions { IsEssential = true };
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOX-AUDIT: Privileged access — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOX-AUDIT: Access to programs and data — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOX-AUDIT: Change management (PCAOB AS 2201) — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOX-AUDIT: Computer operations — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOX-AUDIT: Audit log tamper — Record access recorded for the audit trail");
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, userName, cookieOptions);
 

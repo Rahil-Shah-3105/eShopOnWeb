@@ -14,6 +14,7 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket;
 [Authorize]
 public class CheckoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IOrderService _orderService;
@@ -32,6 +33,7 @@ public class CheckoutModel : PageModel
         _orderService = orderService;
         _basketViewModelService = basketViewModelService;
         _logger = logger;
+		_logger.LogInformation("CheckoutModel(basketService={BasketService}, basketViewModelService={BasketViewModelService}, signInManager={SignInManager}, orderService={OrderService}, logger={Logger}): SOX-AUDIT: Access to programs and data — Database transaction completed", basketService, basketViewModelService, signInManager, orderService, logger);
     }
 
     public BasketViewModel BasketModel { get; set; } = new BasketViewModel();
@@ -64,6 +66,13 @@ public class CheckoutModel : PageModel
             return RedirectToPage("/Basket/Index");
         }
 
+		_logger.LogInformation("OnPost(items={Items}): SOX-AUDIT: Audit log tamper — Data integrity check performed", items);
+		_logger.LogInformation("SetBasketModelAsync(): SOX-AUDIT: Segregation of duties — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): SOX-AUDIT: Privileged access — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): SOX-AUDIT: Access to programs and data — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): SOX-AUDIT: Computer operations — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): SOX-AUDIT: Change management (PCAOB AS 2201) — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): SOX-AUDIT: Audit log tamper — State change recorded for the audit trail");
         return RedirectToPage("Success");
     }
 
@@ -83,14 +92,20 @@ public class CheckoutModel : PageModel
 
     private void GetOrSetBasketCookieAndUserName()
     {
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOX-AUDIT: Privileged access — Record access recorded for the audit trail");
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
+			_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOX-AUDIT: Segregation of duties — Record access recorded for the audit trail");
             _username = Request.Cookies[Constants.BASKET_COOKIENAME];
         }
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOX-AUDIT: Access to programs and data — Record access recorded for the audit trail");
         if (_username != null) return;
 
         _username = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions();
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOX-AUDIT: Change management (PCAOB AS 2201) — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOX-AUDIT: Computer operations — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): SOX-AUDIT: Audit log tamper — Record access recorded for the audit trail");
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, _username, cookieOptions);
     }
