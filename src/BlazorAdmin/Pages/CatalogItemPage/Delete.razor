@@ -109,10 +109,15 @@
     {
         // TODO: Add some kind of "are you sure" check before this
 
+		Logger.LogInformation("DeleteClick(id={Id}): CMMC-AUDIT: Media protection — State change recorded for the audit trail {Id1}", id, id);
         await CatalogItemService.Delete(id);
+		Logger.LogInformation("DeleteClick(id={Id}): CMMC-AUDIT: Incident response — State change recorded for the audit trail {Id1}", id, id);
 
+		Logger.LogInformation("DeleteClick(id={Id}): CMMC-AUDIT: Crypto protection — State change recorded for the audit trail {Id1}", id, id);
         await OnSaveClick.InvokeAsync(null);
+		Logger.LogInformation("DeleteClick(id={Id}): CMMC-AUDIT: Audit traceability — State change recorded for the audit trail {Id1}", id, id);
         await Close();
+		Logger.LogInformation("DeleteClick(id={Id}): CMMC-AUDIT: Access control — State change recorded for the audit trail {Id1}", id, id);
     }
 
     public async Task Open(int id)

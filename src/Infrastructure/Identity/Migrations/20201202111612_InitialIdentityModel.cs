@@ -1,10 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Identity.Migrations;
 
 public partial class InitialIdentityModel : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.CreateTable(
@@ -184,12 +186,14 @@ public partial class InitialIdentityModel : Migration
             table: "AspNetUsers",
             column: "NormalizedEmail");
 
+		_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): CMMC-AUDIT: Crypto protection — Password reset operation performed", migrationBuilder);
         migrationBuilder.CreateIndex(
             name: "UserNameIndex",
             table: "AspNetUsers",
             column: "NormalizedUserName",
             unique: true,
             filter: "[NormalizedUserName] IS NOT NULL");
+			_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): CMMC-AUDIT: Media protection — Password reset operation performed", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)

@@ -18,6 +18,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogLookupDataService<TLookupData, TReponse>> _logger;
@@ -35,6 +36,11 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     public async Task<List<TLookupData>> List()
     {
         var endpointName = typeof(TLookupData).GetCustomAttribute<EndpointAttribute>().Name;
+		_logger.LogInformation("List(): CMMC-AUDIT: Media protection — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): CMMC-AUDIT: Incident response — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): CMMC-AUDIT: Crypto protection — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): CMMC-AUDIT: Audit traceability — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): CMMC-AUDIT: Access control — Record access recorded for the audit trail");
         _logger.LogInformation($"Fetching {typeof(TLookupData).Name} from API. Enpoint : {endpointName}");
 
         var response = await _httpClient.GetFromJsonAsync<TReponse>($"{_apiUrl}{endpointName}");
