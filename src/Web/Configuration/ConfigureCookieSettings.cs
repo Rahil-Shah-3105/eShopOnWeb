@@ -2,22 +2,26 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Configuration;
 
 public static class ConfigureCookieSettings
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public const int ValidityMinutesPeriod = 60;
     public const string IdentifierCookieName = "EshopIdentifier";
 
     public static IServiceCollection AddCookieSettings(this IServiceCollection services)
     {
+		_logger.LogError(">>> Entering AddCookieSettings(services={Services})", services);
         services.Configure<CookiePolicyOptions>(options =>
         {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 //TODO need to check that.
                 //options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.Strict;
+				_logger.LogDebug("AddCookieSettings(services={Services}): options.MinimumSameSitePolicy → {Arg1}", services, options.MinimumSameSitePolicy);
         });
         services.ConfigureApplicationCookie(options =>
         {
@@ -25,9 +29,12 @@ public static class ConfigureCookieSettings
             options.Cookie.HttpOnly = true;
             options.ExpireTimeSpan = TimeSpan.FromMinutes(ValidityMinutesPeriod);
             options.LoginPath = "/Account/Login";
+			_logger.LogDebug("AddCookieSettings(services={Services}): options.LoginPath → {Arg1}", services, options.LoginPath);
             options.LogoutPath = "/Account/Logout";
+			_logger.LogDebug("AddCookieSettings(services={Services}): options.LogoutPath → {Arg1}", services, options.LogoutPath);
             options.Cookie = new CookieBuilder
             {
+				_logger.LogDebug("AddCookieSettings(services={Services}): options.Cookie → <redacted>", services);
                 Name = IdentifierCookieName,
                 IsEssential = true // required for auth to work without explicit user consent; adjust to suit your privacy policy
                 };
@@ -35,6 +42,7 @@ public static class ConfigureCookieSettings
 
         services.AddScoped<RevokeAuthenticationEvents>();
 
+		_logger.LogWarning("<<< Exiting AddCookieSettings(services={Services})", services);
         return services;
     }
 }

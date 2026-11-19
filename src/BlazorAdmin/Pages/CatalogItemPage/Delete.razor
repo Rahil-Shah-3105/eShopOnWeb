@@ -107,27 +107,38 @@
 
     private async Task DeleteClick(int id)
     {
+		Logger.LogError(">>> Entering DeleteClick(id={Id})", id);
         // TODO: Add some kind of "are you sure" check before this
 
         await CatalogItemService.Delete(id);
 
         await OnSaveClick.InvokeAsync(null);
         await Close();
+		Logger.LogWarning("<<< Exiting DeleteClick(id={Id})", id);
     }
 
     public async Task Open(int id)
     {
+		Logger.LogError(">>> Entering Open(id={Id})", id);
         Logger.LogInformation("Now loading... /Catalog/Delete/{Id}", id);
 
         await new Css(JSRuntime).HideBodyOverflow();
 
         _item = await CatalogItemService.GetById(id);
+		Logger.LogDebug("Open(id={Id}): _item → {_item}", id, _item);
 
         _modalDisplay = "block;";
         _modalClass = "Show";
+		Logger.LogDebug("Open(id={Id}): _modalClass → {_modalClass}", id, _modalClass);
         _showDeleteModal = true;
+		Logger.LogDebug("Open(id={Id}): _showDeleteModal → {_showDeleteModal}", id, _showDeleteModal);
 
         StateHasChanged();
+		Logger.LogWarning("<<< Exiting Open(id={Id})", id);
+		Logger.LogError(">>> Entering Close()");
+		Logger.LogError("Close(): _modalDisplay → {_modalDisplay}", _modalDisplay);
+		Logger.LogError("Close(): _modalClass → {_modalClass}", _modalClass);
+		Logger.LogDebug("Close(): _modalClass → {_modalClass}", _modalClass);
     }
 
     private async Task Close()

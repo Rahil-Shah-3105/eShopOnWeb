@@ -1,13 +1,16 @@
 ﻿using MediatR;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Configuration;
 
 public static class ConfigureWebServices
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public static IServiceCollection AddWebServices(this IServiceCollection services, IConfiguration configuration)
     {
+		_logger.LogError(">>> Entering AddWebServices(services={Services},configuration={Configuration})", services, configuration);
         services.AddMediatR(cfg => 
             cfg.RegisterServicesFromAssembly(typeof(BasketViewModelService).Assembly));
         services.AddScoped<IBasketViewModelService, BasketViewModelService>();
@@ -16,6 +19,7 @@ public static class ConfigureWebServices
         services.Configure<CatalogSettings>(configuration);
         services.AddScoped<ICatalogViewModelService, CachedCatalogViewModelService>();
 
+		_logger.LogWarning("<<< Exiting AddWebServices(services={Services},configuration={Configuration})", services, configuration);
         return services;
     }
 }

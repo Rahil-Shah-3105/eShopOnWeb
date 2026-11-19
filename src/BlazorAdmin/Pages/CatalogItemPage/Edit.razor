@@ -126,24 +126,36 @@
 
     private async Task SaveClick()
     {
+		Logger.LogError(">>> Entering SaveClick()");
         await CatalogItemService.Edit(_item);
         await OnSaveClick.InvokeAsync(null);
         await Close();
+		Logger.LogWarning("<<< Exiting SaveClick()");
     }
 
     public async Task Open(int id)
     {
+		Logger.LogError(">>> Entering Open(id={Id})", id);
         Logger.LogInformation("Now loading... /Catalog/Edit/{Id}", id);
 
         await new Css(JSRuntime).HideBodyOverflow();
 
         _item = await CatalogItemService.GetById(id);
+		Logger.LogDebug("Open(id={Id}): _item → {_item}", id, _item);
 
         _modalDisplay = "block;";
         _modalClass = "Show";
+		Logger.LogDebug("Open(id={Id}): _modalClass → {_modalClass}", id, _modalClass);
         _showEditModal = true;
+		Logger.LogDebug("Open(id={Id}): _showEditModal → {_showEditModal}", id, _showEditModal);
 
         StateHasChanged();
+		Logger.LogWarning("<<< Exiting Open(id={Id})", id);
+		Logger.LogError(">>> Entering Close()");
+		Logger.LogWarning("<<< Exiting Close()");
+		Logger.LogError("Close(): _modalDisplay → {_modalDisplay}", _modalDisplay);
+		Logger.LogError("Close(): _modalClass → {_modalClass}", _modalClass);
+		Logger.LogDebug("Close(): _modalClass → {_modalClass}", _modalClass);
     }
 
     private async Task Close()

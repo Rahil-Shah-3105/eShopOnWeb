@@ -11,19 +11,26 @@ namespace Microsoft.eShopWeb.Web.Configuration;
 //TODO : replace IMemoryCache with a distributed cache if you are in multi-host scenario
 public class RevokeAuthenticationEvents : CookieAuthenticationEvents
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMemoryCache _cache;
     private readonly ILogger _logger;
 
     public RevokeAuthenticationEvents(IMemoryCache cache, ILogger<RevokeAuthenticationEvents> logger)
     {
         _cache = cache;
+		_logger.LogDebug("RevokeAuthenticationEvents(cache={Cache},logger={Logger}): _cache → {_cache}", cache, logger, _cache);
         _logger = logger;
+		_logger.LogError(">>> Entering RevokeAuthenticationEvents(cache={Cache},logger={Logger})", cache, logger);
+    _logger.LogWarning("<<< Exiting RevokeAuthenticationEvents(cache={Cache},logger={Logger})", cache, logger);
     }
 
     public override async Task ValidatePrincipal(CookieValidatePrincipalContext context)
     {
+		_logger.LogError(">>> Entering ValidatePrincipal(context={Context})", context);
+        var __logStart = System.Diagnostics.Stopwatch.StartNew();
         var userId = context.Principal?.Claims.First(c => c.Type == ClaimTypes.Name);
         var identityKey = context.Request.Cookies[ConfigureCookieSettings.IdentifierCookieName];
+		_logger.LogError("ValidatePrincipal(context)={Context}: database query executed in {Arg1} ms", context, __logStart.ElapsedMilliseconds);
 
         if (_cache.TryGetValue($"{userId?.Value}:{identityKey}", out var revokeKeys))
         {
@@ -31,5 +38,6 @@ public class RevokeAuthenticationEvents : CookieAuthenticationEvents
             context.RejectPrincipal();
             await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
+		_logger.LogWarning("<<< Exiting ValidatePrincipal(context={Context})", context);
     }
 }
