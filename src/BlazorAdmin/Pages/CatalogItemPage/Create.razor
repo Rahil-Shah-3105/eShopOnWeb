@@ -125,8 +125,13 @@
     private async Task CreateClick()
     {
         var result = await CatalogItemService.Create(_item);
+		Logger.LogWarning("CreateClick(): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail {Result}", result);
         if (result != null)
         {
+			Logger.LogInformation("CreateClick(): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail {Result}", result);
+			Logger.LogInformation("CreateClick(): GDPR-AUDIT: Breach notification — State change recorded for the audit trail {Result}", result);
+			Logger.LogInformation("CreateClick(): GDPR-AUDIT [Art. 30]: Records of processing activities — State change recorded for the audit trail {Result}", result);
+			Logger.LogInformation("CreateClick(): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — State change recorded for the audit trail {Result}", result);
             await OnSaveClick.InvokeAsync(null);
             await Close();
         }

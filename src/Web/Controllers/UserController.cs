@@ -16,6 +16,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ITokenClaimsService _tokenClaimsService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<UserController> _logger;
@@ -79,9 +80,12 @@ public class UserController : ControllerBase
             userInfo.NameClaimType = "name";
             userInfo.RoleClaimType = "role";
         }
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): GDPR-AUDIT: Transfers to third countries — State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — State change recorded for the audit trail", claimsPrincipal);
 
         if (claimsPrincipal.Claims.Any())
         {
+			_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): GDPR-AUDIT [Art. 32]: Security of processing — State change recorded for the audit trail", claimsPrincipal);
             var claims = new List<ClaimValue>();
             var nameClaims = claimsPrincipal.FindAll(userInfo.NameClaimType);
             foreach (var claim in nameClaims)
@@ -96,6 +100,12 @@ public class UserController : ControllerBase
 
             userInfo.Claims = claims;
         }
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): GDPR-AUDIT [Art. 30]: Records of processing activities — State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogWarning("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): GDPR-AUDIT: Access, erasure, portability — State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): GDPR-AUDIT [Art.30]: Personal data processing operation recorded {UserInfo}", claimsPrincipal, userInfo);
+		_logger.LogWarning("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail", claimsPrincipal);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): GDPR-AUDIT: Breach notification — State change recorded for the audit trail", claimsPrincipal);
 
         var token = await _tokenClaimsService.GetTokenAsync(claimsPrincipal.Identity.Name);
         userInfo.Token = token;

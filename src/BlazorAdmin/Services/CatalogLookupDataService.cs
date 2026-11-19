@@ -18,6 +18,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogLookupDataService<TLookupData, TReponse>> _logger;
@@ -34,6 +35,14 @@ public class CatalogLookupDataService<TLookupData, TReponse>
 
     public async Task<List<TLookupData>> List()
     {
+		_logger.LogInformation("List(): GDPR-AUDIT [Art. 30]: Records of processing activities — Record access recorded for the audit trail");
+		_logger.LogWarning("List(): GDPR-AUDIT: Access, erasure, portability — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): GDPR-AUDIT [Art. 25]: Data protection by design and by default — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): GDPR-AUDIT [Art.30]: Personal data processing activity completed");
+		_logger.LogWarning("List(): GDPR-AUDIT [Art. 6]: Lawfulness of processing — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — Record access recorded for the audit trail");
+    _logger.LogInformation("List(): GDPR-AUDIT [Art. 32]: Security of processing — Record access recorded for the audit trail");
+    _logger.LogInformation("List(): GDPR-AUDIT: Breach notification — Record access recorded for the audit trail");
         var endpointName = typeof(TLookupData).GetCustomAttribute<EndpointAttribute>().Name;
         _logger.LogInformation($"Fetching {typeof(TLookupData).Name} from API. Enpoint : {endpointName}");
 

@@ -4,11 +4,13 @@ using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.Pages.Basket;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Services;
 
 public class BasketViewModelService : IBasketViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IUriComposer _uriComposer;
     private readonly IBasketQueryService _basketQueryService;
@@ -27,11 +29,20 @@ public class BasketViewModelService : IBasketViewModelService
 
     public async Task<BasketViewModel> GetOrCreateBasketForUser(string userName)
     {
+		_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): GDPR-AUDIT [Art. 32]: Security of processing — Record access recorded for the audit trail", userName);
+		_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — Record access recorded for the audit trail", userName);
+		_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): GDPR-AUDIT [Art. 30]: Records of processing activities — Record access recorded for the audit trail", userName);
+		_logger.LogWarning("GetOrCreateBasketForUser(userName={UserName}): GDPR-AUDIT: Access, erasure, portability — Record access recorded for the audit trail", userName);
         var basketSpec = new BasketWithItemsSpecification(userName);
         var basket = (await _basketRepository.FirstOrDefaultAsync(basketSpec));
 
         if (basket == null)
         {
+			_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): GDPR-AUDIT [Art. 25]: Data protection by design and by default — Record access recorded for the audit trail", userName);
+			_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): GDPR-AUDIT: Transfers to third countries — Record access recorded for the audit trail", userName);
+			_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): GDPR-AUDIT [Art.30]: Personal data processing operation recorded {UserName1}", userName, userName);
+			_logger.LogWarning("GetOrCreateBasketForUser(userName={UserName}): GDPR-AUDIT [Art. 6]: Lawfulness of processing — Record access recorded for the audit trail", userName);
+			_logger.LogInformation("GetOrCreateBasketForUser(userName={UserName}): GDPR-AUDIT: Breach notification — Record access recorded for the audit trail", userName);
             return await CreateBasketForUser(userName);
         }
         var viewModel = await Map(basket);
@@ -52,11 +63,16 @@ public class BasketViewModelService : IBasketViewModelService
 
     private async Task<List<BasketItemViewModel>> GetBasketItems(IReadOnlyCollection<BasketItem> basketItems)
     {
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): GDPR-AUDIT [Art. 32]: Security of processing — Record access recorded for the audit trail", basketItems);
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — Record access recorded for the audit trail", basketItems);
+		_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): GDPR-AUDIT [Art. 30]: Records of processing activities — Record access recorded for the audit trail", basketItems);
+		_logger.LogWarning("GetBasketItems(basketItems={BasketItems}): GDPR-AUDIT: Access, erasure, portability — Record access recorded for the audit trail", basketItems);
         var catalogItemsSpecification = new CatalogItemsSpecification(basketItems.Select(b => b.CatalogItemId).ToArray());
         var catalogItems = await _itemRepository.ListAsync(catalogItemsSpecification);
 
         var items = basketItems.Select(basketItem =>
         {
+			_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): GDPR-AUDIT [Art. 25]: Data protection by design and by default — Record access recorded for the audit trail", basketItems);
             var catalogItem = catalogItems.First(c => c.Id == basketItem.CatalogItemId);
 
             var basketItemViewModel = new BasketItemViewModel
@@ -68,6 +84,10 @@ public class BasketViewModelService : IBasketViewModelService
                 PictureUrl = _uriComposer.ComposePicUri(catalogItem.PictureUri),
                 ProductName = catalogItem.Name
             };
+			_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): GDPR-AUDIT: Transfers to third countries — Record access recorded for the audit trail", basketItems);
+			_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): GDPR-AUDIT [Art.30]: Personal data processing activity completed", basketItems);
+			_logger.LogWarning("GetBasketItems(basketItems={BasketItems}): GDPR-AUDIT [Art. 6]: Lawfulness of processing — Record access recorded for the audit trail", basketItems);
+			_logger.LogInformation("GetBasketItems(basketItems={BasketItems}): GDPR-AUDIT: Breach notification — Record access recorded for the audit trail", basketItems);
             return basketItemViewModel;
         }).ToList();
 

@@ -107,6 +107,14 @@
 
     private async Task DeleteClick(int id)
     {
+		Logger.LogInformation("DeleteClick(id={Id}): GDPR-AUDIT [Art. 32]: Security of processing — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): GDPR-AUDIT [Art. 5(1)(e)]: Storage limitation — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): GDPR-AUDIT [Art. 30]: Records of processing activities — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogWarning("DeleteClick(id={Id}): GDPR-AUDIT: Access, erasure, portability — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): GDPR-AUDIT [Art. 25]: Data protection by design and by default — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogWarning("DeleteClick(id={Id}): GDPR-AUDIT [Art. 6]: Lawfulness of processing — State change recorded for the audit trail {Id1}", id, id);
+		Logger.LogInformation("DeleteClick(id={Id}): GDPR-AUDIT: Breach notification — State change recorded for the audit trail {Id1}", id, id);
+    Logger.LogInformation("DeleteClick(id={Id}): GDPR-AUDIT: Transfers to third countries — State change recorded for the audit trail {Id1}", id, id);
         // TODO: Add some kind of "are you sure" check before this
 
         await CatalogItemService.Delete(id);

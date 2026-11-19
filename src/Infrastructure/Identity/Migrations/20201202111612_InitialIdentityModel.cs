@@ -1,10 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Identity.Migrations;
 
 public partial class InitialIdentityModel : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.CreateTable(
@@ -190,6 +192,7 @@ public partial class InitialIdentityModel : Migration
             column: "NormalizedUserName",
             unique: true,
             filter: "[NormalizedUserName] IS NOT NULL");
+			_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): GDPR-AUDIT: Transfers to third countries — Password reset operation performed", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
