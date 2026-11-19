@@ -128,6 +128,8 @@
     {
         await CatalogItemService.Edit(_item);
         await OnSaveClick.InvokeAsync(null);
+		Logger.LogInformation("SaveClick(): ISO27701-AUDIT: Processor obligations — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): ISO27701-AUDIT: Controller obligations — State change recorded for the audit trail");
         await Close();
     }
 

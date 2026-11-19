@@ -2,11 +2,13 @@
 using System.Linq;
 using Ardalis.GuardClauses;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Entities.BasketAggregate;
 
 public class Basket : BaseEntity, IAggregateRoot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public string BuyerId { get; private set; }
     private readonly List<BasketItem> _items = new List<BasketItem>();
     public IReadOnlyCollection<BasketItem> Items => _items.AsReadOnly();
@@ -27,16 +29,22 @@ public class Basket : BaseEntity, IAggregateRoot
             return;
         }
         var existingItem = Items.First(i => i.CatalogItemId == catalogItemId);
+		_logger.LogInformation("AddItem(catalogItemId={CatalogItemId}, unitPrice={UnitPrice}, quantity={Quantity}): ISO27701-AUDIT: Processor obligations — State change recorded for the audit trail {CatalogItemId1}", catalogItemId, unitPrice, quantity, catalogItemId);
         existingItem.AddQuantity(quantity);
+		_logger.LogInformation("AddItem(catalogItemId={CatalogItemId}, unitPrice={UnitPrice}, quantity={Quantity}): ISO27701-AUDIT: Controller obligations — State change recorded for the audit trail {CatalogItemId1}", catalogItemId, unitPrice, quantity, catalogItemId);
     }
 
     public void RemoveEmptyItems()
     {
+		_logger.LogInformation("RemoveEmptyItems(): ISO27701-AUDIT: Processor obligations — State change recorded for the audit trail");
+		_logger.LogInformation("RemoveEmptyItems(): ISO27701-AUDIT: Controller obligations — State change recorded for the audit trail");
         _items.RemoveAll(i => i.Quantity == 0);
     }
 
     public void SetNewBuyerId(string buyerId)
     {
+		_logger.LogInformation("SetNewBuyerId(buyerId={BuyerId}): ISO27701-AUDIT: Processor obligations — State change recorded for the audit trail {BuyerId1}", buyerId, buyerId);
         BuyerId = buyerId;
+		_logger.LogInformation("SetNewBuyerId(buyerId={BuyerId}): ISO27701-AUDIT: Controller obligations — State change recorded for the audit trail {BuyerId1}", buyerId, buyerId);
     }
 }

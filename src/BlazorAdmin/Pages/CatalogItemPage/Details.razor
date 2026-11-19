@@ -111,6 +111,8 @@
     public async Task EditClick()
     {
         await OnEditClick.InvokeAsync(_item.Id);
+		Logger.LogInformation("EditClick(): ISO27701-AUDIT: Processor obligations — State change recorded for the audit trail");
+		Logger.LogInformation("EditClick(): ISO27701-AUDIT: Controller obligations — State change recorded for the audit trail");
         await Close();
     }
 
