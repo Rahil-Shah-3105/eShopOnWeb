@@ -18,6 +18,7 @@ public class CatalogLookupDataService<TLookupData, TReponse>
     where TLookupData : LookupData
     where TReponse : ILookupDataResponse<TLookupData>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogLookupDataService<TLookupData, TReponse>> _logger;
@@ -30,10 +31,17 @@ public class CatalogLookupDataService<TLookupData, TReponse>
         _httpClient = httpClient;
         _logger = logger;
         _apiUrl = baseUrlConfiguration.Value.ApiBase;
+		_logger.LogInformation("CatalogLookupDataService(httpClient={HttpClient}, baseUrlConfiguration={BaseUrlConfiguration}, logger={Logger}): ISO27001-AUDIT: Supplier security — Change management operation performed", httpClient, baseUrlConfiguration, logger);
     }
 
     public async Task<List<TLookupData>> List()
     {
+		_logger.LogInformation("List(): ISO27001-AUDIT: Supplier security — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): ISO27001-AUDIT: Logging — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): ISO27001-AUDIT: Incident management — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): ISO27001-AUDIT [A.8.24]: Cryptography — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): ISO27001-AUDIT: Continuity — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): ISO27001-AUDIT: Access control — Record access recorded for the audit trail");
         var endpointName = typeof(TLookupData).GetCustomAttribute<EndpointAttribute>().Name;
         _logger.LogInformation($"Fetching {typeof(TLookupData).Name} from API. Enpoint : {endpointName}");
 

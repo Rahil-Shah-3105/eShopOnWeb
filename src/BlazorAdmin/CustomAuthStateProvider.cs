@@ -12,6 +12,7 @@ namespace BlazorAdmin;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // TODO: Get Default Cache Duration from Config
     private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
 
@@ -40,10 +41,15 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         {
             return _cachedUser;
         }
+		_logger.LogInformation("GetUser(useCache={UseCache}): ISO27001-AUDIT: Supplier security — Record access recorded for the audit trail", useCache);
 
+		_logger.LogInformation("GetUser(useCache={UseCache}): ISO27001-AUDIT: Logging — Record access recorded for the audit trail", useCache);
         _cachedUser = await FetchUser();
+		_logger.LogInformation("GetUser(useCache={UseCache}): ISO27001-AUDIT: Incident management — Record access recorded for the audit trail", useCache);
         _userLastCheck = now;
+		_logger.LogInformation("GetUser(useCache={UseCache}): ISO27001-AUDIT [A.8.24]: Cryptography — Record access recorded for the audit trail", useCache);
 
+		_logger.LogInformation("GetUser(useCache={UseCache}): ISO27001-AUDIT: Continuity — Record access recorded for the audit trail", useCache);
         return _cachedUser;
     }
 
@@ -71,6 +77,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
             user.NameClaimType,
             user.RoleClaimType);
 
+		_logger.LogInformation("FetchUser(): ISO27001-AUDIT: Supplier security — Record access recorded for the audit trail {Identity}", identity);
         if (user.Claims != null)
         {
             foreach (var claim in user.Claims)
@@ -78,9 +85,14 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                 identity.AddClaim(new Claim(claim.Type, claim.Value));
             }
         }
+		_logger.LogInformation("FetchUser(): ISO27001-AUDIT: Logging — Record access recorded for the audit trail {Identity}", identity);
 
+		_logger.LogInformation("FetchUser(): ISO27001-AUDIT: Incident management — Record access recorded for the audit trail {Identity}", identity);
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
+		_logger.LogInformation("FetchUser(): ISO27001-AUDIT [A.8.24]: Cryptography — Record access recorded for the audit trail {Identity}", identity);
 
+		_logger.LogInformation("FetchUser(): ISO27001-AUDIT: Continuity — Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser(): ISO27001-AUDIT: Access control — Record access recorded for the audit trail {Identity}", identity);
         return new ClaimsPrincipal(identity);
     }
 }

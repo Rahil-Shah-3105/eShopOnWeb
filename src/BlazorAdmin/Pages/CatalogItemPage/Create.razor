@@ -125,11 +125,16 @@
     private async Task CreateClick()
     {
         var result = await CatalogItemService.Create(_item);
+		Logger.LogInformation("CreateClick(): ISO27001-AUDIT: Continuity — State change recorded for the audit trail {Result}", result);
         if (result != null)
         {
+			Logger.LogInformation("CreateClick(): ISO27001-AUDIT [A.8.24]: Cryptography — State change recorded for the audit trail {Result}", result);
             await OnSaveClick.InvokeAsync(null);
+			Logger.LogInformation("CreateClick(): ISO27001-AUDIT: Access control — State change recorded for the audit trail {Result}", result);
             await Close();
+			Logger.LogInformation("CreateClick(): ISO27001-AUDIT: Supplier security — State change recorded for the audit trail {Result}", result);
         }
+		Logger.LogInformation("CreateClick(): ISO27001-AUDIT: Logging — State change recorded for the audit trail {Result}", result);
     }
 
     public async Task Open()

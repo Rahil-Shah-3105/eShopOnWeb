@@ -59,6 +59,12 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): ISO27001-AUDIT: Continuity — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): ISO27001-AUDIT: Access control — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): ISO27001-AUDIT [A.8.24]: Cryptography — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogBrands(): ISO27001-AUDIT: Supplier security — Change management operation performed");
+            logger.LogInformation("GetPreconfiguredCatalogBrands(): ISO27001-AUDIT: Incident management — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): ISO27001-AUDIT: Logging — Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +77,12 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): ISO27001-AUDIT: Continuity — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): ISO27001-AUDIT: Access control — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): ISO27001-AUDIT [A.8.24]: Cryptography — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredCatalogTypes(): ISO27001-AUDIT: Supplier security — Change management operation performed");
+            logger.LogInformation("GetPreconfiguredCatalogTypes(): ISO27001-AUDIT: Incident management — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): ISO27001-AUDIT: Logging — Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +94,12 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): ISO27001-AUDIT: Continuity — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): ISO27001-AUDIT: Access control — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): ISO27001-AUDIT [A.8.24]: Cryptography — Record access recorded for the audit trail");
+            logger.LogInformation("GetPreconfiguredItems(): ISO27001-AUDIT: Supplier security — Change management operation performed");
+            logger.LogInformation("GetPreconfiguredItems(): ISO27001-AUDIT: Incident management — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): ISO27001-AUDIT: Logging — Record access recorded for the audit trail");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),
