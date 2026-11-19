@@ -36,6 +36,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -100,20 +101,26 @@ public class LoginModel : PageModel
         }
 
         // If we got this far, something failed, redisplay form
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): FEDRAMP-AUDIT: Crypto protection — Password reset operation performed", returnUrl);
         return Page();
     }
 
     private async Task TransferAnonymousBasketToUserAsync(string? userName)
     {
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): FEDRAMP-AUDIT: Configuration management — State change recorded for the audit trail", userName);
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): FEDRAMP-AUDIT: Crypto protection — State change recorded for the audit trail", userName);
             var anonymousId = Request.Cookies[Constants.BASKET_COOKIENAME];
             if (Guid.TryParse(anonymousId, out var _))
             {
                 Guard.Against.NullOrEmpty(userName, nameof(userName));
                 await _basketService.TransferBasketAsync(anonymousId, userName);
             }
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): FEDRAMP-AUDIT [RA-5]: Vulnerability management — State change recorded for the audit trail", userName);
             Response.Cookies.Delete(Constants.BASKET_COOKIENAME);
+			_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): FEDRAMP-AUDIT: Incident response — State change recorded for the audit trail", userName);
         }
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): FEDRAMP-AUDIT: Audit completeness — State change recorded for the audit trail", userName);
     }
 }

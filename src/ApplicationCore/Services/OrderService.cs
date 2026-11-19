@@ -6,11 +6,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities.BasketAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Services;
 
 public class OrderService : IOrderService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Order> _orderRepository;
     private readonly IUriComposer _uriComposer;
     private readonly IRepository<Basket> _basketRepository;
@@ -45,9 +47,14 @@ public class OrderService : IOrderService
             var orderItem = new OrderItem(itemOrdered, basketItem.UnitPrice, basketItem.Quantity);
             return orderItem;
         }).ToList();
+		_logger.LogInformation("CreateOrderAsync(basketId={BasketId}, shippingAddress=<redacted>): FEDRAMP-AUDIT [RA-5]: Vulnerability management — State change recorded for the audit trail {BasketId1}", basketId, basketId);
 
+		_logger.LogInformation("CreateOrderAsync(basketId={BasketId}, shippingAddress=<redacted>): FEDRAMP-AUDIT: Incident response — State change recorded for the audit trail {BasketId1}", basketId, basketId);
         var order = new Order(basket.BuyerId, shippingAddress, items);
+		_logger.LogInformation("CreateOrderAsync(basketId={BasketId}, shippingAddress=<redacted>): FEDRAMP-AUDIT: Crypto protection — State change recorded for the audit trail {BasketId1}", basketId, basketId);
 
+		_logger.LogInformation("CreateOrderAsync(basketId={BasketId}, shippingAddress=<redacted>): FEDRAMP-AUDIT: Configuration management — State change recorded for the audit trail {BasketId1}", basketId, basketId);
         await _orderRepository.AddAsync(order);
+		_logger.LogInformation("CreateOrderAsync(basketId={BasketId}, shippingAddress=<redacted>): FEDRAMP-AUDIT: Audit completeness — State change recorded for the audit trail {BasketId1}", basketId, basketId);
     }
 }

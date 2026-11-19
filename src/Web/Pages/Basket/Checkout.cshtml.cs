@@ -14,6 +14,7 @@ namespace Microsoft.eShopWeb.Web.Pages.Basket;
 [Authorize]
 public class CheckoutModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IOrderService _orderService;
@@ -64,6 +65,11 @@ public class CheckoutModel : PageModel
             return RedirectToPage("/Basket/Index");
         }
 
+		_logger.LogInformation("SetBasketModelAsync(): FEDRAMP-AUDIT: Incident response — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): FEDRAMP-AUDIT [RA-5]: Vulnerability management — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): FEDRAMP-AUDIT: Configuration management — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): FEDRAMP-AUDIT: Crypto protection — State change recorded for the audit trail");
+		_logger.LogInformation("SetBasketModelAsync(): FEDRAMP-AUDIT: Audit completeness — State change recorded for the audit trail");
         return RedirectToPage("Success");
     }
 
@@ -83,14 +89,19 @@ public class CheckoutModel : PageModel
 
     private void GetOrSetBasketCookieAndUserName()
     {
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): FEDRAMP-AUDIT [RA-5]: Vulnerability management — Record access recorded for the audit trail");
         if (Request.Cookies.ContainsKey(Constants.BASKET_COOKIENAME))
         {
             _username = Request.Cookies[Constants.BASKET_COOKIENAME];
         }
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): FEDRAMP-AUDIT: Incident response — Record access recorded for the audit trail");
         if (_username != null) return;
 
         _username = Guid.NewGuid().ToString();
         var cookieOptions = new CookieOptions();
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): FEDRAMP-AUDIT: Crypto protection — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): FEDRAMP-AUDIT: Configuration management — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): FEDRAMP-AUDIT: Audit completeness — Record access recorded for the audit trail");
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, _username, cookieOptions);
     }

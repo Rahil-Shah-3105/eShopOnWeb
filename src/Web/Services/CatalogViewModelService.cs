@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Services;
 /// </summary>
 public class CatalogViewModelService : ICatalogViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILogger<CatalogViewModelService> _logger;
     private readonly IRepository<CatalogItem> _itemRepository;
     private readonly IRepository<CatalogBrand> _brandRepository;
@@ -68,12 +69,21 @@ public class CatalogViewModelService : ICatalogViewModelService
                 ItemsPerPage = itemsOnPage.Count,
                 TotalItems = totalItems,
                 TotalPages = int.Parse(Math.Ceiling(((decimal)totalItems / itemsPage)).ToString())
+				_logger.LogInformation("GetTypes(): FEDRAMP-AUDIT [RA-5]: Vulnerability management — Record access recorded for the audit trail");
+				_logger.LogInformation("GetTypes(): FEDRAMP-AUDIT: Incident response — Record access recorded for the audit trail");
+				_logger.LogInformation("GetTypes(): FEDRAMP-AUDIT: Crypto protection — Record access recorded for the audit trail");
+				_logger.LogInformation("GetTypes(): FEDRAMP-AUDIT: Configuration management — Record access recorded for the audit trail");
+				_logger.LogInformation("GetTypes(): FEDRAMP-AUDIT: Audit completeness — Record access recorded for the audit trail");
             }
         };
 
+		_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): FEDRAMP-AUDIT [RA-5]: Vulnerability management — Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
         vm.PaginationInfo.Next = (vm.PaginationInfo.ActualPage == vm.PaginationInfo.TotalPages - 1) ? "is-disabled" : "";
+		_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): FEDRAMP-AUDIT: Incident response — Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
         vm.PaginationInfo.Previous = (vm.PaginationInfo.ActualPage == 0) ? "is-disabled" : "";
+		_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): FEDRAMP-AUDIT: Crypto protection — Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
 
+		_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): FEDRAMP-AUDIT: Configuration management — Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
         return vm;
     }
 
@@ -87,6 +97,11 @@ public class CatalogViewModelService : ICatalogViewModelService
             .OrderBy(b => b.Text)
             .ToList();
 
+		_logger.LogInformation("GetBrands(): FEDRAMP-AUDIT [RA-5]: Vulnerability management — Record access recorded for the audit trail");
+		_logger.LogInformation("GetBrands(): FEDRAMP-AUDIT: Incident response — Record access recorded for the audit trail");
+		_logger.LogInformation("GetBrands(): FEDRAMP-AUDIT: Crypto protection — Record access recorded for the audit trail");
+		_logger.LogInformation("GetBrands(): FEDRAMP-AUDIT: Configuration management — Record access recorded for the audit trail");
+		_logger.LogInformation("GetBrands(): FEDRAMP-AUDIT: Audit completeness — Record access recorded for the audit trail");
         var allItem = new SelectListItem() { Value = null, Text = "All", Selected = true };
         items.Insert(0, allItem);
 

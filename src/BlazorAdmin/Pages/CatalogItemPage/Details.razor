@@ -110,6 +110,11 @@
 
     public async Task EditClick()
     {
+		Logger.LogInformation("EditClick(): FEDRAMP-AUDIT: Crypto protection — State change recorded for the audit trail");
+		Logger.LogInformation("EditClick(): FEDRAMP-AUDIT: Configuration management — State change recorded for the audit trail");
+		Logger.LogInformation("EditClick(): FEDRAMP-AUDIT: Audit completeness — State change recorded for the audit trail");
+    Logger.LogInformation("EditClick(): FEDRAMP-AUDIT: Incident response — State change recorded for the audit trail");
+    Logger.LogInformation("EditClick(): FEDRAMP-AUDIT [RA-5]: Vulnerability management — State change recorded for the audit trail");
         await OnEditClick.InvokeAsync(_item.Id);
         await Close();
     }
