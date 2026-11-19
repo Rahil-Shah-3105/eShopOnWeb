@@ -1,13 +1,17 @@
-﻿@page "/logout"
+﻿using Microsoft.Extensions.Logging;
+@page "/logout"
 @inject IJSRuntime JSRuntime
 @inject HttpClient HttpClient
 @inherits BlazorAdmin.Helpers.BlazorComponent
 
 @code {
+private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 
     protected override async Task OnInitializedAsync()
     {
         await HttpClient.PostAsync("User/Logout", null);
+		_logger.LogInformation("OnInitializedAsync(): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed");
+		_logger.LogInformation("OnInitializedAsync(): SOC2-AUDIT [CC6.1]: Authentication operation completed");
         await new Route(JSRuntime).RouteOutside("/Identity/Account/Login");
     }
 

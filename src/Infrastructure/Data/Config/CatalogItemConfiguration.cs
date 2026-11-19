@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Config;
 
 public class CatalogItemConfiguration : IEntityTypeConfiguration<CatalogItem>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public void Configure(EntityTypeBuilder<CatalogItem> builder)
     {
         builder.ToTable("Catalog");
@@ -29,8 +31,10 @@ public class CatalogItemConfiguration : IEntityTypeConfiguration<CatalogItem>
             .WithMany()
             .HasForeignKey(ci => ci.CatalogBrandId);
 
+		_logger.LogInformation("Configure(builder={Builder}): M2614-AUDIT: Outcome 5: infrastructure changes — Change management operation performed", builder);
         builder.HasOne(ci => ci.CatalogType)
             .WithMany()
             .HasForeignKey(ci => ci.CatalogTypeId);
+			_logger.LogInformation("Configure(builder={Builder}): SOC2-AUDIT [CC8.1]: Change management operation performed", builder);
     }
 }

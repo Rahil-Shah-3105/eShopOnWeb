@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 [AllowAnonymous]
 public class RegisterModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<RegisterModel> _logger;
@@ -31,7 +32,9 @@ public class RegisterModel : PageModel
         _userManager = userManager;
         _signInManager = signInManager;
         _logger = logger;
+		_logger.LogInformation("RegisterModel(userManager={UserManager}, signInManager={SignInManager}, logger={Logger}, emailSender=<redacted>): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed for user {UserManager1}", userManager, signInManager, logger, userManager);
         _emailSender = emailSender;
+		_logger.LogInformation("RegisterModel(userManager={UserManager}, signInManager={SignInManager}, logger={Logger}, emailSender=<redacted>): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {UserManager1}", userManager, signInManager, logger, userManager);
     }
 
     [BindProperty]
@@ -41,6 +44,7 @@ public class RegisterModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -73,6 +77,7 @@ public class RegisterModel : PageModel
             if (result.Succeeded)
             {
                 _logger.LogInformation("User created a new account with password.");
+				// SUGGESTED FIX (review before applying): _logger.LogInformation("User created a new account with ***.");
 
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var callbackUrl = Url.Page(
@@ -93,8 +98,12 @@ public class RegisterModel : PageModel
                 ModelState.AddModelError(string.Empty, error.Description);
             }
         }
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed", returnUrl);
 
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): M2614-AUDIT: Log Management / data protection — Log management recorded for the audit trail", returnUrl);
         // If we got this far, something failed, redisplay form
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): SOC2-AUDIT [CC6.1]: Authentication operation completed", returnUrl);
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): M2614-AUDIT: Activity-Based Outcomes 1-11 — Audit coverage recorded for the audit trail", returnUrl);
         return Page();
     }
 }

@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations;
 
 public partial class FixBuyerId : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.AlterColumn<string>(
@@ -17,6 +19,7 @@ public partial class FixBuyerId : Migration
             oldType: "nvarchar(max)",
             oldNullable: true);
 
+		_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): M2614-AUDIT: Outcome 5: infrastructure changes — Change management operation performed", migrationBuilder);
         migrationBuilder.AlterColumn<string>(
             name: "BuyerId",
             table: "Baskets",
@@ -26,6 +29,7 @@ public partial class FixBuyerId : Migration
             oldClrType: typeof(string),
             oldType: "nvarchar(40)",
             oldMaxLength: 40);
+			_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): SOC2-AUDIT [CC8.1]: Change management operation performed", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
@@ -39,6 +43,7 @@ public partial class FixBuyerId : Migration
             oldType: "nvarchar(256)",
             oldMaxLength: 256);
 
+		_logger.LogInformation("Down(migrationBuilder={MigrationBuilder}): M2614-AUDIT: Outcome 5: infrastructure changes — Change management operation performed", migrationBuilder);
         migrationBuilder.AlterColumn<string>(
             name: "BuyerId",
             table: "Baskets",
@@ -48,5 +53,6 @@ public partial class FixBuyerId : Migration
             oldClrType: typeof(string),
             oldType: "nvarchar(256)",
             oldMaxLength: 256);
+			_logger.LogInformation("Down(migrationBuilder={MigrationBuilder}): SOC2-AUDIT [CC8.1]: Change management operation performed", migrationBuilder);
     }
 }

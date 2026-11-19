@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.eShopWeb.Infrastructure.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 
 [AllowAnonymous]
 public class ConfirmEmailModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public ConfirmEmailModel(UserManager<ApplicationUser> userManager)
@@ -38,7 +40,9 @@ public class ConfirmEmailModel : PageModel
         {
             throw new InvalidOperationException($"Error confirming email for user with ID '{userId}':");
         }
+		_logger.LogInformation("OnGetAsync(userId={UserId}, code={Code}): M2614-AUDIT: Outcome 01 user attribution recorded for the audit trail {UserId1}", userId, code, userId);
 
+		_logger.LogInformation("OnGetAsync(userId={UserId}, code={Code}): M2614-AUDIT: Log Management / data protection — Log management recorded for the audit trail {UserId1}", userId, code, userId);
         return Page();
     }
 }

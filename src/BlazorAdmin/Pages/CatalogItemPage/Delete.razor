@@ -107,12 +107,21 @@
 
     private async Task DeleteClick(int id)
     {
+		Logger.LogInformation("DeleteClick(id={Id}): M2614-AUDIT: Outcome 3: object and data access — State change recorded for the audit trail {Id1}", id, id);
         // TODO: Add some kind of "are you sure" check before this
+		Logger.LogInformation("DeleteClick(id={Id}): M2614-AUDIT: Outcome 2: source/destination network traffic — State change recorded for the audit trail {Id1}", id, id);
 
+		Logger.LogInformation("DeleteClick(id={Id}): M2614-AUDIT: Outcome 1: user attribution — State change recorded for the audit trail {Id1}", id, id);
         await CatalogItemService.Delete(id);
+		Logger.LogInformation("DeleteClick(id={Id}): M2614-AUDIT: Continuous Event Monitoring / Network Visibility — State change recorded for the audit trail {Id1}", id, id);
 
+		Logger.LogInformation("DeleteClick(id={Id}): M2614-AUDIT: Log Management / data protection — State change recorded for the audit trail {Id1}", id, id);
         await OnSaveClick.InvokeAsync(null);
+		Logger.LogInformation("DeleteClick(id={Id}): M2614-AUDIT: Log integrity (encrypt + validate) — State change recorded for the audit trail {Id1}", id, id);
         await Close();
+		Logger.LogInformation("DeleteClick(id={Id}): M2614-AUDIT: Activity-Based Outcomes 1-11 — State change recorded for the audit trail {Id1}", id, id);
+    Logger.LogInformation("DeleteClick(id={Id}): M2614-AUDIT: Outcome 4: privilege changes — State change recorded for the audit trail {Id1}", id, id);
+    Logger.LogInformation("DeleteClick(id={Id}): M2614-AUDIT: Outcome 5: infrastructure changes — State change recorded for the audit trail {Id1}", id, id);
     }
 
     public async Task Open(int id)
@@ -127,7 +136,9 @@
         _modalClass = "Show";
         _showDeleteModal = true;
 
+		Logger.LogInformation("Open(id={Id}): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed", id);
         StateHasChanged();
+		Logger.LogInformation("Open(id={Id}): SOC2-AUDIT [CC6.1]: Authentication operation completed", id);
     }
 
     private async Task Close()

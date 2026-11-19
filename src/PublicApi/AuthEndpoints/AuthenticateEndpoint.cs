@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Infrastructure.Identity;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.AuthEndpoints;
 
@@ -16,6 +17,7 @@ public class AuthenticateEndpoint : EndpointBaseAsync
     .WithRequest<AuthenticateRequest>
     .WithActionResult<AuthenticateResponse>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ITokenClaimsService _tokenClaimsService;
 
@@ -23,7 +25,9 @@ public class AuthenticateEndpoint : EndpointBaseAsync
         ITokenClaimsService tokenClaimsService)
     {
         _signInManager = signInManager;
+		_logger.LogInformation("AuthenticateEndpoint(signInManager={SignInManager}, tokenClaimsService={TokenClaimsService}): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed", signInManager, tokenClaimsService);
         _tokenClaimsService = tokenClaimsService;
+		_logger.LogInformation("AuthenticateEndpoint(signInManager={SignInManager}, tokenClaimsService={TokenClaimsService}): SOC2-AUDIT [CC6.1]: Authentication operation completed", signInManager, tokenClaimsService);
     }
 
     [HttpPost("api/authenticate")]
@@ -53,7 +57,10 @@ public class AuthenticateEndpoint : EndpointBaseAsync
         {
             response.Token = await _tokenClaimsService.GetTokenAsync(request.Username);
         }
+		_logger.LogInformation("HandleAsync(request={Request}, cancellationToken=<redacted>): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed for user {Response}", request, response);
 
+		_logger.LogInformation("HandleAsync(request={Request}, cancellationToken=<redacted>): M2614-AUDIT: Log Management / data protection — Log management recorded for the audit trail {Result}", request, result);
+		_logger.LogInformation("HandleAsync(request={Request}, cancellationToken=<redacted>): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {Response}", request, response);
         return response;
     }
 }

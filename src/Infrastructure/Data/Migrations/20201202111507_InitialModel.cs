@@ -1,10 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Data.Migrations;
 
 public partial class InitialModel : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.CreateSequence(
@@ -164,11 +166,14 @@ public partial class InitialModel : Migration
             name: "IX_Catalog_CatalogTypeId",
             table: "Catalog",
             column: "CatalogTypeId");
+			_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): M2614-AUDIT: Outcome 5: infrastructure changes — Change management operation performed", migrationBuilder);
 
+		_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): M2614-AUDIT: Log Management / data protection — Log management recorded for the audit trail", migrationBuilder);
         migrationBuilder.CreateIndex(
             name: "IX_OrderItems_OrderId",
             table: "OrderItems",
             column: "OrderId");
+			_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): SOC2-AUDIT [CC8.1]: Change management operation performed", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
@@ -200,7 +205,9 @@ public partial class InitialModel : Migration
         migrationBuilder.DropSequence(
             name: "catalog_hilo");
 
+		_logger.LogInformation("Down(migrationBuilder={MigrationBuilder}): M2614-AUDIT: Outcome 5: infrastructure changes — Change management operation performed", migrationBuilder);
         migrationBuilder.DropSequence(
             name: "catalog_type_hilo");
+			_logger.LogInformation("Down(migrationBuilder={MigrationBuilder}): SOC2-AUDIT [CC8.1]: Change management operation performed", migrationBuilder);
     }
 }

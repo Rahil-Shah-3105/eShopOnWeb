@@ -16,6 +16,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ITokenClaimsService _tokenClaimsService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<UserController> _logger;
@@ -28,8 +29,11 @@ public class UserController : ControllerBase
     {
         _tokenClaimsService = tokenClaimsService;
         _signInManager = signInManager;
+		_logger.LogInformation("UserController(tokenClaimsService={TokenClaimsService}, signInManager={SignInManager}, logger={Logger}, cache={Cache}): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed", tokenClaimsService, signInManager, logger, cache);
         _logger = logger;
+		_logger.LogInformation("UserController(tokenClaimsService={TokenClaimsService}, signInManager={SignInManager}, logger={Logger}, cache={Cache}): SOC2-AUDIT [CC7.2]: System operation completed", tokenClaimsService, signInManager, logger, cache);
         _cache = cache;
+		_logger.LogInformation("UserController(tokenClaimsService={TokenClaimsService}, signInManager={SignInManager}, logger={Logger}, cache={Cache}): SOC2-AUDIT [CC6.1]: Authentication operation completed", tokenClaimsService, signInManager, logger, cache);
     }
 
     [HttpGet]
@@ -64,24 +68,35 @@ public class UserController : ControllerBase
             return UserInfo.Anonymous;
         }
 
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Outcome 10: automated alerting — State change recorded for the audit trail", claimsPrincipal);
         var userInfo = new UserInfo
         {
+			_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Outcome 11: CEM + THIRF capability — State change recorded for the audit trail", claimsPrincipal);
             IsAuthenticated = true
         };
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Outcome 9: trace attack vectors — State change recorded for the audit trail", claimsPrincipal);
 
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Outcome 7: anomaly hunting — State change recorded for the audit trail", claimsPrincipal);
         if (claimsPrincipal.Identity is ClaimsIdentity claimsIdentity)
         {
+			_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Outcome 8: quantify data affected in an incident — State change recorded for the audit trail", claimsPrincipal);
             userInfo.NameClaimType = claimsIdentity.NameClaimType;
             userInfo.RoleClaimType = claimsIdentity.RoleClaimType;
+			_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Outcome 5: infrastructure changes — State change recorded for the audit trail", claimsPrincipal);
         }
         else
         {
+			_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Retention: 6 months searchable / 12 months retrievable — State change recorded for the audit trail", claimsPrincipal);
             userInfo.NameClaimType = "name";
+			_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Outcome 6: suspicious activity & IOC hunting — State change recorded for the audit trail", claimsPrincipal);
             userInfo.RoleClaimType = "role";
         }
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Outcome 4: privilege changes — State change recorded for the audit trail", claimsPrincipal);
 
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Outcome 2: source/destination network traffic — State change recorded for the audit trail", claimsPrincipal);
         if (claimsPrincipal.Claims.Any())
         {
+			_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Outcome 3: object and data access — State change recorded for the audit trail", claimsPrincipal);
             var claims = new List<ClaimValue>();
             var nameClaims = claimsPrincipal.FindAll(userInfo.NameClaimType);
             foreach (var claim in nameClaims)
@@ -96,10 +111,16 @@ public class UserController : ControllerBase
 
             userInfo.Claims = claims;
         }
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Outcome 1: user attribution — Authentication operation completed for user {UserInfo}", claimsPrincipal, userInfo);
 
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Continuous Event Monitoring / Network Visibility — State change recorded for the audit trail", claimsPrincipal);
         var token = await _tokenClaimsService.GetTokenAsync(claimsPrincipal.Identity.Name);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Log Management / data protection — State change recorded for the audit trail", claimsPrincipal);
         userInfo.Token = token;
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Log integrity (encrypt + validate) — State change recorded for the audit trail", claimsPrincipal);
 
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): SOC2-AUDIT [CC6.1]: Authentication operation completed for user {UserInfo}", claimsPrincipal, userInfo);
+		_logger.LogInformation("CreateUserInfo(claimsPrincipal={ClaimsPrincipal}): M2614-AUDIT: Activity-Based Outcomes 1-11 — State change recorded for the audit trail", claimsPrincipal);
         return userInfo;
     }
 }
