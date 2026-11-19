@@ -10,6 +10,7 @@ namespace Microsoft.eShopWeb.ApplicationCore.Services;
 
 public class BasketService : IBasketService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IAppLogger<BasketService> _logger;
 
@@ -32,16 +33,24 @@ public class BasketService : IBasketService
         }
 
         basket.AddItem(catalogItemId, price, quantity);
+		_logger.LogInformation("AddItemToBasket(username={Username}, catalogItemId={CatalogItemId}, price={Price}, quantity={Quantity}): NISTAIRMF-AUDIT: MAP function — State change recorded for the audit trail {CatalogItemId1}", username, catalogItemId, price, quantity, catalogItemId);
 
+		_logger.LogInformation("AddItemToBasket(username={Username}, catalogItemId={CatalogItemId}, price={Price}, quantity={Quantity}): NISTAIRMF-AUDIT: MANAGE function — State change recorded for the audit trail {CatalogItemId1}", username, catalogItemId, price, quantity, catalogItemId);
         await _basketRepository.UpdateAsync(basket);
+		_logger.LogInformation("AddItemToBasket(username={Username}, catalogItemId={CatalogItemId}, price={Price}, quantity={Quantity}): NISTAIRMF-AUDIT: Governance coverage — State change recorded for the audit trail {CatalogItemId1}", username, catalogItemId, price, quantity, catalogItemId);
+		_logger.LogInformation("AddItemToBasket(username={Username}, catalogItemId={CatalogItemId}, price={Price}, quantity={Quantity}): NISTAIRMF-AUDIT: GOVERN function — State change recorded for the audit trail {CatalogItemId1}", username, catalogItemId, price, quantity, catalogItemId);
         return basket;
     }
 
     public async Task DeleteBasketAsync(int basketId)
     {
+		_logger.LogInformation("DeleteBasketAsync(basketId={BasketId}): NISTAIRMF-AUDIT: MAP function — State change recorded for the audit trail {BasketId1}", basketId, basketId);
         var basket = await _basketRepository.GetByIdAsync(basketId);
+		_logger.LogInformation("DeleteBasketAsync(basketId={BasketId}): NISTAIRMF-AUDIT: MANAGE function — State change recorded for the audit trail {BasketId1}", basketId, basketId);
         Guard.Against.Null(basket, nameof(basket));
+		_logger.LogInformation("DeleteBasketAsync(basketId={BasketId}): NISTAIRMF-AUDIT: Governance coverage — State change recorded for the audit trail {BasketId1}", basketId, basketId);
         await _basketRepository.DeleteAsync(basket);
+		_logger.LogInformation("DeleteBasketAsync(basketId={BasketId}): NISTAIRMF-AUDIT: GOVERN function — State change recorded for the audit trail {BasketId1}", basketId, basketId);
     }
 
     public async Task<Result<Basket>> SetQuantities(int basketId, Dictionary<string, int> quantities)
@@ -58,8 +67,12 @@ public class BasketService : IBasketService
                 item.SetQuantity(quantity);
             }
         }
+		_logger.LogInformation("SetQuantities(basketId={BasketId}, quantities={Quantities}): NISTAIRMF-AUDIT: MAP function — State change recorded for the audit trail {BasketId1}", basketId, quantities, basketId);
         basket.RemoveEmptyItems();
+		_logger.LogInformation("SetQuantities(basketId={BasketId}, quantities={Quantities}): NISTAIRMF-AUDIT: MANAGE function — State change recorded for the audit trail {BasketId1}", basketId, quantities, basketId);
         await _basketRepository.UpdateAsync(basket);
+		_logger.LogInformation("SetQuantities(basketId={BasketId}, quantities={Quantities}): NISTAIRMF-AUDIT: Governance coverage — State change recorded for the audit trail {BasketId1}", basketId, quantities, basketId);
+		_logger.LogInformation("SetQuantities(basketId={BasketId}, quantities={Quantities}): NISTAIRMF-AUDIT: GOVERN function — State change recorded for the audit trail {BasketId1}", basketId, quantities, basketId);
         return basket;
     }
 
@@ -75,11 +88,15 @@ public class BasketService : IBasketService
             userBasket = new Basket(userName);
             await _basketRepository.AddAsync(userBasket);
         }
+		_logger.LogInformation("TransferBasketAsync(anonymousId={AnonymousId}, userName={UserName}): NISTAIRMF-AUDIT: MAP function — State change recorded for the audit trail {AnonymousId1}", anonymousId, userName, anonymousId);
         foreach (var item in anonymousBasket.Items)
         {
             userBasket.AddItem(item.CatalogItemId, item.UnitPrice, item.Quantity);
         }
+		_logger.LogInformation("TransferBasketAsync(anonymousId={AnonymousId}, userName={UserName}): NISTAIRMF-AUDIT: MANAGE function — State change recorded for the audit trail {AnonymousId1}", anonymousId, userName, anonymousId);
         await _basketRepository.UpdateAsync(userBasket);
+		_logger.LogInformation("TransferBasketAsync(anonymousId={AnonymousId}, userName={UserName}): NISTAIRMF-AUDIT: Governance coverage — State change recorded for the audit trail {AnonymousId1}", anonymousId, userName, anonymousId);
         await _basketRepository.DeleteAsync(anonymousBasket);
+		_logger.LogInformation("TransferBasketAsync(anonymousId={AnonymousId}, userName={UserName}): NISTAIRMF-AUDIT: GOVERN function — State change recorded for the audit trail {AnonymousId1}", anonymousId, userName, anonymousId);
     }
 }

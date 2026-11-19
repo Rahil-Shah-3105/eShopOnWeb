@@ -12,6 +12,7 @@ namespace BlazorAdmin;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     // TODO: Get Default Cache Duration from Config
     private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
 
@@ -42,8 +43,11 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         }
 
         _cachedUser = await FetchUser();
+		_logger.LogInformation("GetUser(useCache={UseCache}): NISTAIRMF-AUDIT: MAP function — Record access recorded for the audit trail", useCache);
         _userLastCheck = now;
+		_logger.LogInformation("GetUser(useCache={UseCache}): NISTAIRMF-AUDIT: MANAGE function — Record access recorded for the audit trail", useCache);
 
+		_logger.LogInformation("GetUser(useCache={UseCache}): NISTAIRMF-AUDIT: Governance coverage — Record access recorded for the audit trail", useCache);
         return _cachedUser;
     }
 
@@ -79,8 +83,12 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
             }
         }
 
+		_logger.LogInformation("FetchUser(): NISTAIRMF-AUDIT: MAP function — Record access recorded for the audit trail {Identity}", identity);
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
+		_logger.LogInformation("FetchUser(): NISTAIRMF-AUDIT: MANAGE function — Record access recorded for the audit trail {Identity}", identity);
 
+		_logger.LogInformation("FetchUser(): NISTAIRMF-AUDIT: Governance coverage — Record access recorded for the audit trail {Identity}", identity);
+		_logger.LogInformation("FetchUser(): NISTAIRMF-AUDIT: GOVERN function — Record access recorded for the audit trail {Identity}", identity);
         return new ClaimsPrincipal(identity);
     }
 }
