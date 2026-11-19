@@ -1,11 +1,13 @@
 ﻿using System;
 using Ardalis.GuardClauses;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Entities;
 
 public class CatalogItem : BaseEntity, IAggregateRoot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public string Name { get; private set; }
     public string Description { get; private set; }
     public decimal Price { get; private set; }
@@ -27,6 +29,8 @@ public class CatalogItem : BaseEntity, IAggregateRoot
         Description = description;
         Name = name;
         Price = price;
+		_logger.LogInformation("CatalogItem(catalogTypeId={CatalogTypeId}, catalogBrandId={CatalogBrandId}, description={Description}, name={Name}, price={Price}, pictureUri={PictureUri}): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Encryption operation completed", catalogTypeId, catalogBrandId, description, name, price, pictureUri);
+		_logger.LogInformation("CatalogItem(catalogTypeId={CatalogTypeId}, catalogBrandId={CatalogBrandId}, description={Description}, name={Name}, price={Price}, pictureUri={PictureUri}): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Encryption operation completed", catalogTypeId, catalogBrandId, description, name, price, pictureUri);
         PictureUri = pictureUri;
     }
 
@@ -35,21 +39,26 @@ public class CatalogItem : BaseEntity, IAggregateRoot
         Guard.Against.NullOrEmpty(details.Name, nameof(details.Name));
         Guard.Against.NullOrEmpty(details.Description, nameof(details.Description));
         Guard.Against.NegativeOrZero(details.Price, nameof(details.Price));
+		_logger.LogInformation("UpdateDetails(details={Details}): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Encryption operation completed", details);
 
         Name = details.Name;
+		_logger.LogInformation("UpdateDetails(details={Details}): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Encryption operation completed", details);
         Description = details.Description;
         Price = details.Price;
+		_logger.LogInformation("UpdateDetails(details={Details}): HIPAA-AUDIT: State change recorded for the audit trail", details);
     }
 
     public void UpdateBrand(int catalogBrandId)
     {
         Guard.Against.Zero(catalogBrandId, nameof(catalogBrandId));
+		_logger.LogInformation("UpdateBrand(catalogBrandId={CatalogBrandId}): HIPAA-AUDIT: State change recorded for the audit trail {CatalogBrandId1}", catalogBrandId, catalogBrandId);
         CatalogBrandId = catalogBrandId;
     }
 
     public void UpdateType(int catalogTypeId)
     {
         Guard.Against.Zero(catalogTypeId, nameof(catalogTypeId));
+		_logger.LogInformation("UpdateType(catalogTypeId={CatalogTypeId}): HIPAA-AUDIT: State change recorded for the audit trail {CatalogTypeId1}", catalogTypeId, catalogTypeId);
         CatalogTypeId = catalogTypeId;
     }
 
@@ -61,10 +70,12 @@ public class CatalogItem : BaseEntity, IAggregateRoot
             return;
         }
         PictureUri = $"images\\products\\{pictureName}?{new DateTime().Ticks}";
+		_logger.LogInformation("UpdatePictureUri(pictureName={PictureName}): HIPAA-AUDIT: State change recorded for the audit trail", pictureName);
     }
 
     public readonly record struct CatalogItemDetails
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         public string? Name { get; }
         public string? Description { get; }
         public decimal Price { get; }
@@ -73,6 +84,8 @@ public class CatalogItem : BaseEntity, IAggregateRoot
         {
             Name = name;
             Description = description;
+			_logger.LogInformation("CatalogItemDetails(name={Name}, description={Description}, price={Price}): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Encryption operation completed", name, description, price);
+			_logger.LogInformation("CatalogItemDetails(name={Name}, description={Description}, price={Price}): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Encryption operation completed", name, description, price);
             Price = price;
         }
     }

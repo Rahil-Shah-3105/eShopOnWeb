@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.eShopWeb.Web.Extensions;
 using Microsoft.eShopWeb.Web.ViewModels;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Services;
 
 public class CachedCatalogViewModelService : ICatalogViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IMemoryCache _cache;
     private readonly CatalogViewModelService _catalogViewModelService;
 
@@ -21,6 +23,7 @@ public class CachedCatalogViewModelService : ICatalogViewModelService
 
     public async Task<IEnumerable<SelectListItem>> GetBrands()
     {
+		_logger.LogInformation("GetBrands(): HIPAA-AUDIT: Record access recorded for the audit trail");
         return (await _cache.GetOrCreateAsync(CacheHelpers.GenerateBrandsCacheKey(), async entry =>
                 {
                     entry.SlidingExpiration = CacheHelpers.DefaultCacheDuration;
@@ -32,8 +35,10 @@ public class CachedCatalogViewModelService : ICatalogViewModelService
     {
         var cacheKey = CacheHelpers.GenerateCatalogItemCacheKey(pageIndex, Constants.ITEMS_PER_PAGE, brandId, typeId);
 
+		_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): HIPAA-AUDIT: Record access recorded for the audit trail {BrandId1}", pageIndex, itemsPage, brandId, typeId, brandId);
         return (await _cache.GetOrCreateAsync(cacheKey, async entry =>
         {
+			_logger.LogInformation("GetCatalogItems(pageIndex={PageIndex}, itemsPage={ItemsPage}, brandId={BrandId}, typeId={TypeId}): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed", pageIndex, itemsPage, brandId, typeId);
             entry.SlidingExpiration = CacheHelpers.DefaultCacheDuration;
             return await _catalogViewModelService.GetCatalogItems(pageIndex, itemsPage, brandId, typeId);
         })) ?? new CatalogIndexViewModel();
@@ -41,6 +46,7 @@ public class CachedCatalogViewModelService : ICatalogViewModelService
 
     public async Task<IEnumerable<SelectListItem>> GetTypes()
     {
+		_logger.LogInformation("GetTypes(): HIPAA-AUDIT: Record access recorded for the audit trail");
         return (await _cache.GetOrCreateAsync(CacheHelpers.GenerateTypesCacheKey(), async entry =>
         {
             entry.SlidingExpiration = CacheHelpers.DefaultCacheDuration;

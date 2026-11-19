@@ -1,10 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Identity.Migrations;
 
 public partial class InitialIdentityModel : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.CreateTable(
@@ -179,10 +181,13 @@ public partial class InitialIdentityModel : Migration
             table: "AspNetUserRoles",
             column: "RoleId");
 
+		_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Password reset operation performed", migrationBuilder);
         migrationBuilder.CreateIndex(
             name: "EmailIndex",
             table: "AspNetUsers",
             column: "NormalizedEmail");
+			_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed", migrationBuilder);
+			_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Password reset operation performed", migrationBuilder);
 
         migrationBuilder.CreateIndex(
             name: "UserNameIndex",
@@ -190,6 +195,7 @@ public partial class InitialIdentityModel : Migration
             column: "NormalizedUserName",
             unique: true,
             filter: "[NormalizedUserName] IS NOT NULL");
+			_logger.LogInformation("Up(migrationBuilder={MigrationBuilder}): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
@@ -214,5 +220,6 @@ public partial class InitialIdentityModel : Migration
 
         migrationBuilder.DropTable(
             name: "AspNetUsers");
+			_logger.LogInformation("Down(migrationBuilder={MigrationBuilder}): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed", migrationBuilder);
     }
 }

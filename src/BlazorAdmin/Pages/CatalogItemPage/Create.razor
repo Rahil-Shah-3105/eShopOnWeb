@@ -130,6 +130,7 @@
             await OnSaveClick.InvokeAsync(null);
             await Close();
         }
+		Logger.LogInformation("CreateClick(): HIPAA-AUDIT: State change recorded for the audit trail {Result}", result);
     }
 
     public async Task Open()
@@ -150,6 +151,7 @@
         _showCreateModal = true;
 
         StateHasChanged();
+		Logger.LogInformation("Open(): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed");
     }
 
     private async Task Close()

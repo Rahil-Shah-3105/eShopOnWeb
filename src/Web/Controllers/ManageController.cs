@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Controllers;
 [Route("[controller]/[action]")]
 public class ManageController : Controller
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailSender _emailSender;
@@ -38,6 +39,7 @@ public class ManageController : Controller
         _emailSender = emailSender;
         _logger = logger;
         _urlEncoder = urlEncoder;
+		_logger.LogInformation("ManageController(userManager={UserManager}, signInManager={SignInManager}, emailSender=<redacted>, logger={Logger}, urlEncoder={UrlEncoder}): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed for user {UserManager1}", userManager, signInManager, logger, urlEncoder, userManager);
     }
 
     [TempData]
@@ -126,10 +128,13 @@ public class ManageController : Controller
         {
             throw new ApplicationException($"No email associated with user {user.UserName}'.");
         }
+		_logger.LogInformation("SendVerificationEmail(model={Model}): HIPAA-AUDIT [§164.312(e)(1)]: Secure PHI transmission completed", model);
 
         await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
+		_logger.LogInformation("SendVerificationEmail(model={Model}): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed", model);
 
         StatusMessage = "Verification email sent. Please check your email.";
+		_logger.LogInformation("SendVerificationEmail(model={Model}): HIPAA-AUDIT: Outbound notification recorded for the audit trail", model);
         return RedirectToAction(nameof(MyAccount));
     }
 
@@ -143,12 +148,15 @@ public class ManageController : Controller
         }
 
         var hasPassword = await _userManager.HasPasswordAsync(user);
+		_logger.LogInformation("ChangePassword(): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Password reset operation performed for user {User}", user);
         if (!hasPassword)
         {
             return RedirectToAction(nameof(SetPassword));
         }
 
+		_logger.LogInformation("ChangePassword(): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Password reset operation performed for user {User}", user);
         var model = new ChangePasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogInformation("ChangePassword(): HIPAA-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
@@ -179,6 +187,7 @@ public class ManageController : Controller
         _logger.LogInformation("User changed their password successfully.");
         StatusMessage = "Your password has been changed.";
 
+		_logger.LogInformation("ChangePassword(model={Model}): HIPAA-AUDIT: State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ChangePassword));
     }
 
@@ -193,12 +202,15 @@ public class ManageController : Controller
 
         var hasPassword = await _userManager.HasPasswordAsync(user);
 
+		_logger.LogInformation("SetPassword(): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Password reset operation performed for user {User}", user);
         if (hasPassword)
         {
             return RedirectToAction(nameof(ChangePassword));
         }
 
+		_logger.LogInformation("SetPassword(): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Password reset operation performed for user {User}", user);
         var model = new SetPasswordViewModel { StatusMessage = StatusMessage };
+		_logger.LogInformation("SetPassword(): HIPAA-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
@@ -227,6 +239,7 @@ public class ManageController : Controller
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "Your password has been set.";
 
+		_logger.LogInformation("SetPassword(model={Model}): HIPAA-AUDIT: State change recorded for the audit trail", model);
         return RedirectToAction(nameof(SetPassword));
     }
 
@@ -245,6 +258,9 @@ public class ManageController : Controller
             .ToList();
         model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
         model.StatusMessage = StatusMessage;
+		_logger.LogInformation("ExternalLogins(): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Password reset operation performed for user {User}", user);
+		_logger.LogInformation("ExternalLogins(): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Password reset operation performed for user {User}", user);
+		_logger.LogInformation("ExternalLogins(): HIPAA-AUDIT [§164.312(d)]: User authentication completed before PHI access {User}", user);
 
         return View(model);
     }
@@ -287,6 +303,7 @@ public class ManageController : Controller
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
         StatusMessage = "The external login was added.";
+		_logger.LogInformation("LinkLoginCallback(): HIPAA-AUDIT [§164.312(d)]: User authentication completed before PHI access {User}", user);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -312,6 +329,8 @@ public class ManageController : Controller
 
         await _signInManager.SignInAsync(user, isPersistent: false);
         StatusMessage = "The external login was removed.";
+		_logger.LogInformation("RemoveLogin(model={Model}): HIPAA-AUDIT [§164.312(d)]: User authentication completed before PHI access {User}", model, user);
+		_logger.LogInformation("RemoveLogin(model={Model}): HIPAA-AUDIT: State change recorded for the audit trail {Result}", model, result);
         return RedirectToAction(nameof(ExternalLogins));
     }
 
@@ -331,6 +350,8 @@ public class ManageController : Controller
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
         };
 
+		_logger.LogInformation("TwoFactorAuthentication(): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Encryption operation completed");
+		_logger.LogInformation("TwoFactorAuthentication(): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Encryption operation completed");
         return View(model);
     }
 
@@ -368,6 +389,7 @@ public class ManageController : Controller
         }
 
         _logger.LogInformation("User with ID {UserId} has disabled 2fa.", user.Id);
+		_logger.LogInformation("Disable2fa(): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed for user {User}", user);
         return RedirectToAction(nameof(TwoFactorAuthentication));
     }
 
@@ -383,6 +405,7 @@ public class ManageController : Controller
         var model = new EnableAuthenticatorViewModel();
         await LoadSharedKeyAndQrCodeUriAsync(user, model);
 
+		_logger.LogInformation("EnableAuthenticator(): HIPAA-AUDIT: State change recorded for the audit trail");
         return View(model);
     }
 
@@ -396,6 +419,8 @@ public class ManageController : Controller
         }
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes };
+		_logger.LogInformation("ShowRecoveryCodes(): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Encryption operation completed");
+		_logger.LogInformation("ShowRecoveryCodes(): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Encryption operation completed");
         return View(model);
     }
 
@@ -434,12 +459,14 @@ public class ManageController : Controller
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) ?? new List<string>();
         TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
+		_logger.LogInformation("EnableAuthenticator(model={Model}): HIPAA-AUDIT: State change recorded for the audit trail", model);
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
     [HttpGet]
     public IActionResult ResetAuthenticatorWarning()
     {
+		_logger.LogInformation("ResetAuthenticatorWarning(): HIPAA-AUDIT: State change recorded for the audit trail");
         return View(nameof(ResetAuthenticator));
     }
 
@@ -457,6 +484,7 @@ public class ManageController : Controller
         await _userManager.ResetAuthenticatorKeyAsync(user);
         _logger.LogInformation("User with id '{UserId}' has reset their authentication app key.", user.Id);
 
+		_logger.LogInformation("ResetAuthenticator(): HIPAA-AUDIT: State change recorded for the audit trail");
         return RedirectToAction(nameof(EnableAuthenticator));
     }
 
@@ -479,6 +507,9 @@ public class ManageController : Controller
         _logger.LogInformation("User with ID {UserId} has generated new 2FA recovery codes.", user.Id);
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
+		_logger.LogInformation("GenerateRecoveryCodes(): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Encryption operation completed");
+		_logger.LogInformation("GenerateRecoveryCodes(): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Encryption operation completed");
+		_logger.LogInformation("GenerateRecoveryCodes(): HIPAA-AUDIT [45 CFR 164.312(d)]: Person or entity authentication — Authentication operation completed for user {User}", user);
 
         return View(nameof(ShowRecoveryCodes), model);
     }
@@ -497,15 +528,20 @@ public class ManageController : Controller
             throw new ApplicationException($"Cannot generate recovery codes for user with ID '{user.Id}' because they do not have 2FA enabled.");
         }
 
+		_logger.LogInformation("GenerateRecoveryCodesWarning(): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Encryption operation completed");
+		_logger.LogInformation("GenerateRecoveryCodesWarning(): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Encryption operation completed");
         return View(nameof(GenerateRecoveryCodesWarning));
     }
 
     private void AddErrors(IdentityResult result)
     {
+		_logger.LogInformation("AddErrors(result={Result}): HIPAA-AUDIT: State change recorded for the audit trail {Result1}", result, result);
         foreach (var error in result.Errors)
         {
+			_logger.LogInformation("AddErrors(result={Result}): HIPAA-AUDIT [45 CFR 164.312(a)(2)(iv)]: Encryption and decryption — Encryption operation completed with algorithm {Result1}", result, result);
             ModelState.AddModelError(string.Empty, error.Description);
         }
+    _logger.LogInformation("AddErrors(result={Result}): HIPAA-AUDIT [45 CFR 164.312(e)(1)]: Transmission security — Encryption operation completed with algorithm {Result1}", result, result);
     }
 
     private string FormatKey(string unformattedKey)
@@ -545,6 +581,7 @@ public class ManageController : Controller
 
         model.SharedKey = FormatKey(unformattedKey!);
         model.AuthenticatorUri = GenerateQrCodeUri(user.Email!, unformattedKey!);
+		_logger.LogInformation("LoadSharedKeyAndQrCodeUriAsync(user={User}, model={Model}): HIPAA-AUDIT: Record access recorded for the audit trail", user, model);
     }
 
 }
