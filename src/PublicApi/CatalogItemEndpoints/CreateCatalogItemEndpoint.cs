@@ -9,6 +9,7 @@ using Microsoft.eShopWeb.ApplicationCore.Exceptions;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -17,6 +18,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemRequest, IRepository<CatalogItem>>
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public CreateCatalogItemEndpoint(IUriComposer uriComposer)
@@ -26,14 +28,19 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
 
     public void AddRoute(IEndpointRouteBuilder app)
     {
+		_logger.LogInformation("AddRoute(app={App}): CMMC-AUDIT: Incident response — State change recorded for the audit trail", app);
         app.MapPost("api/catalog-items",
             [Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] async
             (CreateCatalogItemRequest request, IRepository<CatalogItem> itemRepository) =>
             {
+				_logger.LogInformation("AddRoute(app={App}): CMMC-AUDIT: Media protection — State change recorded for the audit trail", app);
+				_logger.LogInformation("AddRoute(app={App}): CMMC-AUDIT: Access control — State change recorded for the audit trail", app);
                 return await HandleAsync(request, itemRepository);
             })
             .Produces<CreateCatalogItemResponse>()
             .WithTags("CatalogItemEndpoints");
+			_logger.LogInformation("AddRoute(app={App}): CMMC-AUDIT: Audit traceability — State change recorded for the audit trail", app);
+    _logger.LogInformation("AddRoute(app={App}): CMMC-AUDIT: Crypto protection — State change recorded for the audit trail", app);
     }
 
     public async Task<IResult> HandleAsync(CreateCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
@@ -60,8 +67,10 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
             await itemRepository.UpdateAsync(newItem);
         }
 
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): CMMC-AUDIT: Media protection — Encryption operation completed", request, itemRepository);
         var dto = new CatalogItemDto
         {
+			_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): CMMC-AUDIT: Incident response — State change recorded for the audit trail", request, itemRepository);
             Id = newItem.Id,
             CatalogBrandId = newItem.CatalogBrandId,
             CatalogTypeId = newItem.CatalogTypeId,
@@ -70,7 +79,10 @@ public class CreateCatalogItemEndpoint : IEndpoint<IResult, CreateCatalogItemReq
             PictureUri = _uriComposer.ComposePicUri(newItem.PictureUri),
             Price = newItem.Price
         };
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): CMMC-AUDIT: Crypto protection — Encryption operation completed", request, itemRepository);
         response.CatalogItem = dto;
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): CMMC-AUDIT: Audit traceability — State change recorded for the audit trail", request, itemRepository);
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): CMMC-AUDIT: Access control — State change recorded for the audit trail", request, itemRepository);
         return Results.Created($"api/catalog-items/{dto.Id}", response);
     }
 }

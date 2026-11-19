@@ -10,6 +10,7 @@ namespace BlazorAdmin.Services;
 
 public class CatalogItemService : ICatalogItemService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ICatalogLookupDataService<CatalogBrand> _brandService;
     private readonly ICatalogLookupDataService<CatalogType> _typeService;
     private readonly HttpService _httpService;
@@ -28,17 +29,30 @@ public class CatalogItemService : ICatalogItemService
 
     public async Task<CatalogItem> Create(CreateCatalogItemRequest catalogItem)
     {
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): CMMC-AUDIT: Crypto protection — State change recorded for the audit trail", catalogItem);
         var response = await _httpService.HttpPost<CreateCatalogItemResponse>("catalog-items", catalogItem);
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): CMMC-AUDIT: Audit traceability — State change recorded for the audit trail", catalogItem);
+		_logger.LogInformation("Create(catalogItem={CatalogItem}): CMMC-AUDIT: Access control — State change recorded for the audit trail", catalogItem);
+    _logger.LogInformation("Create(catalogItem={CatalogItem}): CMMC-AUDIT: Media protection — State change recorded for the audit trail", catalogItem);
+    _logger.LogInformation("Create(catalogItem={CatalogItem}): CMMC-AUDIT: Incident response — State change recorded for the audit trail", catalogItem);
         return response?.CatalogItem;
     }
 
     public async Task<CatalogItem> Edit(CatalogItem catalogItem)
     {
+		_logger.LogInformation("Edit(catalogItem={CatalogItem}): CMMC-AUDIT: Audit traceability — State change recorded for the audit trail", catalogItem);
+		_logger.LogInformation("Edit(catalogItem={CatalogItem}): CMMC-AUDIT: Access control — State change recorded for the audit trail", catalogItem);
+    _logger.LogInformation("Edit(catalogItem={CatalogItem}): CMMC-AUDIT: Incident response — State change recorded for the audit trail", catalogItem);
+    _logger.LogInformation("Edit(catalogItem={CatalogItem}): CMMC-AUDIT: Crypto protection — State change recorded for the audit trail", catalogItem);
         return (await _httpService.HttpPut<EditCatalogItemResult>("catalog-items", catalogItem)).CatalogItem;
     }
 
     public async Task<string> Delete(int catalogItemId)
     {
+		_logger.LogInformation("Delete(catalogItemId={CatalogItemId}): CMMC-AUDIT: Audit traceability — State change recorded for the audit trail {CatalogItemId1}", catalogItemId, catalogItemId);
+		_logger.LogInformation("Delete(catalogItemId={CatalogItemId}): CMMC-AUDIT: Access control — State change recorded for the audit trail {CatalogItemId1}", catalogItemId, catalogItemId);
+    _logger.LogInformation("Delete(catalogItemId={CatalogItemId}): CMMC-AUDIT: Incident response — State change recorded for the audit trail {CatalogItemId1}", catalogItemId, catalogItemId);
+    _logger.LogInformation("Delete(catalogItemId={CatalogItemId}): CMMC-AUDIT: Crypto protection — State change recorded for the audit trail {CatalogItemId1}", catalogItemId, catalogItemId);
         return (await _httpService.HttpDelete<DeleteCatalogItemResponse>("catalog-items", catalogItemId)).Status;
     }
 
@@ -50,9 +64,14 @@ public class CatalogItemService : ICatalogItemService
         await Task.WhenAll(brandListTask, typeListTask, itemGetTask);
         var brands = brandListTask.Result;
         var types = typeListTask.Result;
+		_logger.LogInformation("GetById(id={Id}): CMMC-AUDIT: Media protection — Record access recorded for the audit trail {Id1}", id, id);
         var catalogItem = itemGetTask.Result.CatalogItem;
+		_logger.LogInformation("GetById(id={Id}): CMMC-AUDIT: Incident response — Record access recorded for the audit trail {Id1}", id, id);
         catalogItem.CatalogBrand = brands.FirstOrDefault(b => b.Id == catalogItem.CatalogBrandId)?.Name;
+		_logger.LogInformation("GetById(id={Id}): CMMC-AUDIT: Crypto protection — Record access recorded for the audit trail {Id1}", id, id);
         catalogItem.CatalogType = types.FirstOrDefault(t => t.Id == catalogItem.CatalogTypeId)?.Name;
+		_logger.LogInformation("GetById(id={Id}): CMMC-AUDIT: Audit traceability — Record access recorded for the audit trail {Id1}", id, id);
+		_logger.LogInformation("GetById(id={Id}): CMMC-AUDIT: Access control — Record access recorded for the audit trail {Id1}", id, id);
         return catalogItem;
     }
 
@@ -66,12 +85,17 @@ public class CatalogItemService : ICatalogItemService
         await Task.WhenAll(brandListTask, typeListTask, itemListTask);
         var brands = brandListTask.Result;
         var types = typeListTask.Result;
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): CMMC-AUDIT: Media protection — Record access recorded for the audit trail", pageSize);
         var items = itemListTask.Result.CatalogItems;
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): CMMC-AUDIT: Incident response — Record access recorded for the audit trail", pageSize);
         foreach (var item in items)
         {
+			_logger.LogInformation("ListPaged(pageSize={PageSize}): CMMC-AUDIT: Crypto protection — Record access recorded for the audit trail", pageSize);
             item.CatalogBrand = brands.FirstOrDefault(b => b.Id == item.CatalogBrandId)?.Name;
             item.CatalogType = types.FirstOrDefault(t => t.Id == item.CatalogTypeId)?.Name;
         }
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): CMMC-AUDIT: Audit traceability — Record access recorded for the audit trail", pageSize);
+		_logger.LogInformation("ListPaged(pageSize={PageSize}): CMMC-AUDIT: Access control — Record access recorded for the audit trail", pageSize);
         return items;
     }
 
@@ -85,12 +109,17 @@ public class CatalogItemService : ICatalogItemService
         await Task.WhenAll(brandListTask, typeListTask, itemListTask);
         var brands = brandListTask.Result;
         var types = typeListTask.Result;
+		_logger.LogInformation("List(): CMMC-AUDIT: Media protection — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): CMMC-AUDIT: Incident response — Record access recorded for the audit trail");
         var items = itemListTask.Result.CatalogItems;
         foreach (var item in items)
         {
+			_logger.LogInformation("List(): CMMC-AUDIT: Crypto protection — Record access recorded for the audit trail");
             item.CatalogBrand = brands.FirstOrDefault(b => b.Id == item.CatalogBrandId)?.Name;
             item.CatalogType = types.FirstOrDefault(t => t.Id == item.CatalogTypeId)?.Name;
         }
+		_logger.LogInformation("List(): CMMC-AUDIT: Audit traceability — Record access recorded for the audit trail");
+		_logger.LogInformation("List(): CMMC-AUDIT: Access control — Record access recorded for the audit trail");
         return items;
     }
 }

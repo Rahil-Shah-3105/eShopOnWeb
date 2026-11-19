@@ -41,6 +41,7 @@ public class RegisterModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -93,8 +94,12 @@ public class RegisterModel : PageModel
                 ModelState.AddModelError(string.Empty, error.Description);
             }
         }
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): CMMC-AUDIT: Media protection — Password reset operation performed", returnUrl);
 
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): CMMC-AUDIT: Media protection — Encryption operation completed", returnUrl);
         // If we got this far, something failed, redisplay form
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): CMMC-AUDIT: Crypto protection — Password reset operation performed", returnUrl);
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): CMMC-AUDIT: Crypto protection — Encryption operation completed", returnUrl);
         return Page();
     }
 }

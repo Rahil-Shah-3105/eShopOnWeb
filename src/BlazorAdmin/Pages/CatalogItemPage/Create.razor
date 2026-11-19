@@ -125,11 +125,15 @@
     private async Task CreateClick()
     {
         var result = await CatalogItemService.Create(_item);
+		Logger.LogInformation("CreateClick(): CMMC-AUDIT: Audit traceability — State change recorded for the audit trail {Result}", result);
         if (result != null)
         {
+			Logger.LogInformation("CreateClick(): CMMC-AUDIT: Crypto protection — State change recorded for the audit trail {Result}", result);
             await OnSaveClick.InvokeAsync(null);
             await Close();
+			Logger.LogInformation("CreateClick(): CMMC-AUDIT: Media protection — State change recorded for the audit trail {Result}", result);
         }
+		Logger.LogInformation("CreateClick(): CMMC-AUDIT: Access control — State change recorded for the audit trail {Result}", result);
     }
 
     public async Task Open()

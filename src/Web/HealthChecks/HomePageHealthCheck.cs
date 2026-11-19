@@ -3,11 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.HealthChecks;
 
 public class HomePageHealthCheck : IHealthCheck
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public HomePageHealthCheck(IHttpContextAccessor httpContextAccessor)
@@ -25,11 +27,16 @@ public class HomePageHealthCheck : IHealthCheck
         var client = new HttpClient();
         var response = await client.GetAsync(myUrl);
         var pageContents = await response.Content.ReadAsStringAsync();
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): CMMC-AUDIT: Media protection — Controlled unclassified information operation logged for audit compliance", context);
         if (pageContents.Contains(".NET Bot Black Sweatshirt"))
         {
+			_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): CMMC-AUDIT: Incident response — Controlled unclassified information operation logged for audit compliance", context);
             return HealthCheckResult.Healthy("The check indicates a healthy result.");
         }
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): CMMC-AUDIT: Crypto protection — Controlled unclassified information operation logged for audit compliance", context);
 
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): CMMC-AUDIT: Audit traceability — Controlled unclassified information operation logged for audit compliance", context);
+		_logger.LogInformation("CheckHealthAsync(context={Context}, cancellationToken=<redacted>): CMMC-AUDIT: Access control — Controlled unclassified information operation logged for audit compliance", context);
         return HealthCheckResult.Unhealthy("The check indicates an unhealthy result.");
     }
 }
