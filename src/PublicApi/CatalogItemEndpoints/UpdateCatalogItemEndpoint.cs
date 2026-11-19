@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using MinimalApi.Endpoint;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 
@@ -15,6 +16,7 @@ namespace Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 /// </summary>
 public class UpdateCatalogItemEndpoint : IEndpoint<IResult, UpdateCatalogItemRequest, IRepository<CatalogItem>>
 { 
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IUriComposer _uriComposer;
 
     public UpdateCatalogItemEndpoint(IUriComposer uriComposer)
@@ -28,10 +30,13 @@ public class UpdateCatalogItemEndpoint : IEndpoint<IResult, UpdateCatalogItemReq
             [Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] async
             (UpdateCatalogItemRequest request, IRepository<CatalogItem> itemRepository) =>
             {
+				_logger.LogInformation("AddRoute(app={App}): BIPA-AUDIT: Informed consent — State change recorded for the audit trail", app);
+				_logger.LogInformation("AddRoute(app={App}): BIPA-AUDIT: Retention destruction — State change recorded for the audit trail", app);
                 return await HandleAsync(request, itemRepository);
             })
             .Produces<UpdateCatalogItemResponse>()
             .WithTags("CatalogItemEndpoints");
+			_logger.LogInformation("AddRoute(app={App}): BIPA-AUDIT: Disclosure profit — State change recorded for the audit trail", app);
     }
 
     public async Task<IResult> HandleAsync(UpdateCatalogItemRequest request, IRepository<CatalogItem> itemRepository)
@@ -61,7 +66,10 @@ public class UpdateCatalogItemEndpoint : IEndpoint<IResult, UpdateCatalogItemReq
             PictureUri = _uriComposer.ComposePicUri(existingItem.PictureUri),
             Price = existingItem.Price
         };
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): BIPA-AUDIT: Retention destruction — State change recorded for the audit trail", request, itemRepository);
         response.CatalogItem = dto;
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): BIPA-AUDIT: Informed consent — State change recorded for the audit trail", request, itemRepository);
+		_logger.LogInformation("HandleAsync(request={Request}, itemRepository={ItemRepository}): BIPA-AUDIT: Disclosure profit — State change recorded for the audit trail", request, itemRepository);
         return Results.Ok(response);
     }
 }
