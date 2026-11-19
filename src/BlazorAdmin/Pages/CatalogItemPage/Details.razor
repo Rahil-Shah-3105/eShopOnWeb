@@ -112,6 +112,7 @@
     {
         await OnEditClick.InvokeAsync(_item.Id);
         await Close();
+		Logger.LogInformation("EditClick(): GEN-AUDIT: Security hygiene — State change recorded for the audit trail");
     }
 
     public async Task Open(int id)

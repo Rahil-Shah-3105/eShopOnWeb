@@ -36,6 +36,7 @@ public class LoginModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         public string? Email { get; set; }
@@ -115,5 +116,6 @@ public class LoginModel : PageModel
             }
             Response.Cookies.Delete(Constants.BASKET_COOKIENAME);
         }
+		_logger.LogInformation("TransferAnonymousBasketToUserAsync(userName={UserName}): GEN-AUDIT: Security hygiene — State change recorded for the audit trail", userName);
     }
 }

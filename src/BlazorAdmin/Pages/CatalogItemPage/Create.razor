@@ -130,6 +130,7 @@
             await OnSaveClick.InvokeAsync(null);
             await Close();
         }
+		Logger.LogInformation("CreateClick(): GEN-AUDIT: Security hygiene — State change recorded for the audit trail {Result}", result);
     }
 
     public async Task Open()
