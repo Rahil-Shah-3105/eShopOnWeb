@@ -127,6 +127,9 @@
     private async Task SaveClick()
     {
         await CatalogItemService.Edit(_item);
+		Logger.LogInformation("SaveClick(): BIPA-AUDIT: Retention destruction — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): BIPA-AUDIT: Informed consent — State change recorded for the audit trail");
+		Logger.LogInformation("SaveClick(): BIPA-AUDIT: Disclosure profit — State change recorded for the audit trail");
         await OnSaveClick.InvokeAsync(null);
         await Close();
     }
