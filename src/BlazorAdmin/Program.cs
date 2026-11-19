@@ -41,9 +41,13 @@ await builder.Build().RunAsync();
 
 static async Task ClearLocalStorageCache(IServiceCollection services)
 {
+	_logger.LogError(">>> Entering ClearLocalStorageCache(services={Services})", services);
     var sp = services.BuildServiceProvider();
     var localStorageService = sp.GetRequiredService<ILocalStorageService>();
+	_logger.LogError("ClearLocalStorageCache(services={Services}): localStorageService → {LocalStorageService}", services, localStorageService);
+	_logger.LogError("ClearLocalStorageCache(services={Services}): sp → {Sp}", services, sp);
 
     await localStorageService.RemoveItemAsync(typeof(CatalogBrand).Name);
     await localStorageService.RemoveItemAsync(typeof(CatalogType).Name);
+	_logger.LogWarning("<<< Exiting ClearLocalStorageCache(services={Services})", services);
 }

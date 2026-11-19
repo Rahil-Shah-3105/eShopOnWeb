@@ -3,11 +3,13 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading.Tasks;
 using BlazorInputFile;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorShared.Models;
 
 public class CatalogItem
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     public int Id { get; set; }
 
     public int CatalogTypeId { get; set; }
@@ -36,11 +38,13 @@ public class CatalogItem
 
     public static string IsValidImage(string pictureName, string pictureBase64)
     {
+		_logger.LogError(">>> Entering IsValidImage(pictureName={PictureName},pictureBase64={PictureBase64})", pictureName, pictureBase64);
         if (string.IsNullOrEmpty(pictureBase64))
         {
             return "File not found!";
         }
         var fileData = Convert.FromBase64String(pictureBase64);
+		_logger.LogError("IsValidImage(pictureName={PictureName},pictureBase64={PictureBase64}): fileData → {FileData}", pictureName, pictureBase64, fileData);
 
         if (fileData.Length <= 0)
         {
@@ -57,11 +61,13 @@ public class CatalogItem
             return "File is not image";
         }
 
+		_logger.LogWarning("<<< Exiting IsValidImage(pictureName={PictureName},pictureBase64={PictureBase64})", pictureName, pictureBase64);
         return null;
     }
 
     public static async Task<string> DataToBase64(IFileListEntry fileItem)
     {
+		_logger.LogError(">>> Entering DataToBase64(fileItem={FileItem})", fileItem);
         using (var reader = new StreamReader(fileItem.Data))
         {
             using (var memStream = new MemoryStream())
@@ -70,6 +76,7 @@ public class CatalogItem
                 var fileData = memStream.ToArray();
                 var encodedBase64 = Convert.ToBase64String(fileData);
 
+				_logger.LogWarning("<<< Exiting DataToBase64(fileItem={FileItem})", fileItem);
                 return encodedBase64;
             }
         }
@@ -77,8 +84,11 @@ public class CatalogItem
 
     private static bool IsExtensionValid(string fileName)
     {
+		_logger.LogError(">>> Entering IsExtensionValid(fileName={FileName})", fileName);
         var extension = Path.GetExtension(fileName);
 
+		_logger.LogError("IsExtensionValid(fileName={FileName}): extension → {Extension}", fileName, extension);
+		_logger.LogWarning("<<< Exiting IsExtensionValid(fileName={FileName})", fileName);
         return string.Equals(extension, ".jpg", StringComparison.OrdinalIgnoreCase) ||
                string.Equals(extension, ".png", StringComparison.OrdinalIgnoreCase) ||
                string.Equals(extension, ".gif", StringComparison.OrdinalIgnoreCase) ||

@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Services;
 /// </summary>
 public class CatalogViewModelService : ICatalogViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly ILogger<CatalogViewModelService> _logger;
     private readonly IRepository<CatalogItem> _itemRepository;
     private readonly IRepository<CatalogBrand> _brandRepository;
@@ -31,26 +32,37 @@ public class CatalogViewModelService : ICatalogViewModelService
         IUriComposer uriComposer)
     {
         _logger = loggerFactory.CreateLogger<CatalogViewModelService>();
+		_logger.LogError(">>> Entering CatalogViewModelService(loggerFactory={LoggerFactory},itemRepository={ItemRepository},brandRepository={BrandRepository},typeRepository={TypeRepository},uriComposer={UriComposer})", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer);
         _itemRepository = itemRepository;
         _brandRepository = brandRepository;
+		_logger.LogDebug("CatalogViewModelService(loggerFactory={LoggerFactory},itemRepository={ItemRepository},brandRepository={BrandRepository},typeRepository={TypeRepository},uriComposer={UriComposer}): _logger → {_logger}", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer, _logger);
+		_logger.LogDebug("CatalogViewModelService(loggerFactory={LoggerFactory},itemRepository={ItemRepository},brandRepository={BrandRepository},typeRepository={TypeRepository},uriComposer={UriComposer}): _itemRepository → {_itemRepository}", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer, _itemRepository);
         _typeRepository = typeRepository;
+		_logger.LogDebug("CatalogViewModelService(loggerFactory={LoggerFactory},itemRepository={ItemRepository},brandRepository={BrandRepository},typeRepository={TypeRepository},uriComposer={UriComposer}): _typeRepository → {_typeRepository}", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer, _typeRepository);
+		_logger.LogWarning("<<< Exiting CatalogViewModelService(loggerFactory={LoggerFactory},itemRepository={ItemRepository},brandRepository={BrandRepository},typeRepository={TypeRepository},uriComposer={UriComposer})", loggerFactory, itemRepository, brandRepository, typeRepository, uriComposer);
         _uriComposer = uriComposer;
     }
 
     public async Task<CatalogIndexViewModel> GetCatalogItems(int pageIndex, int itemsPage, int? brandId, int? typeId)
     {
+		_logger.LogError(">>> Entering GetCatalogItems(pageIndex={PageIndex},itemsPage={ItemsPage},brandId={BrandId},typeId={TypeId})", pageIndex, itemsPage, brandId, typeId);
         _logger.LogInformation("GetCatalogItems called.");
 
         var filterSpecification = new CatalogFilterSpecification(brandId, typeId);
+		_logger.LogError("GetCatalogItems(pageIndex={PageIndex},itemsPage={ItemsPage},brandId={BrandId},typeId={TypeId}): filterSpecification → {FilterSpecification}", pageIndex, itemsPage, brandId, typeId, filterSpecification);
         var filterPaginatedSpecification =
             new CatalogFilterPaginatedSpecification(itemsPage * pageIndex, itemsPage, brandId, typeId);
 
         // the implementation below using ForEach and Count. We need a List.
+		var __logStart = System.Diagnostics.Stopwatch.StartNew();
+		_logger.LogError("GetCatalogItems(pageIndex,itemsPage,brandId,typeId)={PageIndex},{ItemsPage},{BrandId},{TypeId}: database query executed in {Arg4} ms", pageIndex, itemsPage, brandId, typeId, __logStart.ElapsedMilliseconds);
         var itemsOnPage = await _itemRepository.ListAsync(filterPaginatedSpecification);
         var totalItems = await _itemRepository.CountAsync(filterSpecification);
 
+		_logger.LogError("GetCatalogItems(pageIndex={PageIndex},itemsPage={ItemsPage},brandId={BrandId},typeId={TypeId}): itemsOnPage → {ItemsOnPage}", pageIndex, itemsPage, brandId, typeId, itemsOnPage);
         var vm = new CatalogIndexViewModel()
         {
+			_logger.LogError("GetCatalogItems(pageIndex={PageIndex},itemsPage={ItemsPage},brandId={BrandId},typeId={TypeId}): totalItems → {TotalItems}", pageIndex, itemsPage, brandId, typeId, totalItems);
             CatalogItems = itemsOnPage.Select(i => new CatalogItemViewModel()
             {
                 Id = i.Id,
@@ -64,12 +76,17 @@ public class CatalogViewModelService : ICatalogViewModelService
             TypesFilterApplied = typeId ?? 0,
             PaginationInfo = new PaginationInfoViewModel()
             {
+				_logger.LogDebug("GetCatalogItems(pageIndex={PageIndex},itemsPage={ItemsPage},brandId={BrandId},typeId={TypeId}): PaginationInfo → {PaginationInfo}", pageIndex, itemsPage, brandId, typeId, PaginationInfo);
                 ActualPage = pageIndex,
                 ItemsPerPage = itemsOnPage.Count,
                 TotalItems = totalItems,
                 TotalPages = int.Parse(Math.Ceiling(((decimal)totalItems / itemsPage)).ToString())
+				_logger.LogError(">>> Entering GetTypes()");
+				_logger.LogError("GetTypes(): database query executed in {Arg0} ms", __logStart.ElapsedMilliseconds);
+				_logger.LogWarning("<<< Exiting GetTypes()");
             }
         };
+		_logger.LogError("GetCatalogItems(pageIndex,itemsPage,brandId,typeId)={PageIndex},{ItemsPage},{BrandId},{TypeId}: count query executed in {Arg4} ms", pageIndex, itemsPage, brandId, typeId, __logStart.ElapsedMilliseconds);
 
         vm.PaginationInfo.Next = (vm.PaginationInfo.ActualPage == vm.PaginationInfo.TotalPages - 1) ? "is-disabled" : "";
         vm.PaginationInfo.Previous = (vm.PaginationInfo.ActualPage == 0) ? "is-disabled" : "";
@@ -79,33 +96,45 @@ public class CatalogViewModelService : ICatalogViewModelService
 
     public async Task<IEnumerable<SelectListItem>> GetBrands()
     {
+		_logger.LogError(">>> Entering GetBrands()");
+		var __logStart = System.Diagnostics.Stopwatch.StartNew();
         _logger.LogInformation("GetBrands called.");
         var brands = await _brandRepository.ListAsync();
 
+		_logger.LogError("GetBrands(): database query executed in {Arg0} ms", __logStart.ElapsedMilliseconds);
         var items = brands
             .Select(brand => new SelectListItem() { Value = brand.Id.ToString(), Text = brand.Brand })
             .OrderBy(b => b.Text)
             .ToList();
+			_logger.LogError("GetBrands(): brands → {Brands}", brands);
 
         var allItem = new SelectListItem() { Value = null, Text = "All", Selected = true };
+		_logger.LogError("GetBrands(): allItem → {AllItem}", allItem);
         items.Insert(0, allItem);
 
+		_logger.LogWarning("<<< Exiting GetBrands()");
         return items;
     }
 
     public async Task<IEnumerable<SelectListItem>> GetTypes()
     {
+		_logger.LogError(">>> Entering GetTypes()");
+		var __logStart = System.Diagnostics.Stopwatch.StartNew();
         _logger.LogInformation("GetTypes called.");
         var types = await _typeRepository.ListAsync();
 
+		_logger.LogError("GetTypes(): database query executed in {Arg0} ms", __logStart.ElapsedMilliseconds);
         var items = types
             .Select(type => new SelectListItem() { Value = type.Id.ToString(), Text = type.Type })
             .OrderBy(t => t.Text)
             .ToList();
+			_logger.LogError("GetTypes(): types → {Types}", types);
 
         var allItem = new SelectListItem() { Value = null, Text = "All", Selected = true };
+		_logger.LogError("GetTypes(): allItem → {AllItem}", allItem);
         items.Insert(0, allItem);
 
+		_logger.LogWarning("<<< Exiting GetTypes()");
         return items;
     }
 }

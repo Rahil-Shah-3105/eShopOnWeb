@@ -2,21 +2,28 @@
 using System.Collections.Generic;
 using Ardalis.GuardClauses;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
 
 public class Order : BaseEntity, IAggregateRoot
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     #pragma warning disable CS8618 // Required by Entity Framework
     private Order() {}
 
     public Order(string buyerId, Address shipToAddress, List<OrderItem> items)
     {
+		_logger.LogError(">>> Entering Order(buyerId={BuyerId},shipToAddress={ShipToAddress},items={Items})", buyerId, shipToAddress, items);
         Guard.Against.NullOrEmpty(buyerId, nameof(buyerId));
+		_logger.LogWarning("<<< Exiting Order()");
 
         BuyerId = buyerId;
+		_logger.LogDebug("Order(buyerId={BuyerId},shipToAddress={ShipToAddress},items={Items}): BuyerId → {BuyerId1}", buyerId, shipToAddress, items, BuyerId);
         ShipToAddress = shipToAddress;
+		_logger.LogDebug("Order(buyerId={BuyerId},shipToAddress={ShipToAddress},items={Items}): ShipToAddress → {ShipToAddress1}", buyerId, shipToAddress, items, ShipToAddress);
         _orderItems = items;
+		_logger.LogDebug("Order(buyerId={BuyerId},shipToAddress={ShipToAddress},items={Items}): _orderItems → {_orderItems}", buyerId, shipToAddress, items, _orderItems);
     }
 
     public string BuyerId { get; private set; }
@@ -37,11 +44,14 @@ public class Order : BaseEntity, IAggregateRoot
 
     public decimal Total()
     {
+		_logger.LogError(">>> Entering Total()");
         var total = 0m;
+		_logger.LogError("Total(): total → {Total}", total);
         foreach (var item in _orderItems)
         {
             total += item.UnitPrice * item.Units;
         }
+		_logger.LogWarning("<<< Exiting Total()");
         return total;
     }
 }

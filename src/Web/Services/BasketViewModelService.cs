@@ -4,11 +4,13 @@ using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.Pages.Basket;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Services;
 
 public class BasketViewModelService : IBasketViewModelService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Basket> _basketRepository;
     private readonly IUriComposer _uriComposer;
     private readonly IBasketQueryService _basketQueryService;
@@ -19,22 +21,34 @@ public class BasketViewModelService : IBasketViewModelService
         IUriComposer uriComposer,
         IBasketQueryService basketQueryService)
     {
+		_logger.LogError(">>> Entering BasketViewModelService(basketRepository={BasketRepository},itemRepository={ItemRepository},uriComposer={UriComposer},basketQueryService={BasketQueryService})", basketRepository, itemRepository, uriComposer, basketQueryService);
         _basketRepository = basketRepository;
         _uriComposer = uriComposer;
+		_logger.LogDebug("BasketViewModelService(basketRepository={BasketRepository},itemRepository={ItemRepository},uriComposer={UriComposer},basketQueryService={BasketQueryService}): _uriComposer → {_uriComposer}", basketRepository, itemRepository, uriComposer, basketQueryService, _uriComposer);
+		_logger.LogDebug("BasketViewModelService(basketRepository={BasketRepository},itemRepository={ItemRepository},uriComposer={UriComposer},basketQueryService={BasketQueryService}): _basketRepository → {_basketRepository}", basketRepository, itemRepository, uriComposer, basketQueryService, _basketRepository);
+    _logger.LogWarning("<<< Exiting BasketViewModelService(basketRepository={BasketRepository},itemRepository={ItemRepository},uriComposer={UriComposer},basketQueryService={BasketQueryService})", basketRepository, itemRepository, uriComposer, basketQueryService);
         _basketQueryService = basketQueryService;
+		_logger.LogDebug("BasketViewModelService(basketRepository={BasketRepository},itemRepository={ItemRepository},uriComposer={UriComposer},basketQueryService={BasketQueryService}): _basketQueryService → {_basketQueryService}", basketRepository, itemRepository, uriComposer, basketQueryService, _basketQueryService);
         _itemRepository = itemRepository;
     }
 
     public async Task<BasketViewModel> GetOrCreateBasketForUser(string userName)
     {
+		_logger.LogError(">>> Entering GetOrCreateBasketForUser(userName={UserName})", userName);
+		var __logStart = System.Diagnostics.Stopwatch.StartNew();
         var basketSpec = new BasketWithItemsSpecification(userName);
         var basket = (await _basketRepository.FirstOrDefaultAsync(basketSpec));
 
+		_logger.LogError("GetOrCreateBasketForUser(userName)={UserName}: database query executed in {Arg1} ms", userName, __logStart.ElapsedMilliseconds);
         if (basket == null)
         {
+			_logger.LogError("GetOrCreateBasketForUser(userName={UserName}): basketSpec → {BasketSpec}", userName, basketSpec);
+			_logger.LogError("GetOrCreateBasketForUser(userName={UserName}): basket → {Basket}", userName, basket);
             return await CreateBasketForUser(userName);
         }
         var viewModel = await Map(basket);
+		_logger.LogError("GetOrCreateBasketForUser(userName={UserName}): viewModel → {ViewModel}", userName, viewModel);
+		_logger.LogWarning("<<< Exiting GetOrCreateBasketForUser(userName={UserName})", userName);
         return viewModel;
     }
 
@@ -52,13 +66,19 @@ public class BasketViewModelService : IBasketViewModelService
 
     private async Task<List<BasketItemViewModel>> GetBasketItems(IReadOnlyCollection<BasketItem> basketItems)
     {
+		_logger.LogError(">>> Entering GetBasketItems(basketItems={BasketItems})", basketItems);
+		var __logStart = System.Diagnostics.Stopwatch.StartNew();
         var catalogItemsSpecification = new CatalogItemsSpecification(basketItems.Select(b => b.CatalogItemId).ToArray());
         var catalogItems = await _itemRepository.ListAsync(catalogItemsSpecification);
 
+		_logger.LogError("GetBasketItems(basketItems)={BasketItems}: database query executed in {Arg1} ms", basketItems, __logStart.ElapsedMilliseconds);
         var items = basketItems.Select(basketItem =>
         {
+			_logger.LogError("GetBasketItems(basketItems={BasketItems}): catalogItemsSpecification → {CatalogItemsSpecification}", basketItems, catalogItemsSpecification);
+			_logger.LogError("GetBasketItems(basketItems={BasketItems}): catalogItems → {CatalogItems}", basketItems, catalogItems);
             var catalogItem = catalogItems.First(c => c.Id == basketItem.CatalogItemId);
 
+			_logger.LogError("GetBasketItems(basketItems={BasketItems}): catalogItem → {CatalogItem}", basketItems, catalogItem);
             var basketItemViewModel = new BasketItemViewModel
             {
                 Id = basketItem.Id,
@@ -68,6 +88,7 @@ public class BasketViewModelService : IBasketViewModelService
                 PictureUrl = _uriComposer.ComposePicUri(catalogItem.PictureUri),
                 ProductName = catalogItem.Name
             };
+		_logger.LogWarning("<<< Exiting GetBasketItems(basketItems={BasketItems})", basketItems);
             return basketItemViewModel;
         }).ToList();
 
@@ -76,7 +97,9 @@ public class BasketViewModelService : IBasketViewModelService
 
     public async Task<BasketViewModel> Map(Basket basket)
     {
+		_logger.LogError(">>> Entering Map(basket={Basket})", basket);
         return new BasketViewModel()
+		_logger.LogWarning("<<< Exiting Map(basket={Basket})", basket);
         {
             BuyerId = basket.BuyerId,
             Id = basket.Id,
@@ -86,8 +109,10 @@ public class BasketViewModelService : IBasketViewModelService
 
     public async Task<int> CountTotalBasketItems(string username)
     {
+		_logger.LogError(">>> Entering CountTotalBasketItems(username={Username})", username);
         var counter = await _basketQueryService.CountTotalBasketItems(username);
 
+		_logger.LogWarning("<<< Exiting CountTotalBasketItems(username={Username})", username);
         return counter;
     }
 }

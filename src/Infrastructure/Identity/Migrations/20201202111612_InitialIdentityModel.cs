@@ -1,12 +1,15 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Infrastructure.Identity.Migrations;
 
 public partial class InitialIdentityModel : Migration
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     protected override void Up(MigrationBuilder migrationBuilder)
     {
+		_logger.LogError(">>> Entering Up(migrationBuilder={MigrationBuilder})", migrationBuilder);
         migrationBuilder.CreateTable(
             name: "AspNetRoles",
             columns: table => new
@@ -99,6 +102,7 @@ public partial class InitialIdentityModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): UserId → {UserId}", migrationBuilder, UserId);
                 table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
                 table.ForeignKey(
                     name: "FK_AspNetUserLogins_AspNetUsers_UserId",
@@ -117,6 +121,7 @@ public partial class InitialIdentityModel : Migration
             },
             constraints: table =>
             {
+				_logger.LogDebug("Up(migrationBuilder={MigrationBuilder}): RoleId → {RoleId}", migrationBuilder, RoleId);
                 table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
                 table.ForeignKey(
                     name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
@@ -190,10 +195,12 @@ public partial class InitialIdentityModel : Migration
             column: "NormalizedUserName",
             unique: true,
             filter: "[NormalizedUserName] IS NOT NULL");
+			_logger.LogWarning("<<< Exiting Up(migrationBuilder={MigrationBuilder})", migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
+		_logger.LogError(">>> Entering Down(migrationBuilder={MigrationBuilder})", migrationBuilder);
         migrationBuilder.DropTable(
             name: "AspNetRoleClaims");
 
@@ -214,5 +221,6 @@ public partial class InitialIdentityModel : Migration
 
         migrationBuilder.DropTable(
             name: "AspNetUsers");
+			_logger.LogWarning("<<< Exiting Down(migrationBuilder={MigrationBuilder})", migrationBuilder);
     }
 }
