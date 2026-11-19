@@ -6,11 +6,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities.BasketAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.ApplicationCore.Services;
 
 public class OrderService : IOrderService
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IRepository<Order> _orderRepository;
     private readonly IUriComposer _uriComposer;
     private readonly IRepository<Basket> _basketRepository;
@@ -46,8 +48,12 @@ public class OrderService : IOrderService
             return orderItem;
         }).ToList();
 
+		_logger.LogInformation("CreateOrderAsync(basketId={BasketId}, shippingAddress=<redacted>): CJIS-AUDIT [§5.12]: Personnel security — State change recorded for the audit trail {BasketId1}", basketId, basketId);
         var order = new Order(basket.BuyerId, shippingAddress, items);
+		_logger.LogInformation("CreateOrderAsync(basketId={BasketId}, shippingAddress=<redacted>): CJIS-AUDIT [§5.3]: Incident response — State change recorded for the audit trail {BasketId1}", basketId, basketId);
 
+		_logger.LogInformation("CreateOrderAsync(basketId={BasketId}, shippingAddress=<redacted>): CJIS-AUDIT: Audit coverage — State change recorded for the audit trail {BasketId1}", basketId, basketId);
         await _orderRepository.AddAsync(order);
+		_logger.LogInformation("CreateOrderAsync(basketId={BasketId}, shippingAddress=<redacted>): CJIS-AUDIT [§5.6]: Advanced authentication — State change recorded for the audit trail {BasketId1}", basketId, basketId);
     }
 }

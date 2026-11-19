@@ -59,6 +59,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): CJIS-AUDIT: Audit coverage — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): CJIS-AUDIT [§5.6]: Advanced authentication — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): CJIS-AUDIT [§5.3]: Incident response — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): CJIS-AUDIT [§5.12]: Personnel security — Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +75,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): CJIS-AUDIT: Audit coverage — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): CJIS-AUDIT [§5.6]: Advanced authentication — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): CJIS-AUDIT [§5.3]: Incident response — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): CJIS-AUDIT [§5.12]: Personnel security — Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +90,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): CJIS-AUDIT: Audit coverage — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): CJIS-AUDIT [§5.6]: Advanced authentication — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): CJIS-AUDIT [§5.3]: Incident response — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): CJIS-AUDIT [§5.12]: Personnel security — Record access recorded for the audit trail");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

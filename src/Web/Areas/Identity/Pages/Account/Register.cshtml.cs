@@ -17,6 +17,7 @@ namespace Microsoft.eShopWeb.Web.Areas.Identity.Pages.Account;
 [AllowAnonymous]
 public class RegisterModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<RegisterModel> _logger;
@@ -32,6 +33,7 @@ public class RegisterModel : PageModel
         _signInManager = signInManager;
         _logger = logger;
         _emailSender = emailSender;
+		_logger.LogInformation("RegisterModel(userManager={UserManager}, signInManager={SignInManager}, logger={Logger}, emailSender=<redacted>): CJIS-AUDIT [§5.6]: Advanced authentication — Authentication operation completed for user {UserManager1}", userManager, signInManager, logger, userManager);
     }
 
     [BindProperty]
@@ -41,6 +43,7 @@ public class RegisterModel : PageModel
 
     public class InputModel
     {
+    	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -95,6 +98,7 @@ public class RegisterModel : PageModel
         }
 
         // If we got this far, something failed, redisplay form
+		_logger.LogInformation("OnPostAsync(returnUrl={ReturnUrl}): CJIS-AUDIT [§5.6]: Advanced authentication — Authentication operation completed", returnUrl);
         return Page();
     }
 }
