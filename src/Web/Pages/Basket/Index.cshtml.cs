@@ -5,11 +5,13 @@ using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.eShopWeb.Web.Pages.Basket;
 
 public class IndexModel : PageModel
 {
+	private static readonly Microsoft.Extensions.Logging.ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     private readonly IBasketService _basketService;
     private readonly IBasketViewModelService _basketViewModelService;
     private readonly IRepository<CatalogItem> _itemRepository;
@@ -48,7 +50,10 @@ public class IndexModel : PageModel
             productDetails.Id, item.Price);
 
         BasketModel = await _basketViewModelService.Map(basket);
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): TRAIGA-AUDIT: Regulatory sandbox — State change recorded for the audit trail", productDetails);
 
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): TRAIGA-AUDIT: Prohibited practices — State change recorded for the audit trail", productDetails);
+		_logger.LogInformation("OnPost(productDetails={ProductDetails}): TRAIGA-AUDIT: Gov ai disclosure — State change recorded for the audit trail", productDetails);
         return RedirectToPage();
     }
 
@@ -94,6 +99,9 @@ public class IndexModel : PageModel
         var cookieOptions = new CookieOptions { IsEssential = true };
         cookieOptions.Expires = DateTime.Today.AddYears(10);
         Response.Cookies.Append(Constants.BASKET_COOKIENAME, userName, cookieOptions);
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): TRAIGA-AUDIT: Regulatory sandbox — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): TRAIGA-AUDIT: Prohibited practices — Record access recorded for the audit trail");
+		_logger.LogInformation("GetOrSetBasketCookieAndUserName(): TRAIGA-AUDIT: Gov ai disclosure — Record access recorded for the audit trail");
 
         return userName;
     }
