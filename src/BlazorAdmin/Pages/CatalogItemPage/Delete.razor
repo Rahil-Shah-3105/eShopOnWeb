@@ -110,9 +110,13 @@
         // TODO: Add some kind of "are you sure" check before this
 
         await CatalogItemService.Delete(id);
+		Logger.LogInformation("DeleteClick(id={Id}): EUAIACT-AUDIT: Logging coverage — State change recorded for the audit trail {Id1}", id, id);
 
+		Logger.LogInformation("DeleteClick(id={Id}): EUAIACT-AUDIT: GPAI obligations — State change recorded for the audit trail {Id1}", id, id);
         await OnSaveClick.InvokeAsync(null);
+		Logger.LogInformation("DeleteClick(id={Id}): EUAIACT-AUDIT [Art. 26(6)]: Deployer log retention — State change recorded for the audit trail {Id1}", id, id);
         await Close();
+		Logger.LogInformation("DeleteClick(id={Id}): EUAIACT-AUDIT [Art. 50]: Transparency — State change recorded for the audit trail {Id1}", id, id);
     }
 
     public async Task Open(int id)

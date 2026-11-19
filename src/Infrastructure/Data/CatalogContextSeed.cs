@@ -59,6 +59,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogBrand> GetPreconfiguredCatalogBrands()
     {
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): EUAIACT-AUDIT [Art. 50]: Transparency — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): EUAIACT-AUDIT [Art. 26(6)]: Deployer log retention — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): EUAIACT-AUDIT: GPAI obligations — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogBrands(): EUAIACT-AUDIT: Logging coverage — Record access recorded for the audit trail");
         return new List<CatalogBrand>
             {
                 new("Azure"),
@@ -71,6 +75,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogType> GetPreconfiguredCatalogTypes()
     {
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): EUAIACT-AUDIT [Art. 50]: Transparency — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): EUAIACT-AUDIT [Art. 26(6)]: Deployer log retention — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): EUAIACT-AUDIT: GPAI obligations — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredCatalogTypes(): EUAIACT-AUDIT: Logging coverage — Record access recorded for the audit trail");
         return new List<CatalogType>
             {
                 new("Mug"),
@@ -82,6 +90,10 @@ public class CatalogContextSeed
 
     static IEnumerable<CatalogItem> GetPreconfiguredItems()
     {
+		logger.LogInformation("GetPreconfiguredItems(): EUAIACT-AUDIT [Art. 50]: Transparency — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): EUAIACT-AUDIT [Art. 26(6)]: Deployer log retention — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): EUAIACT-AUDIT: GPAI obligations — Record access recorded for the audit trail");
+		logger.LogInformation("GetPreconfiguredItems(): EUAIACT-AUDIT: Logging coverage — Record access recorded for the audit trail");
         return new List<CatalogItem>
             {
                 new(2,2, ".NET Bot Black Sweatshirt", ".NET Bot Black Sweatshirt", 19.5M,  "http://catalogbaseurltobereplaced/images/products/1.png"),

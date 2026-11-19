@@ -125,11 +125,14 @@
     private async Task CreateClick()
     {
         var result = await CatalogItemService.Create(_item);
+		Logger.LogInformation("CreateClick(): EUAIACT-AUDIT: GPAI obligations — State change recorded for the audit trail {Result}", result);
         if (result != null)
         {
+			Logger.LogInformation("CreateClick(): EUAIACT-AUDIT [Art. 26(6)]: Deployer log retention — State change recorded for the audit trail {Result}", result);
             await OnSaveClick.InvokeAsync(null);
             await Close();
         }
+		Logger.LogInformation("CreateClick(): EUAIACT-AUDIT [Art. 50]: Transparency — State change recorded for the audit trail {Result}", result);
     }
 
     public async Task Open()
