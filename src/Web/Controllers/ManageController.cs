@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Encodings.Web;
 using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Authentication;
