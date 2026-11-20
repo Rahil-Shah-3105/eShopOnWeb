@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
 using Ardalis.Result;
@@ -65,21 +66,28 @@ public class BasketService : IBasketService
 
     public async Task TransferBasketAsync(string anonymousId, string userName)
     {
-        var anonymousBasketSpec = new BasketWithItemsSpecification(anonymousId);
-        var anonymousBasket = await _basketRepository.FirstOrDefaultAsync(anonymousBasketSpec);
-        if (anonymousBasket == null) return;
-        var userBasketSpec = new BasketWithItemsSpecification(userName);
-        var userBasket = await _basketRepository.FirstOrDefaultAsync(userBasketSpec);
-        if (userBasket == null)
+        try
         {
-            userBasket = new Basket(userName);
-            await _basketRepository.AddAsync(userBasket);
+            var anonymousBasketSpec = new BasketWithItemsSpecification(anonymousId);
+            var anonymousBasket = await _basketRepository.FirstOrDefaultAsync(anonymousBasketSpec);
+            if (anonymousBasket == null) return;
+            var userBasketSpec = new BasketWithItemsSpecification(userName);
+            var userBasket = await _basketRepository.FirstOrDefaultAsync(userBasketSpec);
+            if (userBasket == null)
+            {
+                userBasket = new Basket(userName);
+                await _basketRepository.AddAsync(userBasket);
+            }
+            foreach (var item in anonymousBasket.Items)
+            {
+                userBasket.AddItem(item.CatalogItemId, item.UnitPrice, item.Quantity);
+            }
+            await _basketRepository.UpdateAsync(userBasket);
+            await _basketRepository.DeleteAsync(anonymousBasket);
         }
-        foreach (var item in anonymousBasket.Items)
+        catch (Exception ex)
         {
-            userBasket.AddItem(item.CatalogItemId, item.UnitPrice, item.Quantity);
+            _logger.LogError($"Error transferring basket: {ex.Message}");
         }
-        await _basketRepository.UpdateAsync(userBasket);
-        await _basketRepository.DeleteAsync(anonymousBasket);
     }
 }
