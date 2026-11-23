@@ -127,7 +127,15 @@ public class ManageController : Controller
             throw new ApplicationException($"No email associated with user {user.UserName}'.");
         }
 
-        await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
+        try
+        {
+            await _emailSender.SendEmailConfirmationAsync(email, callbackUrl);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error sending verification email to user with ID '{UserId}'.", user.Id);
+            throw;
+        }
 
         StatusMessage = "Verification email sent. Please check your email.";
         return RedirectToAction(nameof(MyAccount));
